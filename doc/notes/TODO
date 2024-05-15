@@ -1,0 +1,6 @@
+- Do a function which return a well cleaned dataframe from the dict structure from train_test_bookies_comparison function
+- Create a notebook which explore new features and try to improve the model - How to log properly the results of one pipeline/feature set ?
+- Add new data features with other tables (stats of the players, stats of the teams, etc)
+- Explore deep learning models with player stats - embedding ?
+- Start implementing a database in azure and a componant which fill this database daily with odds, stats (explore tha apis)
+- Create a componant backend api which calculate the prob of a given match using odds mean or a simple model
