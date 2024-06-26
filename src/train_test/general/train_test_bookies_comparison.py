@@ -3,13 +3,45 @@ from train_test.split import train_test_split_expanding_windows
 from train_test.metrics import accuracy_fn, recall_fn, precision_fn, f_mesure_fn, log_loss_fn, mse_loss_fn, classwise_ECE_fn
 import numpy as np
 import numbers
+import pandas as pd
 
 NO_RESULTS = -2
+HOME_VICTORY = 1
+DRAW = 0
+AWAY_VICTORY = -1
 
 
 def train_test_bookies_comparison(matchs, pipeline, X_cols, Y_col, 
     train_test_split_fn = lambda df : train_test_split_expanding_windows(df, split=5, test_prop=0.2, date_col="date"),
     bookies=['B365', 'BW', 'IW', 'LB', 'PS', 'WH', 'SJ', 'VC', 'GB', 'BS']):
+    """
+    Compare the prediction of the model and the bookies for the matchs dataset for different features set.
+
+    Parameters
+    ----------
+    matchs : pd.DataFrame
+        The matchs dataset.
+    pipeline : sklearn.pipeline.Pipeline
+        The model to evaluate.
+    X_cols : list of tuple
+        The features set to evaluate.
+    Y_col : str
+        The target column.
+    train_test_split_fn : function, optional
+        The function to split the dataset. The default is lambda df : train_test_split_expanding_windows(df, split=5, test_prop=0.2, date_col="date").
+    bookies : list of str, optional
+        The bookies to evaluate. The default is ['B365', 'BW', 'IW', 'LB', 'PS', 'WH', 'SJ', 'VC', 'GB', 'BS'].
+
+    Returns
+    -------
+    dict
+        The metrics of the model and the bookies for the different features set.
+        { bookie : { "model_mean_all" : { metric : value }, 
+                     "model_all" : { metric : [value] }, 
+                     "bookie_mean" : { metric : value }, 
+                     "bookie" : { metric : [value] } } 
+                     }
+    """
 
     keys = ["accuracy", "weighted_accuracy", "accuracy_home", "accuracy_draw", "accuracy_away",
             "recall_all", "weighted_recall", "balanced_accuracy", "recall_home", "recall_draw", "recall_away",
@@ -52,94 +84,28 @@ def train_test_bookies_comparison(matchs, pipeline, X_cols, Y_col,
 
         metrics_bookies[bookie]["bookie_mean"] = {key: np.mean(metrics_bookie[key]) for key in keys if isinstance(metrics_bookie[key][0], numbers.Real)}
         metrics_bookies[bookie]["bookie"] = metrics_bookie
-
+    
     metrics_bookies["all_df"] = {}
     for (name, X_col) in X_cols:
-        metrics_bookies["all_df"][f"model_mean_{name}"], metrics_bookies[bookie][f"model_{name}"], _ = train_test(matchs_bookie, pipeline, X_col, Y_col, train_test_split_fn=train_test_split_fn)
-
+        metrics_bookies["all_df"][f"model_mean_{name}"], metrics_bookies["all_df"][f"model_{name}"], _ = train_test(matchs_bookie, pipeline, X_col, Y_col, train_test_split_fn=train_test_split_fn)
+    metrics_bookies["all_df"][f"bookie_mean"] = {key: np.mean([metrics_bookies[bookie]["bookie_mean"][key] for bookie in bookies]) for key in keys if isinstance(metrics_bookies[bookie]["bookie"][key][0], numbers.Real)}
+    
     return metrics_bookies
 
-bookies = ['B365', 'BW', 'IW', 'LB', 'PS', 'WH', 'SJ', 'VC', 'GB', 'BS']
+def display_train_test_bookies_comparison(metrics_bookies,
+                                          X_cols,
+                                          cols=['B365', 'BW', 'IW', 'LB', 'PS', 'WH', 'SJ', 'VC', 'GB', 'BS', "all_df"],
+                                          metrics_of_interrest=["balanced_accuracy"]):
+    metrics_bookies_dict = {}
 
+    for bookie in cols:
+        metrics_one_bookie_list = [metrics_bookies[bookie]["bookie_mean"][metric] for metric in metrics_of_interrest]
+        for (name, _) in X_cols:
+            for metric in metrics_of_interrest:
+                metrics_one_bookie_list.append(metrics_bookies[bookie][f"model_mean_{name}"][metric])
+        metrics_bookies_dict[bookie] = metrics_one_bookie_list
 
-def bookie_prediction(row, bookies):
-    """
-    Return 1 if the home team is the winner according to the bookie, 0 if it's a draw, -1 if the away team is the winner and -2 if the bookie is not able to predict the winner
-    """
-    if row[f'{bookies}H'] < row[f'{bookies}D'] and row[f'{bookies}H'] < row[f'{bookies}A']:
-        return 1
-    elif row[f'{bookies}D'] < row[f'{bookies}H'] and row[f'{bookies}D'] < row[f'{bookies}A']:
-        return 0
-    elif row[f'{bookies}A'] < row[f'{bookies}H'] and row[f'{bookies}A'] < row[f'{bookies}D']:
-        return -1
-    else:
-        return -2
+    df_display = pd.DataFrame(metrics_bookies_dict, index=metrics_of_interrest + 
+    [f"{metric}_model_{name}" for (name, _) in X_cols for metric in metrics_of_interrest])
 
-
-def prob_by_bookies(row, bookie):
-    if np.isnan(row[f'{bookie}H']) or np.isnan(row[f'{bookie}D']) or np.isnan(row[f'{bookie}A']):
-        (np.nan, np.nan, np.nan)
-    margin = 1/row[f'{bookie}H'] + 1/row[f'{bookie}D'] + 1/row[f'{bookie}A'] - 1
-    return 1 / row[f'{bookie}H'] - margin/3, 1 / row[f'{bookie}D'] - margin/3, 1 / row[f'{bookie}A'] - margin/3
-
-
-
-if __name__ == "__main__":
-    
-    from sklearn.pipeline import Pipeline
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.linear_model import LogisticRegression
-    import sqlite3
-    import pandas as pd
-    import os
-
-    # Retrieval pf the matchs dataset
-    python_script_path = os.path.dirname(os.path.abspath(__file__))
-    DATA_PATH = f'{python_script_path}/../../../data/soccer/European_Soccer_Database/database.sqlite'
-    conn = sqlite3.connect(DATA_PATH)
-    tables = pd.read_sql("SELECT name FROM sqlite_master WHERE type='table'", conn)
-    matchs = pd.read_sql("SELECT * FROM Match", conn)
-
-    # Features enginnering (minimun col to add to be able to test the prediction of the bookmakers)
-    matchs['FTR'] = matchs.apply(lambda x: 1 if x['home_team_goal'] > x['away_team_goal'] else 0 if x['home_team_goal'] == x['away_team_goal'] else -1, axis=1)
-    bookies = ['B365', 'BW', 'IW', 'LB', 'PS', 'WH', 'SJ', 'VC', 'GB', 'BS']
-    for bookie in bookies:
-        matchs[f'{bookie}_prediction'] = matchs.apply(lambda x: bookie_prediction(x, bookie), axis=1)
-    for bookie in bookies:
-        matchs[f'{bookie}H_prob'], matchs[f'{bookie}D_prob'], matchs[f'{bookie}A_prob'] = zip(*matchs.apply(lambda x: prob_by_bookies(x, bookie), axis=1))
-
-    # Replacing missing odd by the mean of the other bookies
-    for bookie in bookies:
-        matchs[f'{bookie}H'] = matchs[f'{bookie}H'].fillna(matchs[f'{bookie}H'].mean())
-        matchs[f'{bookie}D'] = matchs[f'{bookie}D'].fillna(matchs[f'{bookie}D'].mean())
-        matchs[f'{bookie}A'] = matchs[f'{bookie}A'].fillna(matchs[f'{bookie}A'].mean())
-
-    # Pipeline
-    pipeline = Pipeline([
-        ('scaler', StandardScaler()),
-        ('model', LogisticRegression())
-    ])
-
-    # Feature selection
-    X_cols = [("all", ["B365H", "B365D", "B365A", "BWH", "BWD", "BWA", "IWH", "IWD", "IWA", "LBH", "LBD", "LBA", "PSH", "PSD", "PSA", "WHH", "WHD", "WHA", "SJH", "SJD", "SJA", "VCH", "VCD", "VCA", "GBH", "GBD", "GBA", "BSH", "BSD", "BSA"])]
-    Y_col = "FTR"
-
-    # Test of the function
-    metrics_bookies = train_test_bookies_comparison(matchs, pipeline, X_cols, Y_col)
-
-    df = pd.DataFrame.from_dict({(i,j): metrics_bookies[i][j] 
-                           for i in metrics_bookies.keys() 
-                           for j in metrics_bookies[i].keys()},
-                           orient='index')
-
-    # Réinitialisez l'index du DataFrame
-    df.reset_index(inplace=True)
-
-    # Renommez les colonnes
-    df.columns = ['Bookmaker', 'Metric', 'Value']
-
-    # Transformez le DataFrame en un format long
-    df_melted = df.melt(id_vars=['Bookmaker', 'Metric'], var_name='X_col', value_name='Value')
-
-    # Affichez le DataFrame
-    print(df_melted)
+    return df_display

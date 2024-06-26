@@ -1,0 +1,64 @@
+2024-06-26 16:38:22,890 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-26 16:38:22,890 - __main__ - INFO - Starting the inference pipeline
+2024-06-26 16:38:22,890 - __main__ - INFO - Environment variables loaded successfully
+2024-06-26 16:38:23,220 - __main__ - INFO - Database connection established
+2024-06-26 16:38:26,339 - __main__ - INFO - Data retrieved from database successfully in 3.389376401901245 seconds
+2024-06-26 16:38:51,176 - __main__ - INFO - Data processing completed successfully in 24.826176643371582 seconds
+2024-06-26 16:38:51,438 - __main__ - INFO - Model training and inference completed successfully completed in 0.2569570541381836 seconds, accuray on train test :     metrics    values
+0  mse_home  1.488128
+1  mse_away  1.213667
+2   r2_home  0.123160
+3   r2_away  0.095889
+2024-06-26 16:38:51,455 - __main__ - ERROR - Error inserting results into the database: 'pred_home_goals'
+2024-06-26 16:38:51,455 - __main__ - ERROR - Error executing the pipeline: 'pred_home_goals' 
+
+
+2024-06-26 16:42:17,845 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-26 16:42:17,845 - __main__ - INFO - Starting the inference pipeline
+2024-06-26 16:42:17,853 - __main__ - INFO - Environment variables loaded successfully
+2024-06-26 16:42:18,114 - __main__ - INFO - Database connection established
+2024-06-26 16:42:20,745 - __main__ - INFO - Data retrieved from database successfully in 2.841886281967163 seconds
+2024-06-26 16:42:43,410 - __main__ - INFO - Data processing completed successfully in 22.657193660736084 seconds
+2024-06-26 16:42:43,983 - __main__ - INFO - Model training and inference completed successfully completed in 0.5644476413726807 seconds, accuray on train test :     metrics    values
+0  mse_home  1.488128
+1  mse_away  1.213667
+2   r2_home  0.123160
+3   r2_away  0.095889
+2024-06-26 16:42:44,046 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.0632781982421875 seconds
+2024-06-26 16:42:44,443 - __main__ - INFO - Pipeline executed successfully in 26.597968 seconds 
+
+
+2024-06-26 16:45:13,743 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-26 16:45:13,743 - __main__ - ERROR - Error parsing date_stop parameter: time data '2024-06-13' does not match format '%Y-%m-%d %H:%M:%S'
+2024-06-26 16:45:32,150 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-26 16:45:32,150 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-14 00:00:00
+2024-06-26 16:45:32,150 - __main__ - INFO - Starting the inference pipeline
+2024-06-26 16:45:32,150 - __main__ - INFO - Environment variables loaded successfully
+2024-06-26 16:45:32,382 - __main__ - INFO - Database connection established
+2024-06-26 16:45:34,693 - __main__ - INFO - Data retrieved from database successfully in 2.479856014251709 seconds
+2024-06-26 16:46:03,405 - __main__ - INFO - Data processing completed successfully in 28.703688621520996 seconds
+2024-06-26 16:46:03,664 - __main__ - INFO - Model training and inference completed successfully completed in 0.24788832664489746 seconds, accuray on train test :     metrics    values
+0  mse_home  1.488510
+1  mse_away  1.214071
+2   r2_home  0.123107
+3   r2_away  0.095968
+2024-06-26 16:46:03,740 - __main__ - INFO - 34 results inserted into the database successfully, completed in 0.07669806480407715 seconds
+2024-06-26 16:46:03,904 - __main__ - INFO - Pipeline executed successfully in 31.753271 seconds 
+
+
+2024-06-26 16:50:52,639 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-26 16:50:52,641 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-14 00:00:00
+2024-06-26 16:50:52,641 - __main__ - INFO - Starting the inference pipeline
+2024-06-26 16:50:52,643 - __main__ - INFO - Environment variables loaded successfully
+2024-06-26 16:50:52,837 - __main__ - INFO - Database connection established
+2024-06-26 16:50:55,531 - __main__ - INFO - Data retrieved from database successfully in 2.8366506099700928 seconds
+2024-06-26 16:51:30,793 - __main__ - INFO - Data processing completed successfully in 35.25405836105347 seconds
+2024-06-26 16:51:31,333 - __main__ - INFO - Model training and inference completed successfully completed in 0.5273456573486328 seconds, accuray on train test :     metrics    values
+0  mse_home  1.488510
+1  mse_away  1.214071
+2   r2_home  0.123107
+3   r2_away  0.095968
+2024-06-26 16:51:31,424 - __main__ - INFO - 34 results inserted into the database successfully, completed in 0.08954763412475586 seconds
+2024-06-26 16:51:31,706 - __main__ - INFO - Pipeline executed successfully in 39.066486 seconds 
+
+

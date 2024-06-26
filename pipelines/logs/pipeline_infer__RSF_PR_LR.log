@@ -1,0 +1,160 @@
+2024-06-24 17:54:06,333 - root - INFO - 
+ -- Starting the RFS_PR_LR pipeline -- 
+
+2024-06-24 17:54:06,334 - __main__ - INFO - Starting the inference pipeline
+2024-06-24 17:54:06,336 - __main__ - INFO - Environment variables loaded successfully
+2024-06-24 17:54:07,041 - __main__ - INFO - Database connection established
+2024-06-24 17:54:55,177 - __main__ - INFO - Data retrieved from database successfully
+2024-06-24 17:54:55,234 - __main__ - ERROR - Error during data processing: 'WindowsPath' object has no attribute 'read'
+2024-06-24 17:54:55,235 - __main__ - ERROR - Error executing the pipeline: 'WindowsPath' object has no attribute 'read'
+2024-06-24 17:59:18,510 - root - INFO - 
+ -- Starting the RFS_PR_LR pipeline -- 
+
+2024-06-24 17:59:18,511 - __main__ - INFO - Starting the inference pipeline
+2024-06-24 17:59:18,512 - __main__ - INFO - Environment variables loaded successfully
+2024-06-24 17:59:19,277 - __main__ - INFO - Database connection established
+2024-06-24 17:59:55,788 - __main__ - INFO - Data retrieved from database successfully in 37.25149941444397 seconds
+2024-06-24 17:59:57,244 - __main__ - INFO - Data processing completed successfully
+2024-06-24 17:59:57,248 - __main__ - ERROR - Error during model training and inference: Input y contains NaN.
+2024-06-24 17:59:57,248 - __main__ - ERROR - Error executing the pipeline: Input y contains NaN.
+2024-06-24 18:04:52,552 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-24 18:04:52,554 - __main__ - INFO - Starting the inference pipeline
+2024-06-24 18:04:52,560 - __main__ - INFO - Environment variables loaded successfully
+2024-06-24 18:04:53,425 - __main__ - INFO - Database connection established
+2024-06-24 18:05:33,547 - __main__ - INFO - Data retrieved from database successfully in 40.927075147628784 seconds
+2024-06-24 18:05:35,979 - __main__ - INFO - Data processing completed successfully in 2.383962631225586 seconds
+2024-06-24 18:09:15,692 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-24 18:09:15,693 - __main__ - INFO - Starting the inference pipeline
+2024-06-24 18:09:15,695 - __main__ - INFO - Environment variables loaded successfully
+2024-06-24 18:09:17,153 - __main__ - INFO - Database connection established
+2024-06-24 18:10:01,468 - __main__ - INFO - Data retrieved from database successfully in 45.74444651603699 seconds
+2024-06-24 18:10:02,877 - __main__ - INFO - Data processing completed successfully in 1.370934247970581 seconds
+2024-06-24 18:10:02,877 - __main__ - ERROR - Error during model training and inference: Input y contains NaN.
+2024-06-24 18:10:02,877 - __main__ - ERROR - Error executing the pipeline: Input y contains NaN. 
+
+2024-06-24 18:10:28,081 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-24 18:10:28,084 - __main__ - INFO - Starting the inference pipeline
+2024-06-24 18:10:28,089 - __main__ - INFO - Environment variables loaded successfully
+2024-06-24 18:10:28,889 - __main__ - INFO - Database connection established
+2024-06-24 18:11:17,644 - __main__ - INFO - Data retrieved from database successfully in 49.49103927612305 seconds
+2024-06-24 18:11:19,932 - __main__ - INFO - Data processing completed successfully in 2.244520902633667 seconds
+2024-06-24 18:14:01,986 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-24 18:14:01,987 - __main__ - INFO - Starting the inference pipeline
+2024-06-24 18:14:01,988 - __main__ - INFO - Environment variables loaded successfully
+2024-06-24 18:14:02,812 - __main__ - INFO - Database connection established
+2024-06-24 18:14:54,361 - __main__ - INFO - Data retrieved from database successfully in 52.34255075454712 seconds
+2024-06-24 18:14:55,903 - __main__ - INFO - Data processing completed successfully in 1.4189355373382568 seconds
+2024-06-24 18:14:55,906 - __main__ - ERROR - Error during model training and inference: Input y contains NaN.
+2024-06-24 18:14:55,906 - __main__ - ERROR - Error executing the pipeline: Input y contains NaN. 
+
+2024-06-24 18:16:35,051 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-24 18:16:35,053 - __main__ - INFO - Starting the inference pipeline
+2024-06-24 18:16:35,054 - __main__ - INFO - Environment variables loaded successfully
+2024-06-24 18:16:48,318 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-24 18:16:48,321 - __main__ - INFO - Starting the inference pipeline
+2024-06-24 18:16:48,326 - __main__ - INFO - Environment variables loaded successfully
+2024-06-24 18:16:49,028 - __main__ - INFO - Database connection established
+2024-06-24 18:17:31,172 - __main__ - INFO - Data retrieved from database successfully in 42.784263372421265 seconds
+2024-06-24 18:23:20,673 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-24 18:23:20,682 - __main__ - INFO - Starting the inference pipeline
+2024-06-24 18:23:20,687 - __main__ - INFO - Environment variables loaded successfully
+2024-06-24 18:23:21,614 - __main__ - INFO - Database connection established
+2024-06-24 18:23:28,698 - __main__ - INFO - Data retrieved from database successfully in 7.950462341308594 seconds
+2024-06-24 18:28:12,569 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-24 18:28:12,570 - __main__ - INFO - Starting the inference pipeline
+2024-06-24 18:28:12,571 - __main__ - INFO - Environment variables loaded successfully
+2024-06-24 18:28:13,429 - __main__ - INFO - Database connection established
+2024-06-24 18:28:20,133 - __main__ - INFO - Data retrieved from database successfully in 7.53416633605957 seconds
+2024-06-24 18:28:35,157 - __main__ - INFO - Data processing completed successfully in 14.985639810562134 seconds
+2024-06-24 18:28:36,348 - __main__ - INFO - Model training and inference completed successfully completed in 1.1898019313812256 seconds
+2024-06-24 18:28:36,561 - __main__ - INFO - 8 results inserted into the database successfully, completed in 0.21268963813781738 seconds
+2024-06-24 18:28:36,701 - __main__ - INFO - Pipeline executed successfully in 24.132668 seconds 
+
+2024-06-25 11:52:53,909 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-25 11:52:53,909 - __main__ - INFO - Starting the inference pipeline
+2024-06-25 11:52:53,909 - __main__ - INFO - Environment variables loaded successfully
+2024-06-25 11:52:54,611 - __main__ - INFO - Database connection established
+2024-06-25 11:53:07,060 - __main__ - INFO - Data retrieved from database successfully in 13.112914085388184 seconds
+2024-06-25 11:53:21,072 - __main__ - INFO - Data processing completed successfully in 13.958951711654663 seconds
+2024-06-25 11:53:22,229 - __main__ - INFO - Model training and inference completed successfully completed in 1.1539244651794434 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525414
+1    weighted_accuracy  0.668534
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740147
+4        accuracy_away  0.712339
+5           recall_all  1.351027
+6      weighted_recall  0.525414
+7    balanced_accuracy  0.450342
+8          recall_home  0.834939
+9          recall_draw  0.000000
+10         recall_away  0.516088
+11       precision_all  0.347408
+12  weighted_precision  0.388444
+13      precision_home  0.529649
+14      precision_draw  0.000000
+15      precision_away  0.512574
+16        f_mesure_all  0.387146
+17   f_mesure_weighted  0.441435
+18       f_mesure_home  0.647945
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513492
+21            log_loss  0.989544
+22           loss_home  0.303533
+23           loss_draw  0.372190
+24           loss_away  0.313820
+25                 mse  0.196215
+26            mse_home  0.215062
+27            mse_draw  0.191411
+28            mse_away  0.182172
+29       classwise_ECE  0.034561
+30            ECE_home  0.040405
+31            ECE_draw  0.034582
+32            ECE_away  0.028696
+2024-06-25 11:53:22,555 - __main__ - INFO - 5 results inserted into the database successfully, completed in 0.32589244842529297 seconds
+2024-06-25 11:53:22,708 - __main__ - INFO - Pipeline executed successfully in 28.799049 seconds 
+
+
+2024-06-26 16:36:24,695 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-26 16:36:24,703 - __main__ - INFO - Starting the inference pipeline
+2024-06-26 16:36:24,703 - __main__ - INFO - Environment variables loaded successfully
+2024-06-26 16:36:24,985 - __main__ - INFO - Database connection established
+2024-06-26 16:36:27,941 - __main__ - INFO - Data retrieved from database successfully in 3.1889584064483643 seconds
+2024-06-26 16:36:54,451 - __main__ - INFO - Data processing completed successfully in 26.507922172546387 seconds
+2024-06-26 16:36:57,212 - __main__ - INFO - Model training and inference completed successfully completed in 2.74516224861145 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525783
+1    weighted_accuracy  0.668977
+2        accuracy_home  0.599263
+3        accuracy_draw  0.739963
+4        accuracy_away  0.712339
+5           recall_all  1.353447
+6      weighted_recall  0.525783
+7    balanced_accuracy  0.451149
+8          recall_home  0.835557
+9          recall_draw  0.000725
+10         recall_away  0.517166
+11       precision_all  0.380778
+12  weighted_precision  0.413658
+13      precision_home  0.529928
+14      precision_draw  0.100000
+15      precision_away  0.512405
+16        f_mesure_all  0.387939
+17   f_mesure_weighted  0.441813
+18       f_mesure_home  0.648351
+19       f_mesure_draw  0.001439
+20       f_mesure_away  0.514027
+21            log_loss  0.988875
+22           loss_home  0.303037
+23           loss_draw  0.372885
+24           loss_away  0.312953
+25                 mse  0.196078
+26            mse_home  0.214693
+27            mse_draw  0.191641
+28            mse_away  0.181899
+29       classwise_ECE  0.034115
+30            ECE_home  0.039456
+31            ECE_draw  0.034494
+32            ECE_away  0.028395
+2024-06-26 16:36:57,283 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.07107210159301758 seconds
+2024-06-26 16:36:57,476 - __main__ - INFO - Pipeline executed successfully in 32.780998 seconds 
+
+

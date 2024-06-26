@@ -6,7 +6,19 @@ import pandas as pd
 
 def train_test(matchs, pipeline, X_col, Y_col, 
     train_test_split_fn = lambda df : train_test_split_expanding_windows(df, split=5, test_prop=0.2, date_col="date"), 
-    result_df_all_split=False, m=10, beta=1):
+    result_df_all_split=False, m=10, beta=1,
+    keys = ["accuracy", "weighted_accuracy", "accuracy_home", "accuracy_draw", "accuracy_away",
+            "recall_all", "weighted_recall", "balanced_accuracy", "recall_home", "recall_draw", "recall_away",
+            "precision_all", "weighted_precision", "precision_home", "precision_draw", "precision_away",
+            "f_mesure_all", "f_mesure_weighted", "f_mesure_home", "f_mesure_draw", "f_mesure_away",
+            "log_loss", "loss_home", "loss_draw", "loss_away",
+            "mse", "mse_home", "mse_draw", "mse_away",
+            "classwise_ECE", "ECE_home", "ECE_draw", "ECE_away", "home_ECE_y", "draw_ECE_y", "away_ECE_y", "home_ECE_p", "draw_ECE_p", "away_ECE_p", "home_ECE_size", "draw_ECE_size", "away_ECE_size"],
+    result_col_name = 'FTR',
+    model_predictions_col_name = 'model_predictions',
+    model_predictions_prob_home_col_name = 'model_predictions_prob_home',
+    model_predictions_prob_draw_col_name = 'model_predictions_prob_draw',
+    model_predictions_prob_away_col_name = 'model_predictions_prob_away'):
     """
     Train and test the model on the dataset
 
@@ -37,19 +49,7 @@ def train_test(matchs, pipeline, X_col, Y_col,
 
     train_test_split = train_test_split_fn(matchs)
 
-    keys = ["accuracy", "weighted_accuracy", "accuracy_home", "accuracy_draw", "accuracy_away",
-            "recall_all", "weighted_recall", "balanced_accuracy", "recall_home", "recall_draw", "recall_away",
-            "precision_all", "weighted_precision", "precision_home", "precision_draw", "precision_away",
-            "f_mesure_all", "f_mesure_weighted", "f_mesure_home", "f_mesure_draw", "f_mesure_away",
-            "log_loss", "loss_home", "loss_draw", "loss_away",
-            "mse", "mse_home", "mse_draw", "mse_away",
-            "classwise_ECE", "ECE_home", "ECE_draw", "ECE_away", "home_ECE_y", "draw_ECE_y", "away_ECE_y", "home_ECE_p", "draw_ECE_p", "away_ECE_p", "home_ECE_size", "draw_ECE_size", "away_ECE_size"]
 
-    result_col_name = 'FTR'
-    model_predictions_col_name = 'model_predictions'
-    model_predictions_prob_home_col_name = 'model_predictions_prob_home'
-    model_predictions_prob_draw_col_name = 'model_predictions_prob_draw'
-    model_predictions_prob_away_col_name = 'model_predictions_prob_away'
 
     metrics = {key: [0 for _ in range(len(train_test_split))] for key in keys}
 
