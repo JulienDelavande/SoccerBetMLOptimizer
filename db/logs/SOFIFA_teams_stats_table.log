@@ -1,0 +1,148 @@
+2024-06-17 16:30:02,598 - __main__ - INFO - path to logging file exists ? True
+2024-06-17 16:30:02,598 - __main__ - INFO - logging file path: C:\Users\jdelavande\Projects\optim-sportbet\db\logs\SOFIFA_teams_stats_table.log
+2024-06-17 16:39:09,181 - SOFIFA_teams_stats_table__loger - INFO - path to logging file exists ? True
+2024-06-17 16:39:09,181 - SOFIFA_teams_stats_table__loger - INFO - logging file path: C:\Users\jdelavande\Projects\optim-sportbet\db\logs\SOFIFA_teams_stats_table.log
+2024-06-17 16:40:02,989 - SOFIFA_teams_stats_table__loger - INFO - path to logging file exists ? True
+2024-06-17 16:40:03,005 - SOFIFA_teams_stats_table__loger - INFO - logging file path: C:\Users\jdelavande\Projects\optim-sportbet\db\logs\SOFIFA_teams_stats_table.log
+2024-06-17 16:40:03,005 - SOFIFA_teams_stats_table__loger - INFO - Début de l'insertion des données dans la table SOFIFA teams stats
+2024-06-17 16:40:03,016 - SOFIFA_teams_stats_table__loger - INFO - Connexion à la base de données
+2024-06-17 16:40:03,020 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-17 16:40:03,074 - SOFIFA_teams_stats_table__loger - INFO - Chargement des données de SoFIFA
+2024-06-17 16:40:03,079 - SOFIFA_teams_stats_table__loger - INFO - no_cache_latest: True
+2024-06-17 16:40:03,082 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-17 16:40:03,087 - SOFIFA_teams_stats_table__loger - INFO - Chargement des données des équipes big 5 - latest
+2024-06-17 16:40:37,301 - SOFIFA_teams_stats_table__loger - INFO - Chargement des données des équipes international - latest
+2024-06-17 16:41:04,516 - SOFIFA_teams_stats_table__loger - INFO - Conversion des types de données
+2024-06-17 16:41:04,526 - SOFIFA_teams_stats_table__loger - INFO - Insertion des données dans la base de données
+2024-06-17 16:41:06,211 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles données en cours...
+2024-06-17 16:41:06,403 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles données terminée avec succès, 0 nouvelles lignes insérées
+2024-06-17 16:41:06,549 - SOFIFA_teams_stats_table__loger - INFO - Fin de l'insertion des données dans la table SOFIFA teams stats
+
+
+2024-06-17 16:42:54,930 - SOFIFA_teams_stats_table__loger - INFO - path to logging file exists ? True
+2024-06-17 16:42:54,930 - SOFIFA_teams_stats_table__loger - INFO - logging file path: C:\Users\jdelavande\Projects\optim-sportbet\db\logs\SOFIFA_teams_stats_table.log
+2024-06-17 16:42:54,930 - SOFIFA_teams_stats_table__loger - INFO - Debut de l'insertion des donnees dans la table SOFIFA teams stats
+2024-06-17 16:42:54,945 - SOFIFA_teams_stats_table__loger - INFO - Connexion à la base de donnees
+2024-06-17 16:42:54,951 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-17 16:42:55,010 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees de SoFIFA
+2024-06-17 16:42:55,014 - SOFIFA_teams_stats_table__loger - INFO - no_cache_latest: True
+2024-06-17 16:42:55,016 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-17 16:42:55,021 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes big 5 - latest
+2024-06-17 16:43:29,976 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes international - latest
+2024-06-17 16:44:17,341 - SOFIFA_teams_stats_table__loger - INFO - Conversion des types de donnees
+2024-06-17 16:44:17,353 - SOFIFA_teams_stats_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-06-17 16:44:19,079 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees en cours...
+2024-06-17 16:44:19,308 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+2024-06-17 16:44:19,434 - SOFIFA_teams_stats_table__loger - INFO - Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+
+2024-06-20 14:59:35,619 - SOFIFA_teams_stats_table__loger - INFO - --- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+2024-06-20 14:59:35,619 - SOFIFA_teams_stats_table__loger - INFO - Connexion a la base de donnees
+2024-06-20 14:59:35,619 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-20 14:59:35,655 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees de SoFIFA
+2024-06-20 14:59:35,668 - SOFIFA_teams_stats_table__loger - INFO - no_cache_latest: True
+2024-06-20 14:59:35,669 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-20 14:59:35,669 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes big 5 - latest
+2024-06-20 15:00:27,982 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes international - latest
+2024-06-20 15:01:55,293 - SOFIFA_teams_stats_table__loger - INFO - Conversion des types de donnees
+2024-06-20 15:01:55,306 - SOFIFA_teams_stats_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-06-20 15:01:55,501 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees en cours...
+2024-06-20 15:01:55,522 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+2024-06-20 15:01:55,531 - SOFIFA_teams_stats_table__loger - INFO - Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+
+2024-06-20 17:35:03,970 - SOFIFA_teams_stats_table__loger - INFO - --- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+2024-06-20 17:35:03,985 - SOFIFA_teams_stats_table__loger - INFO - Connexion a la base de donnees
+2024-06-20 17:35:03,991 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-20 17:35:04,077 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees de SoFIFA
+2024-06-20 17:35:04,077 - SOFIFA_teams_stats_table__loger - INFO - use_cache: False
+2024-06-20 17:35:04,085 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-20 17:35:04,085 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes big 5 - latest
+2024-06-20 17:36:10,267 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes international - latest
+2024-06-20 17:37:40,274 - SOFIFA_teams_stats_table__loger - INFO - Conversion des types de donnees
+2024-06-20 17:37:40,289 - SOFIFA_teams_stats_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-06-20 17:37:40,643 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees en cours...
+2024-06-20 17:37:40,680 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+2024-06-20 17:37:40,700 - SOFIFA_teams_stats_table__loger - INFO - Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+
+2024-06-24 09:52:29,745 - SOFIFA_teams_stats_table__loger - INFO - --- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+2024-06-24 09:52:29,761 - SOFIFA_teams_stats_table__loger - INFO - Connexion a la base de donnees
+2024-06-24 09:52:29,761 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-24 09:52:29,850 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees de SoFIFA
+2024-06-24 09:52:29,850 - SOFIFA_teams_stats_table__loger - INFO - use_cache: False
+2024-06-24 09:52:29,850 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-24 09:52:29,850 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes big 5 - latest
+2024-06-24 09:53:00,036 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes international - latest
+2024-06-24 09:53:25,740 - SOFIFA_teams_stats_table__loger - INFO - Conversion des types de donnees
+2024-06-24 09:53:25,756 - SOFIFA_teams_stats_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-06-24 09:53:46,936 - SOFIFA_teams_stats_table__loger - ERROR - Erreur lors de l'insertion des donnees: (psycopg2.OperationalError) connection to server at "soccerodds-psql-db.postgres.database.azure.com" (4.233.83.213), port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2024-06-24 09:55:02,343 - SOFIFA_teams_stats_table__loger - INFO - --- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+2024-06-24 09:55:02,359 - SOFIFA_teams_stats_table__loger - INFO - Connexion a la base de donnees
+2024-06-24 09:55:02,359 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-24 09:55:02,414 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees de SoFIFA
+2024-06-24 09:55:02,416 - SOFIFA_teams_stats_table__loger - INFO - use_cache: False
+2024-06-24 09:55:02,416 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-24 09:55:02,416 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes big 5 - latest
+2024-06-24 09:56:39,194 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes international - latest
+2024-06-24 09:58:27,765 - SOFIFA_teams_stats_table__loger - ERROR - Erreur lors du chargement des donnees des equipes international : Could not download https://sofifa.com/?r=200061&set=true.
+2024-06-24 09:58:27,770 - SOFIFA_teams_stats_table__loger - INFO - Conversion des types de donnees
+2024-06-24 09:58:27,770 - SOFIFA_teams_stats_table__loger - ERROR - Erreur lors de la conversion des types de donnees: 'NoneType' object does not support item assignment
+2024-06-24 09:58:27,781 - SOFIFA_teams_stats_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-06-24 09:58:27,790 - SOFIFA_teams_stats_table__loger - ERROR - Erreur lors de l'insertion des donnees: (psycopg2.OperationalError) 
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2024-06-24 10:02:43,272 - SOFIFA_teams_stats_table__loger - INFO - --- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+2024-06-24 10:02:43,288 - SOFIFA_teams_stats_table__loger - INFO - Connexion a la base de donnees
+2024-06-24 10:02:43,288 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-24 10:02:43,375 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees de SoFIFA
+2024-06-24 10:02:43,392 - SOFIFA_teams_stats_table__loger - INFO - use_cache: False
+2024-06-24 10:02:43,392 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-24 10:02:43,416 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes big 5 - latest
+2024-06-24 10:34:44,729 - SOFIFA_teams_stats_table__loger - INFO - --- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+2024-06-24 10:34:44,733 - SOFIFA_teams_stats_table__loger - INFO - Connexion a la base de donnees
+2024-06-24 10:34:44,735 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-24 10:34:44,763 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees de SoFIFA
+2024-06-24 10:34:44,776 - SOFIFA_teams_stats_table__loger - INFO - use_cache: False
+2024-06-24 10:34:44,777 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-24 10:34:44,782 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes big 5 - latest
+2024-06-24 10:35:17,199 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes international - latest
+2024-06-24 10:35:44,070 - SOFIFA_teams_stats_table__loger - INFO - Conversion des types de donnees
+2024-06-24 10:35:44,084 - SOFIFA_teams_stats_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-06-24 10:35:45,423 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees en cours...
+2024-06-24 10:35:45,619 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+2024-06-24 10:35:45,720 - SOFIFA_teams_stats_table__loger - INFO - Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+
+2024-06-25 10:12:01,371 - SOFIFA_teams_stats_table__loger - INFO - --- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+2024-06-25 10:12:01,374 - SOFIFA_teams_stats_table__loger - INFO - Connexion a la base de donnees
+2024-06-25 10:12:01,374 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-25 10:12:01,411 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees de SoFIFA
+2024-06-25 10:12:01,411 - SOFIFA_teams_stats_table__loger - INFO - use_cache: False
+2024-06-25 10:12:01,411 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-25 10:12:01,411 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes big 5 - latest
+2024-06-25 10:16:06,008 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes international - latest
+2024-06-25 10:25:39,005 - SOFIFA_teams_stats_table__loger - INFO - Conversion des types de donnees
+2024-06-25 10:25:39,017 - SOFIFA_teams_stats_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-06-25 10:25:40,156 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees en cours...
+2024-06-25 10:25:40,288 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+2024-06-25 10:25:40,358 - SOFIFA_teams_stats_table__loger - INFO - Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+
+2024-06-26 16:32:08,504 - SOFIFA_teams_stats_table__loger - INFO - --- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+2024-06-26 16:32:08,513 - SOFIFA_teams_stats_table__loger - INFO - Connexion a la base de donnees
+2024-06-26 16:32:08,521 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-26 16:32:08,678 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees de SoFIFA
+2024-06-26 16:32:08,686 - SOFIFA_teams_stats_table__loger - INFO - use_cache: False
+2024-06-26 16:32:08,686 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-26 16:32:08,694 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes big 5 - latest
+2024-06-26 16:32:40,117 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes international - latest
+2024-06-26 16:33:06,438 - SOFIFA_teams_stats_table__loger - INFO - Conversion des types de donnees
+2024-06-26 16:33:06,478 - SOFIFA_teams_stats_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-06-26 16:33:06,768 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees en cours...
+2024-06-26 16:33:06,808 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+2024-06-26 16:33:06,835 - SOFIFA_teams_stats_table__loger - INFO - Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+
