@@ -233,3 +233,19 @@ LINE 5:             ON CONFLICT index DO UPDATE SET index = EXCLUDED...
 2024-06-26 16:31:34,131 - fbref_results_table__loger - INFO - Fin de l'insertion des donnees dans la table fbref_results
 
 
+2024-06-30 14:19:40,017 - fbref_results_table__loger - INFO - --- Debut de l'insertion des donnees dans la table fbref_results
+2024-06-30 14:19:40,023 - fbref_results_table__loger - INFO - Connexion a la base de donnees
+2024-06-30 14:19:40,023 - fbref_results_table__loger - INFO - DB_USER: Consultant
+2024-06-30 14:19:40,156 - fbref_results_table__loger - INFO - Chargement des donnees de Fbref
+2024-06-30 14:19:40,172 - fbref_results_table__loger - INFO - get_current_season_only: True
+2024-06-30 14:19:40,172 - fbref_results_table__loger - INFO - use_cache: False
+2024-06-30 14:19:40,172 - fbref_results_table__loger - INFO - Chargement des donnees des matchs INT-World Cup
+2024-06-30 14:19:40,248 - fbref_results_table__loger - INFO - Chargement des donnees des matchs INT-European Championships
+2024-06-30 14:19:44,330 - fbref_results_table__loger - INFO - Chargement des donnees des matchs Big 5 European Leagues Combined
+2024-06-30 14:19:46,520 - fbref_results_table__loger - INFO - Conversion des types de donnees
+2024-06-30 14:19:46,574 - fbref_results_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-06-30 14:19:50,469 - fbref_results_table__loger - INFO - Insertion des nouvelles donnees en cours...
+2024-06-30 14:19:50,785 - fbref_results_table__loger - INFO - Insertion des nouvelles donnees terminee avec succes, 6 nouvelles lignes inserees
+2024-06-30 14:19:50,968 - fbref_results_table__loger - INFO - Fin de l'insertion des donnees dans la table fbref_results
+
+
