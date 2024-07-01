@@ -50,9 +50,10 @@ def infer__RSF_PR_LR__pipeline(date_stop=None):
     try:
         with engine.connect() as connection:
             logger.info("Database connection established")
-            query = text(f"SELECT * FROM {DB_TN_FBREF_RESULTS}")
-            fbref_results_df = pd.read_sql(query, connection)
-            sofifa_teams_stats_df = pd.read_sql(f'SELECT * FROM {DB_TN_SOFIFA_TEAMS_STATS}', connection)
+            query_fbref_results = text(f"SELECT * FROM {DB_TN_FBREF_RESULTS}")
+            fbref_results_df = pd.read_sql(query_fbref_results, connection)
+            query_sofifa_team_stats = text(f'SELECT * FROM {DB_TN_SOFIFA_TEAMS_STATS}')
+            sofifa_teams_stats_df = pd.read_sql(query_sofifa_team_stats, connection)
             logger.info(f"Data retrieved from database successfully in {time.time() - start_data_retrieval} seconds")
     except Exception as e:
         logger.error(f"Error retrieving data from the database: {e}")
