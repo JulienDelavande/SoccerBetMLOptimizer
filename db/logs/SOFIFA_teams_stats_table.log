@@ -146,3 +146,18 @@
 2024-06-26 16:33:06,835 - SOFIFA_teams_stats_table__loger - INFO - Fin de l'insertion des donnees dans la table SOFIFA teams stats
 
 
+2024-06-30 14:20:00,810 - SOFIFA_teams_stats_table__loger - INFO - --- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+2024-06-30 14:20:00,810 - SOFIFA_teams_stats_table__loger - INFO - Connexion a la base de donnees
+2024-06-30 14:20:00,827 - SOFIFA_teams_stats_table__loger - INFO - DB_USER: Consultant
+2024-06-30 14:20:00,900 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees de SoFIFA
+2024-06-30 14:20:00,900 - SOFIFA_teams_stats_table__loger - INFO - use_cache: False
+2024-06-30 14:20:00,916 - SOFIFA_teams_stats_table__loger - INFO - scrap_all: False
+2024-06-30 14:20:00,927 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes big 5 - latest
+2024-06-30 14:20:35,124 - SOFIFA_teams_stats_table__loger - INFO - Chargement des donnees des equipes international - latest
+2024-06-30 14:21:04,386 - SOFIFA_teams_stats_table__loger - INFO - Conversion des types de donnees
+2024-06-30 14:21:04,422 - SOFIFA_teams_stats_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-06-30 14:21:06,890 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees en cours...
+2024-06-30 14:21:07,325 - SOFIFA_teams_stats_table__loger - INFO - Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+2024-06-30 14:21:07,579 - SOFIFA_teams_stats_table__loger - INFO - Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+

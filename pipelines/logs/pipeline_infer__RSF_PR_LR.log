@@ -158,3 +158,251 @@
 2024-06-26 16:36:57,476 - __main__ - INFO - Pipeline executed successfully in 32.780998 seconds 
 
 
+2024-06-30 14:21:32,928 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-30 14:21:32,928 - __main__ - INFO - Starting the inference pipeline
+2024-06-30 14:21:32,928 - __main__ - INFO - Environment variables loaded successfully
+2024-06-30 14:21:34,097 - __main__ - INFO - Database connection established
+2024-06-30 14:21:47,518 - __main__ - INFO - Data retrieved from database successfully in 14.543297529220581 seconds
+2024-06-30 14:22:10,729 - __main__ - INFO - Data processing completed successfully in 23.119784116744995 seconds
+2024-06-30 14:22:12,794 - __main__ - INFO - Model training and inference completed successfully completed in 2.0523948669433594 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525414
+1    weighted_accuracy  0.668434
+2        accuracy_home  0.598158
+3        accuracy_draw  0.740516
+4        accuracy_away  0.712155
+5           recall_all  1.350559
+6      weighted_recall  0.525414
+7    balanced_accuracy  0.450186
+8          recall_home  0.835481
+9          recall_draw  0.000730
+10         recall_away  0.514348
+11       precision_all  0.380861
+12  weighted_precision  0.413746
+13      precision_home  0.529211
+14      precision_draw  0.100000
+15      precision_away  0.513373
+16        f_mesure_all  0.387373
+17   f_mesure_weighted  0.441617
+18       f_mesure_home  0.647752
+19       f_mesure_draw  0.001449
+20       f_mesure_away  0.512917
+21            log_loss  0.989466
+22           loss_home  0.303860
+23           loss_draw  0.370976
+24           loss_away  0.314630
+25                 mse  0.196238
+26            mse_home  0.215105
+27            mse_draw  0.191233
+28            mse_away  0.182376
+29       classwise_ECE  0.034082
+30            ECE_home  0.039803
+31            ECE_draw  0.033834
+32            ECE_away  0.028609
+2024-06-30 14:22:13,366 - __main__ - INFO - 4 results inserted into the database successfully, completed in 0.5724632740020752 seconds
+2024-06-30 14:22:13,504 - __main__ - INFO - Pipeline executed successfully in 40.576132 seconds 
+
+
+2024-06-30 14:28:50,448 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-30 14:28:50,448 - __main__ - ERROR - Error parsing date_stop parameter: time data '29-06-2024 00:00:00' does not match format '%Y-%m-%d %H:%M:%S'
+2024-06-30 14:29:14,125 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-30 14:29:14,141 - __main__ - ERROR - Error parsing date_stop parameter: time data '24-06-28 00:00:00' does not match format '%Y-%m-%d %H:%M:%S'
+2024-06-30 14:29:22,424 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-30 14:29:22,424 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-06-30 14:29:22,424 - __main__ - INFO - Starting the inference pipeline
+2024-06-30 14:29:22,424 - __main__ - INFO - Environment variables loaded successfully
+2024-06-30 14:29:23,788 - __main__ - INFO - Database connection established
+2024-06-30 14:39:46,545 - __main__ - INFO - Data retrieved from database successfully in 624.0734753608704 seconds
+2024-06-30 14:40:07,311 - __main__ - INFO - Data processing completed successfully in 20.67599368095398 seconds
+2024-06-30 14:40:09,252 - __main__ - INFO - Model training and inference completed successfully completed in 1.9297981262207031 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525230
+1    weighted_accuracy  0.668567
+2        accuracy_home  0.598711
+3        accuracy_draw  0.739779
+4        accuracy_away  0.711971
+5           recall_all  1.351769
+6      weighted_recall  0.525230
+7    balanced_accuracy  0.450590
+8          recall_home  0.835205
+9          recall_draw  0.000727
+10         recall_away  0.515837
+11       precision_all  0.380352
+12  weighted_precision  0.413145
+13      precision_home  0.529621
+14      precision_draw  0.100000
+15      precision_away  0.511435
+16        f_mesure_all  0.387477
+17   f_mesure_weighted  0.441351
+18       f_mesure_home  0.648032
+19       f_mesure_draw  0.001444
+20       f_mesure_away  0.512955
+21            log_loss  0.988935
+22           loss_home  0.303714
+23           loss_draw  0.371831
+24           loss_away  0.313391
+25                 mse  0.196147
+26            mse_home  0.214901
+27            mse_draw  0.191547
+28            mse_away  0.181991
+29       classwise_ECE  0.034036
+30            ECE_home  0.038827
+31            ECE_draw  0.034448
+32            ECE_away  0.028834
+2024-06-30 14:40:09,602 - __main__ - INFO - 6 results inserted into the database successfully, completed in 0.34880757331848145 seconds
+2024-06-30 14:40:09,730 - __main__ - INFO - Pipeline executed successfully in 647.305975 seconds 
+
+
+2024-07-01 10:26:19,024 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 10:26:19,024 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-07-01 10:26:19,024 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 10:26:19,024 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 10:26:20,140 - __main__ - INFO - Database connection established
+2024-07-01 10:27:00,566 - __main__ - INFO - Data retrieved from database successfully in 41.45714616775513 seconds
+2024-07-01 10:27:25,204 - __main__ - INFO - Data processing completed successfully in 24.582581758499146 seconds
+2024-07-01 10:27:25,208 - __main__ - ERROR - Error during model training and inference: Found array with 0 sample(s) (shape=(0, 32)) while a minimum of 1 is required by StandardScaler.
+2024-07-01 10:27:25,208 - __main__ - ERROR - Error executing the pipeline: Found array with 0 sample(s) (shape=(0, 32)) while a minimum of 1 is required by StandardScaler. 
+
+
+2024-07-01 10:37:54,896 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 10:37:54,896 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-07-01 10:37:54,896 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 10:37:54,896 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 10:37:55,905 - __main__ - INFO - Database connection established
+2024-07-01 10:38:05,892 - __main__ - INFO - Data retrieved from database successfully in 10.964415550231934 seconds
+2024-07-01 10:38:27,344 - __main__ - ERROR - Error during data processing: Invalid type for timedelta scalar: <class 'datetime.time'>
+2024-07-01 10:38:27,344 - __main__ - ERROR - Error executing the pipeline: Invalid type for timedelta scalar: <class 'datetime.time'> 
+
+
+2024-07-01 10:40:54,098 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 10:40:54,098 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-07-01 10:40:54,098 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 10:40:54,098 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 10:40:55,081 - __main__ - INFO - Database connection established
+2024-07-01 10:44:41,868 - __main__ - INFO - Data retrieved from database successfully in 227.72245478630066 seconds
+2024-07-01 10:45:01,110 - __main__ - ERROR - Error during data processing: 'datetime'
+2024-07-01 10:45:01,110 - __main__ - ERROR - Error executing the pipeline: 'datetime' 
+
+
+2024-07-01 10:45:55,335 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 10:45:55,335 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-07-01 10:45:55,335 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 10:45:55,335 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 10:45:56,268 - __main__ - INFO - Database connection established
+2024-07-01 10:53:00,496 - __main__ - INFO - Data retrieved from database successfully in 425.12359833717346 seconds
+2024-07-01 10:53:33,337 - __main__ - ERROR - Error during data processing: Invalid comparison between dtype=timedelta64[ns] and datetime
+2024-07-01 10:53:33,337 - __main__ - ERROR - Error executing the pipeline: Invalid comparison between dtype=timedelta64[ns] and datetime 
+
+
+2024-07-01 10:57:07,611 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 10:57:07,611 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-07-01 10:57:07,611 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 10:57:07,611 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 10:57:08,626 - __main__ - INFO - Database connection established
+2024-07-01 11:00:32,691 - __main__ - INFO - Data retrieved from database successfully in 205.0325222015381 seconds
+2024-07-01 11:00:50,428 - __main__ - INFO - Data processing completed successfully in 17.677040100097656 seconds
+2024-07-01 11:00:52,147 - __main__ - INFO - Model training and inference completed successfully completed in 1.7124698162078857 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525230
+1    weighted_accuracy  0.668567
+2        accuracy_home  0.598711
+3        accuracy_draw  0.739779
+4        accuracy_away  0.711971
+5           recall_all  1.351769
+6      weighted_recall  0.525230
+7    balanced_accuracy  0.450590
+8          recall_home  0.835205
+9          recall_draw  0.000727
+10         recall_away  0.515837
+11       precision_all  0.380352
+12  weighted_precision  0.413145
+13      precision_home  0.529621
+14      precision_draw  0.100000
+15      precision_away  0.511435
+16        f_mesure_all  0.387477
+17   f_mesure_weighted  0.441351
+18       f_mesure_home  0.648032
+19       f_mesure_draw  0.001444
+20       f_mesure_away  0.512955
+21            log_loss  0.988935
+22           loss_home  0.303714
+23           loss_draw  0.371831
+24           loss_away  0.313391
+25                 mse  0.196147
+26            mse_home  0.214901
+27            mse_draw  0.191547
+28            mse_away  0.181991
+29       classwise_ECE  0.034036
+30            ECE_home  0.038827
+31            ECE_draw  0.034448
+32            ECE_away  0.028834
+2024-07-01 11:00:52,571 - __main__ - ERROR - Error inserting results into the database: (psycopg2.errors.DatatypeMismatch) column "time_match" is of type time without time zone but expression is of type bigint
+LINE 1: ...y', '9b4d5970', '2024-06-29T00:00:00'::timestamp, 6480000000...
+                                                             ^
+HINT:  You will need to rewrite or cast the expression.
+
+[SQL: INSERT INTO models_results (game, game_id, date_match, time_match, home_team, away_team, prob_home_win, prob_draw, prob_away_win, datetime_inference, model, prob_home_team_score, prob_away_team_score) VALUES (%(game__0)s, %(game_id__0)s, %(date_match ... 920 characters truncated ... , %(datetime_inference__3)s, %(model__3)s, %(prob_home_team_score__3)s, %(prob_away_team_score__3)s)]
+[parameters: {'time_match__0': 64800000000000, 'game_id__0': '9b4d5970', 'prob_draw__0': 0.2678962777989173, 'prob_away_team_score__0': None, 'game__0': '2024-06-29 Switzerland-Italy', 'prob_home_win__0': 0.31522415999728004, 'prob_away_win__0': 0.4168795622038026, 'home_team__0': 'Switzerland', 'date_match__0': datetime.datetime(2024, 6, 29, 0, 0), 'away_team__0': 'Italy', 'model__0': 'RSF_PR_LR', 'datetime_inference__0': datetime.datetime(2024, 7, 1, 11, 0, 52, 157505), 'prob_home_team_score__0': None, 'time_match__1': 75600000000000, 'game_id__1': 'c7429dd6', 'prob_draw__1': 0.2564702205380772, 'prob_away_team_score__1': None, 'game__1': '2024-06-29 Germany-Denmark', 'prob_home_win__1': 0.5359785691662705, 'prob_away_win__1': 0.20755121029565227, 'home_team__1': 'Germany', 'date_match__1': datetime.datetime(2024, 6, 29, 0, 0), 'away_team__1': 'Denmark', 'model__1': 'RSF_PR_LR', 'datetime_inference__1': datetime.datetime(2024, 7, 1, 11, 0, 52, 157505), 'prob_home_team_score__1': None, 'time_match__2': 75600000000000, 'game_id__2': None, 'prob_draw__2': 0.28756276626804744, 'prob_away_team_score__2': None, 'game__2': '2024-07-02 Austria-Türkiye', 'prob_home_win__2': 0.3875298708685221, 'prob_away_win__2': 0.3249073628634304, 'home_team__2': 'Austria', 'date_match__2': datetime.datetime(2024, 7, 2, 0, 0), 'away_team__2': 'Türkiye', 'model__2': 'RSF_PR_LR', 'datetime_inference__2': datetime.datetime(2024, 7, 1, 11, 0, 52, 157505), 'prob_home_team_score__2': None, 'time_match__3': 64800000000000, 'game_id__3': None, 'prob_draw__3': 0.23110330376140387, 'prob_away_team_score__3': None, 'game__3': '2024-07-02 Romania-Netherlands', 'prob_home_win__3': 0.15986669665641323, 'prob_away_win__3': 0.6090299995821828, 'home_team__3': 'Romania', 'date_match__3': datetime.datetime(2024, 7, 2, 0, 0), 'away_team__3': 'Netherlands', 'model__3': 'RSF_PR_LR', 'datetime_inference__3': datetime.datetime(2024, 7, 1, 11, 0, 52, 157505), 'prob_home_team_score__3': None}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2024-07-01 11:00:52,571 - __main__ - ERROR - Error executing the pipeline: (psycopg2.errors.DatatypeMismatch) column "time_match" is of type time without time zone but expression is of type bigint
+LINE 1: ...y', '9b4d5970', '2024-06-29T00:00:00'::timestamp, 6480000000...
+                                                             ^
+HINT:  You will need to rewrite or cast the expression.
+
+[SQL: INSERT INTO models_results (game, game_id, date_match, time_match, home_team, away_team, prob_home_win, prob_draw, prob_away_win, datetime_inference, model, prob_home_team_score, prob_away_team_score) VALUES (%(game__0)s, %(game_id__0)s, %(date_match ... 920 characters truncated ... , %(datetime_inference__3)s, %(model__3)s, %(prob_home_team_score__3)s, %(prob_away_team_score__3)s)]
+[parameters: {'time_match__0': 64800000000000, 'game_id__0': '9b4d5970', 'prob_draw__0': 0.2678962777989173, 'prob_away_team_score__0': None, 'game__0': '2024-06-29 Switzerland-Italy', 'prob_home_win__0': 0.31522415999728004, 'prob_away_win__0': 0.4168795622038026, 'home_team__0': 'Switzerland', 'date_match__0': datetime.datetime(2024, 6, 29, 0, 0), 'away_team__0': 'Italy', 'model__0': 'RSF_PR_LR', 'datetime_inference__0': datetime.datetime(2024, 7, 1, 11, 0, 52, 157505), 'prob_home_team_score__0': None, 'time_match__1': 75600000000000, 'game_id__1': 'c7429dd6', 'prob_draw__1': 0.2564702205380772, 'prob_away_team_score__1': None, 'game__1': '2024-06-29 Germany-Denmark', 'prob_home_win__1': 0.5359785691662705, 'prob_away_win__1': 0.20755121029565227, 'home_team__1': 'Germany', 'date_match__1': datetime.datetime(2024, 6, 29, 0, 0), 'away_team__1': 'Denmark', 'model__1': 'RSF_PR_LR', 'datetime_inference__1': datetime.datetime(2024, 7, 1, 11, 0, 52, 157505), 'prob_home_team_score__1': None, 'time_match__2': 75600000000000, 'game_id__2': None, 'prob_draw__2': 0.28756276626804744, 'prob_away_team_score__2': None, 'game__2': '2024-07-02 Austria-Türkiye', 'prob_home_win__2': 0.3875298708685221, 'prob_away_win__2': 0.3249073628634304, 'home_team__2': 'Austria', 'date_match__2': datetime.datetime(2024, 7, 2, 0, 0), 'away_team__2': 'Türkiye', 'model__2': 'RSF_PR_LR', 'datetime_inference__2': datetime.datetime(2024, 7, 1, 11, 0, 52, 157505), 'prob_home_team_score__2': None, 'time_match__3': 64800000000000, 'game_id__3': None, 'prob_draw__3': 0.23110330376140387, 'prob_away_team_score__3': None, 'game__3': '2024-07-02 Romania-Netherlands', 'prob_home_win__3': 0.15986669665641323, 'prob_away_win__3': 0.6090299995821828, 'home_team__3': 'Romania', 'date_match__3': datetime.datetime(2024, 7, 2, 0, 0), 'away_team__3': 'Netherlands', 'model__3': 'RSF_PR_LR', 'datetime_inference__3': datetime.datetime(2024, 7, 1, 11, 0, 52, 157505), 'prob_home_team_score__3': None}]
+(Background on this error at: https://sqlalche.me/e/20/f405) 
+
+
+2024-07-01 11:06:09,387 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 11:06:09,387 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-07-01 11:06:09,387 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 11:06:09,387 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 11:06:10,522 - __main__ - INFO - Database connection established
+2024-07-01 11:06:35,443 - __main__ - INFO - Data retrieved from database successfully in 26.009172439575195 seconds
+2024-07-01 11:07:19,924 - __main__ - ERROR - Error during data processing: 'date_'
+2024-07-01 11:07:19,925 - __main__ - ERROR - Error executing the pipeline: 'date_' 
+
+
+2024-07-01 11:10:54,270 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 11:10:54,273 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-07-01 11:10:54,273 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 11:10:54,278 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 11:10:55,272 - __main__ - INFO - Database connection established
+2024-07-01 11:13:41,648 - __main__ - INFO - Data retrieved from database successfully in 167.31515097618103 seconds
+2024-07-01 11:14:00,659 - __main__ - INFO - Data processing completed successfully in 18.763614892959595 seconds
+2024-07-01 11:14:02,707 - __main__ - INFO - Model training and inference completed successfully completed in 2.038940191268921 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525230
+1    weighted_accuracy  0.668567
+2        accuracy_home  0.598711
+3        accuracy_draw  0.739779
+4        accuracy_away  0.711971
+5           recall_all  1.351769
+6      weighted_recall  0.525230
+7    balanced_accuracy  0.450590
+8          recall_home  0.835205
+9          recall_draw  0.000727
+10         recall_away  0.515837
+11       precision_all  0.380352
+12  weighted_precision  0.413145
+13      precision_home  0.529621
+14      precision_draw  0.100000
+15      precision_away  0.511435
+16        f_mesure_all  0.387477
+17   f_mesure_weighted  0.441351
+18       f_mesure_home  0.648032
+19       f_mesure_draw  0.001444
+20       f_mesure_away  0.512955
+21            log_loss  0.988935
+22           loss_home  0.303714
+23           loss_draw  0.371831
+24           loss_away  0.313391
+25                 mse  0.196147
+26            mse_home  0.214901
+27            mse_draw  0.191547
+28            mse_away  0.181991
+29       classwise_ECE  0.034036
+30            ECE_home  0.038827
+31            ECE_draw  0.034448
+32            ECE_away  0.028834
+2024-07-01 11:14:02,962 - __main__ - INFO - 4 results inserted into the database successfully, completed in 0.2548675537109375 seconds
+2024-07-01 11:14:03,116 - __main__ - INFO - Pipeline executed successfully in 188.845929 seconds 
+
+

@@ -62,3 +62,44 @@
 2024-06-26 16:51:31,706 - __main__ - INFO - Pipeline executed successfully in 39.066486 seconds 
 
 
+2024-06-30 14:22:29,948 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-06-30 14:22:29,948 - __main__ - INFO - Starting the inference pipeline
+2024-06-30 14:22:29,948 - __main__ - INFO - Environment variables loaded successfully
+2024-06-30 14:22:31,352 - __main__ - INFO - Database connection established
+2024-06-30 14:27:14,326 - __main__ - INFO - Data retrieved from database successfully in 284.2945191860199 seconds
+2024-06-30 14:27:49,043 - __main__ - INFO - Data processing completed successfully in 34.618919372558594 seconds
+2024-06-30 14:27:49,447 - __main__ - INFO - Model training and inference completed successfully completed in 0.3949010372161865 seconds, accuray on train test :     metrics    values
+0  mse_home  1.487963
+1  mse_away  1.213760
+2   r2_home  0.123137
+3   r2_away  0.095781
+2024-06-30 14:27:49,990 - __main__ - INFO - 4 results inserted into the database successfully, completed in 0.5435712337493896 seconds
+2024-06-30 14:27:50,245 - __main__ - INFO - Pipeline executed successfully in 320.296467 seconds 
+
+
+2024-07-01 10:20:46,352 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 10:20:46,357 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-07-01 10:20:46,357 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 10:20:46,362 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 10:20:46,477 - __main__ - ERROR - Error retrieving data from the database: (psycopg2.OperationalError) 
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2024-07-01 10:20:46,478 - __main__ - ERROR - Error executing the pipeline: (psycopg2.OperationalError) 
+(Background on this error at: https://sqlalche.me/e/20/e3q8) 
+
+
+2024-07-01 10:21:06,800 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 10:21:06,800 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-07-01 10:21:06,800 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 10:21:06,800 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 10:21:07,826 - __main__ - INFO - Database connection established
+2024-07-01 10:21:31,057 - __main__ - INFO - Data retrieved from database successfully in 24.187649250030518 seconds
+2024-07-01 10:22:16,178 - __main__ - INFO - Data processing completed successfully in 45.06361436843872 seconds
+2024-07-01 10:22:19,692 - __main__ - INFO - Model training and inference completed successfully completed in 3.498365640640259 seconds, accuray on train test :     metrics    values
+0  mse_home  1.488049
+1  mse_away  1.213752
+2   r2_home  0.123141
+3   r2_away  0.095782
+2024-07-01 10:22:19,977 - __main__ - INFO - 4 results inserted into the database successfully, completed in 0.28511571884155273 seconds
+2024-07-01 10:22:20,243 - __main__ - INFO - Pipeline executed successfully in 73.442866 seconds 
+
+
