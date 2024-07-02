@@ -106,7 +106,7 @@ def merge_sofifa_fbref_results(fbref_results_df, sofifa_teams_stats_df,
     sofifa_teams_stats_df[team_col] = sofifa_teams_stats_df[team_col].replace(mapping)
                                                                         
     fbref_results_df[date_col] = pd.to_datetime(fbref_results_df[date_col])
-    fbref_results_df_date = fbref_results_df[fbref_results_df["date"] >= min(sofifa_teams_stats_df[update_col])]
+    fbref_results_df_date = fbref_results_df[fbref_results_df[date_col] >= min(sofifa_teams_stats_df[update_col])]
 
     # Extraire la liste des équipes du DataFrame sofifa_teams_stats_df
     sofifa_teams = set(sofifa_teams_stats_df[team_col].unique())
@@ -118,7 +118,7 @@ def merge_sofifa_fbref_results(fbref_results_df, sofifa_teams_stats_df,
     ]
 
     # Assurance que les dates sont correctement formatées
-    fbref_df_date_filtered[date_col] = pd.to_datetime(fbref_df_date_filtered[date_col])
+    fbref_df_date_filtered.loc[:, date_col] = pd.to_datetime(fbref_df_date_filtered[date_col])
     sofifa_teams_stats_df[update_col] = pd.to_datetime(sofifa_teams_stats_df[update_col])
 
     # Trier les dataframes pour la jointure asynchrone

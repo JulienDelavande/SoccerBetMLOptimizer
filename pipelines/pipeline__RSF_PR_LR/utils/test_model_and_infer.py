@@ -37,9 +37,10 @@ def test_model_and_infer(fbref_results_df__sofifa_merged__data_formated__signals
     train_test_metrics = pd.DataFrame({'metrics': metrics_mean.keys(), 'values': metrics_mean.values()})
 
     pipeline.fit(fbref_results_df__sofifa_merged__data_formated__signals_added__train[X_col], fbref_results_df__sofifa_merged__data_formated__signals_added__train[Y_col])
-    fbref_results_df__sofifa_merged__data_formated__signals_added__infer['pred'] = pipeline.predict(fbref_results_df__sofifa_merged__data_formated__signals_added__infer[X_col])
-    fbref_results_df__sofifa_merged__data_formated__signals_added__infer['prob_home_win'] = pipeline.predict_proba(fbref_results_df__sofifa_merged__data_formated__signals_added__infer[X_col])[:, 2]
-    fbref_results_df__sofifa_merged__data_formated__signals_added__infer['prob_draw'] = pipeline.predict_proba(fbref_results_df__sofifa_merged__data_formated__signals_added__infer[X_col])[:, 1]
-    fbref_results_df__sofifa_merged__data_formated__signals_added__infer['prob_away_win'] = pipeline.predict_proba(fbref_results_df__sofifa_merged__data_formated__signals_added__infer[X_col])[:, 0]
+    fbref_results_df__sofifa_merged__data_formated__signals_added__infer = fbref_results_df__sofifa_merged__data_formated__signals_added__infer.copy()
+    fbref_results_df__sofifa_merged__data_formated__signals_added__infer.loc[:, 'pred'] = pipeline.predict(fbref_results_df__sofifa_merged__data_formated__signals_added__infer[X_col])
+    fbref_results_df__sofifa_merged__data_formated__signals_added__infer.loc[:, 'prob_home_win'] = pipeline.predict_proba(fbref_results_df__sofifa_merged__data_formated__signals_added__infer[X_col])[:, 2]
+    fbref_results_df__sofifa_merged__data_formated__signals_added__infer.loc[:, 'prob_draw'] = pipeline.predict_proba(fbref_results_df__sofifa_merged__data_formated__signals_added__infer[X_col])[:, 1]
+    fbref_results_df__sofifa_merged__data_formated__signals_added__infer.loc[:, 'prob_away_win'] = pipeline.predict_proba(fbref_results_df__sofifa_merged__data_formated__signals_added__infer[X_col])[:, 0]
 
     return train_test_metrics, fbref_results_df__sofifa_merged__data_formated__signals_added__infer

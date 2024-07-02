@@ -63,15 +63,14 @@ def infer__RSF_PR_LR__pipeline(date_stop=None):
     #### Data processing ####
     start_data_processing = time.time()
     try:
-        fbref_results_df__sofifa_merged = merge_sofifa_fbref_results(fbref_results_df, sofifa_teams_stats_df)
-        fbref_results_df__sofifa_merged__data_formated = format_sofifa_fbref_data(fbref_results_df__sofifa_merged)
-        fbref_results_df__sofifa_merged__data_formated__signals_added = add_signals(fbref_results_df__sofifa_merged__data_formated, date_stop=date_stop)
-        
         date_stop = date_stop if date_stop else datetime.datetime.now()
-        rule_is_before_date_stop_or_now = fbref_results_df__sofifa_merged__data_formated__signals_added["date"] < date_stop
-        rule_if_its_date_is_it_before_exact_time = (fbref_results_df__sofifa_merged__data_formated__signals_added["date"] == date_stop) & (fbref_results_df__sofifa_merged__data_formated__signals_added["time"] < date_stop.time())
-        fbref_results_df__sofifa_merged__data_formated__signals_added__train = fbref_results_df__sofifa_merged__data_formated__signals_added[rule_is_before_date_stop_or_now | rule_if_its_date_is_it_before_exact_time]
-        fbref_results_df__sofifa_merged__data_formated__signals_added__infer = fbref_results_df__sofifa_merged__data_formated__signals_added[~(rule_is_before_date_stop_or_now | rule_if_its_date_is_it_before_exact_time)]
+        fbref_results_df__sofifa_merged = merge_sofifa_fbref_results(fbref_results_df, sofifa_teams_stats_df)
+        fbref_results_df__sofifa_merged__data_formated = format_sofifa_fbref_data(fbref_results_df__sofifa_merged, date_stop=date_stop)
+        fbref_results_df__sofifa_merged__data_formated__signals_added = add_signals(fbref_results_df__sofifa_merged__data_formated, date_stop=date_stop)
+
+        rule_is_before_datetime = fbref_results_df__sofifa_merged__data_formated__signals_added["datetime"] < date_stop
+        fbref_results_df__sofifa_merged__data_formated__signals_added__train = fbref_results_df__sofifa_merged__data_formated__signals_added[rule_is_before_datetime].copy()
+        fbref_results_df__sofifa_merged__data_formated__signals_added__infer = fbref_results_df__sofifa_merged__data_formated__signals_added[~rule_is_before_datetime].copy()
 
         logger.info(f"Data processing completed successfully in {time.time() - start_data_processing} seconds")
     except Exception as e:
