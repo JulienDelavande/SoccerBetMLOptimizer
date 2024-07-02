@@ -65,10 +65,15 @@ def train_test(matchs, pipeline, X_col, Y_col,
         prob_predictions = pipeline.predict_proba(X_test)
 
         result_df = test.copy()
-        result_df.reset_index(inplace=True)
-        result_df = result_df.merge(pd.DataFrame(predictions, columns=[model_predictions_col_name]), how='left', on=result_df.index)
-        result_df = result_df.drop(columns=['key_0'])
-        result_df = result_df.merge(pd.DataFrame(prob_predictions, columns=[model_predictions_prob_away_col_name, model_predictions_prob_draw_col_name, model_predictions_prob_home_col_name]), how='left', on=result_df.index)
+        ###
+        result_df.loc[:, model_predictions_col_name] = predictions
+        result_df.loc[:, model_predictions_prob_home_col_name] = prob_predictions[:, 2]
+        result_df.loc[:, model_predictions_prob_draw_col_name] = prob_predictions[:, 1]
+        result_df.loc[:, model_predictions_prob_away_col_name] = prob_predictions[:, 0]
+        # result_df.reset_index(inplace=True)
+        # result_df = result_df.merge(pd.DataFrame(predictions, columns=[model_predictions_col_name]), how='left', on=result_df.index)
+        # result_df = result_df.drop(columns=['key_0'])
+        # result_df = result_df.merge(pd.DataFrame(prob_predictions, columns=[model_predictions_prob_away_col_name, model_predictions_prob_draw_col_name, model_predictions_prob_home_col_name]), how='left', on=result_df.index)
 
         metrics["accuracy"][i], metrics["weighted_accuracy"][i], (metrics["accuracy_home"][i], metrics["accuracy_draw"][i], metrics["accuracy_away"][i]) = accuracy_fn(result_df, result_col_name, model_predictions_col_name)
         metrics["recall_all"][i], metrics["weighted_recall"][i], metrics["balanced_accuracy"][i], (metrics["recall_home"][i], metrics["recall_draw"][i], metrics["recall_away"][i]) = recall_fn(result_df, result_col_name, model_predictions_col_name)
