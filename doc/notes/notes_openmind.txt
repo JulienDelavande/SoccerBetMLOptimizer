@@ -1,0 +1,34 @@
+- Introduction sur le sujet
+	- Je vais vouc présenter le travail que j'ai fait dans le cadre de mon stage qui consiste en l'optimsation des gains dans les paris sportifs
+	- Les paris sportifs existent depuis longtemps et représente une part énorme des transactions
+- Formalisation du problème
+	- Comment fonctionnent les paris sportifs : cas du foot et des côtes dynamiques (exemples d'autres types de côtes)
+		- Les bookmakers fournissent une côte par issue d'un match (score, action, résultats...)
+		- Le parieurs mise une somme sur cette issue. Si le parieur perd, il ne récupère pas l'argent, si il gagne il récupère sa mise multipliée par la côte que le bookmaker avait proposé au moment du pari
+	- Le bookmaker joue donc contre les joueurs :
+		- Bookmaker : doit choisir la côte qu'il va appliquer aux issues d'un matchs qu'il propose pour pouvoir gagner de l'argent sur le long terme en considérant un pool de parieurs tout en restant attractif
+		- Joueur : doit choisir les issues sur lesquels il mise ainsi que les sommes qu'il place sur chacune des issues choisies pour optimiser ses gains
+	- Exemple des issues d'un match de foot pour fixer les idées.
+		- On suppose que les issues du match suivent une loi de probabilitées 'vraie'
+		- Le bookmaker et le joueur démarrent avec une cagnotte
+- Etat de l'art
+	- Séparation du problème -> prediction des issues features / architectures
+	- Point de vue du bookmaker : (La méthode utilisée est secrete mais quelques recherches nous permettent d'inférer les méthode utilisée)
+		- Méthode 1:
+			- Equilibrer le pot, tracking de là ou sont placer les mises et bouger les cotes en fonction de là ou sont placer les mise en rajoutant une marge
+		- Méthode 2:
+			- prédiction des probilités des issues 1 / probilité calculée + marge
+			- Ainsi si le bookmaker s'approche de la probabilité 'vraie' et que tous les joueurs possèdent cette proba vraie il se fera de l'argent sur la marge
+			- On peut supposer que la probabiltées des joueurs est plus mauvaise que celle du bookmaker donc le bookmaker se fera à la fois de l'argent sur l'erreur à la proba vraie + la marge
+		- Méthode 3:
+			- Un mélange des deux méthodes précédentes
+		- En prédisant la où les parieurs vont le plus parier, le bookmaker peut tirer parti de ce biais et bouger les côtes en défaveur 
+	- Portfolio management
+	- Tout en un
+- Architecture
+- Scrapping data in real time (historical/current)
+- Storing into a database postgres azure
+- Merging data, creation of the signals, formating, training, inférence
+- Résultats jusqu'à lors
+- Prédiction sur la fin de l'euro
+

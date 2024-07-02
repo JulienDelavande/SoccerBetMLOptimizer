@@ -406,3 +406,693 @@ HINT:  You will need to rewrite or cast the expression.
 2024-07-01 11:14:03,116 - __main__ - INFO - Pipeline executed successfully in 188.845929 seconds 
 
 
+2024-07-01 16:29:12,870 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 16:29:12,878 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 16:29:12,887 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 16:30:31,173 - __main__ - INFO - Database connection established
+2024-07-01 16:37:02,401 - __main__ - INFO - Data retrieved from database successfully in 469.3370168209076 seconds
+2024-07-01 17:07:18,353 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 17:07:18,361 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 17:07:18,376 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 17:07:58,575 - __main__ - INFO - Database connection established
+2024-07-01 17:10:03,893 - __main__ - INFO - Data retrieved from database successfully in 165.40063405036926 seconds
+2024-07-01 17:16:17,045 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 17:16:17,060 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 17:16:17,060 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 17:16:19,895 - __main__ - INFO - Database connection established
+2024-07-01 17:21:15,307 - __main__ - INFO - Data retrieved from database successfully in 298.03750801086426 seconds
+2024-07-01 17:28:22,587 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-01 17:28:22,587 - __main__ - INFO - Starting the inference pipeline
+2024-07-01 17:28:22,602 - __main__ - INFO - Environment variables loaded successfully
+2024-07-01 17:28:34,316 - __main__ - INFO - Database connection established
+2024-07-01 18:13:28,205 - __main__ - ERROR - Error retrieving data from the database: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: SELECT * FROM sofifa_teams_stats]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2024-07-01 18:13:28,205 - __main__ - ERROR - Error executing the pipeline: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: SELECT * FROM sofifa_teams_stats]
+(Background on this error at: https://sqlalche.me/e/20/e3q8) 
+
+
+2024-07-02 09:58:48,823 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 09:58:48,823 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 09:58:48,839 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:00:23,989 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 10:00:23,989 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 10:00:23,989 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:00:26,264 - __main__ - INFO - Database connection established
+2024-07-02 10:00:37,020 - __main__ - INFO - Data retrieved from database successfully in 12.96610426902771 seconds
+2024-07-02 10:01:15,664 - __main__ - INFO - Data processing completed successfully in 38.59337830543518 seconds
+2024-07-02 10:01:19,133 - __main__ - INFO - Model training and inference completed successfully completed in 3.4457223415374756 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 10:01:19,700 - __main__ - INFO - 4 results inserted into the database successfully, completed in 0.5657248497009277 seconds
+2024-07-02 10:01:19,897 - __main__ - INFO - Pipeline executed successfully in 55.908648 seconds 
+
+
+2024-07-02 10:07:28,628 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 10:07:28,630 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 10:07:28,632 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:07:29,363 - __main__ - INFO - Database connection established
+2024-07-02 10:07:40,158 - __main__ - INFO - Data retrieved from database successfully in 11.48799991607666 seconds
+2024-07-02 10:07:41,342 - __main__ - ERROR - Error during data processing: Incompatible merge dtype, dtype('<M8[ns]') and dtype('O'), both sides must have numeric dtype
+2024-07-02 10:07:41,342 - __main__ - ERROR - Error executing the pipeline: Incompatible merge dtype, dtype('<M8[ns]') and dtype('O'), both sides must have numeric dtype 
+
+
+2024-07-02 10:13:30,174 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 10:13:30,176 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 10:13:30,176 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:13:30,982 - __main__ - INFO - Database connection established
+2024-07-02 10:13:40,402 - __main__ - INFO - Data retrieved from database successfully in 10.185495853424072 seconds
+2024-07-02 10:13:41,244 - __main__ - ERROR - Error during data processing: Incompatible merge dtype, dtype('<M8[ns]') and dtype('O'), both sides must have numeric dtype
+2024-07-02 10:13:41,244 - __main__ - ERROR - Error executing the pipeline: Incompatible merge dtype, dtype('<M8[ns]') and dtype('O'), both sides must have numeric dtype 
+
+
+2024-07-02 10:15:24,772 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 10:15:24,773 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 10:15:24,775 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:15:25,536 - __main__ - INFO - Database connection established
+2024-07-02 10:15:38,147 - __main__ - INFO - Data retrieved from database successfully in 13.329679012298584 seconds
+2024-07-02 10:15:39,167 - __main__ - ERROR - Error during data processing: Incompatible merge dtype, dtype('<M8[ns]') and dtype('O'), both sides must have numeric dtype
+2024-07-02 10:15:39,167 - __main__ - ERROR - Error executing the pipeline: Incompatible merge dtype, dtype('<M8[ns]') and dtype('O'), both sides must have numeric dtype 
+
+
+2024-07-02 10:16:12,538 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 10:16:12,540 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 10:16:12,546 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:16:13,242 - __main__ - INFO - Database connection established
+2024-07-02 10:16:21,532 - __main__ - INFO - Data retrieved from database successfully in 8.931362390518188 seconds
+2024-07-02 10:16:22,492 - __main__ - ERROR - Error during data processing: Incompatible merge dtype, dtype('<M8[ns]') and dtype('O'), both sides must have numeric dtype
+2024-07-02 10:16:22,492 - __main__ - ERROR - Error executing the pipeline: Incompatible merge dtype, dtype('<M8[ns]') and dtype('O'), both sides must have numeric dtype 
+
+
+2024-07-02 10:19:35,270 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 10:19:35,273 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 10:19:35,278 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:19:36,089 - __main__ - INFO - Database connection established
+2024-07-02 10:19:45,437 - __main__ - INFO - Data retrieved from database successfully in 10.093347549438477 seconds
+2024-07-02 10:19:46,324 - __main__ - ERROR - Error during data processing: Merge keys contain null values on right side
+2024-07-02 10:19:46,324 - __main__ - ERROR - Error executing the pipeline: Merge keys contain null values on right side 
+
+
+2024-07-02 10:22:13,616 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 10:22:13,618 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 10:22:13,622 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:22:14,425 - __main__ - INFO - Database connection established
+2024-07-02 10:22:25,049 - __main__ - INFO - Data retrieved from database successfully in 11.36319088935852 seconds
+2024-07-02 10:22:25,884 - __main__ - ERROR - Error during data processing: Merge keys contain null values on right side
+2024-07-02 10:22:25,885 - __main__ - ERROR - Error executing the pipeline: Merge keys contain null values on right side 
+
+
+2024-07-02 10:22:49,703 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 10:22:49,704 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 10:22:49,707 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:22:50,950 - __main__ - INFO - Database connection established
+2024-07-02 10:23:01,048 - __main__ - INFO - Data retrieved from database successfully in 11.298351287841797 seconds
+2024-07-02 10:23:01,934 - __main__ - ERROR - Error during data processing: Merge keys contain null values on right side
+2024-07-02 10:23:01,935 - __main__ - ERROR - Error executing the pipeline: Merge keys contain null values on right side 
+
+
+2024-07-02 10:26:23,664 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 10:26:23,665 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 10:26:23,667 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:26:24,415 - __main__ - INFO - Database connection established
+2024-07-02 10:26:34,160 - __main__ - INFO - Data retrieved from database successfully in 10.455593824386597 seconds
+2024-07-02 10:26:54,409 - __main__ - INFO - Data processing completed successfully in 19.954116344451904 seconds
+2024-07-02 10:26:56,248 - __main__ - INFO - Model training and inference completed successfully completed in 1.8339710235595703 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 10:26:56,565 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.31676340103149414 seconds
+2024-07-02 10:26:56,727 - __main__ - INFO - Pipeline executed successfully in 33.062487 seconds 
+
+
+2024-07-02 10:27:47,544 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 10:27:47,546 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 10:27:47,548 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 10:27:49,662 - __main__ - INFO - Database connection established
+2024-07-02 11:30:26,820 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 11:30:26,823 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 11:30:26,828 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 11:30:27,723 - __main__ - INFO - Database connection established
+2024-07-02 11:30:39,088 - __main__ - INFO - Data retrieved from database successfully in 12.035385608673096 seconds
+2024-07-02 11:31:26,656 - __main__ - INFO - Data processing completed successfully in 47.50654411315918 seconds
+2024-07-02 11:31:29,685 - __main__ - INFO - Model training and inference completed successfully completed in 3.0110957622528076 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 11:31:29,935 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.24848389625549316 seconds
+2024-07-02 11:31:30,150 - __main__ - INFO - Pipeline executed successfully in 63.329101 seconds 
+
+
+2024-07-02 11:34:03,577 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 11:34:03,579 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 11:34:03,582 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 11:34:04,482 - __main__ - INFO - Database connection established
+2024-07-02 11:34:15,037 - __main__ - INFO - Data retrieved from database successfully in 11.386330127716064 seconds
+2024-07-02 11:34:50,769 - __main__ - INFO - Data processing completed successfully in 35.68863892555237 seconds
+2024-07-02 11:34:53,442 - __main__ - INFO - Model training and inference completed successfully completed in 2.6565797328948975 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 11:34:53,711 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.2677285671234131 seconds
+2024-07-02 11:34:53,875 - __main__ - INFO - Pipeline executed successfully in 50.297388 seconds 
+
+
+2024-07-02 11:38:31,086 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 11:38:31,087 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 11:38:31,089 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 11:38:31,966 - __main__ - INFO - Database connection established
+2024-07-02 11:38:46,278 - __main__ - INFO - Data retrieved from database successfully in 15.137954950332642 seconds
+2024-07-02 11:39:05,512 - __main__ - INFO - Data processing completed successfully in 19.192795753479004 seconds
+2024-07-02 11:39:07,261 - __main__ - INFO - Model training and inference completed successfully completed in 1.7410600185394287 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 11:39:07,474 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.21300792694091797 seconds
+2024-07-02 11:39:07,644 - __main__ - INFO - Pipeline executed successfully in 36.558215 seconds 
+
+
+2024-07-02 11:43:27,210 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 11:43:27,211 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 11:43:27,214 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 11:43:28,055 - __main__ - INFO - Database connection established
+2024-07-02 11:43:40,805 - __main__ - INFO - Data retrieved from database successfully in 13.543558359146118 seconds
+2024-07-02 11:43:41,832 - __main__ - ERROR - Error during data processing: Incompatible merge dtype, dtype('<M8[ns]') and dtype('O'), both sides must have numeric dtype
+2024-07-02 11:43:41,832 - __main__ - ERROR - Error executing the pipeline: Incompatible merge dtype, dtype('<M8[ns]') and dtype('O'), both sides must have numeric dtype 
+
+
+2024-07-02 11:45:47,591 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 11:45:47,593 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 11:45:47,594 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 11:45:48,393 - __main__ - INFO - Database connection established
+2024-07-02 11:46:02,800 - __main__ - INFO - Data retrieved from database successfully in 15.166631698608398 seconds
+2024-07-02 11:46:23,785 - __main__ - INFO - Data processing completed successfully in 20.94493556022644 seconds
+2024-07-02 11:46:25,789 - __main__ - INFO - Model training and inference completed successfully completed in 1.99580717086792 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 11:46:26,003 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.21469330787658691 seconds
+2024-07-02 11:46:26,152 - __main__ - INFO - Pipeline executed successfully in 38.560907 seconds 
+
+
+2024-07-02 11:51:49,334 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 11:51:49,337 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 11:51:49,342 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 11:51:50,134 - __main__ - INFO - Database connection established
+2024-07-02 11:52:00,594 - __main__ - INFO - Data retrieved from database successfully in 11.192808151245117 seconds
+2024-07-02 11:52:19,749 - __main__ - INFO - Data processing completed successfully in 19.10517406463623 seconds
+2024-07-02 11:52:21,583 - __main__ - INFO - Model training and inference completed successfully completed in 1.8255491256713867 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 11:52:21,925 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.3413810729980469 seconds
+2024-07-02 11:52:22,069 - __main__ - INFO - Pipeline executed successfully in 32.734150 seconds 
+
+
+2024-07-02 11:54:19,240 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 11:54:19,241 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 11:54:19,243 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 11:54:20,155 - __main__ - INFO - Database connection established
+2024-07-02 11:54:32,906 - __main__ - INFO - Data retrieved from database successfully in 13.618669748306274 seconds
+2024-07-02 11:54:54,887 - __main__ - INFO - Data processing completed successfully in 21.93069863319397 seconds
+2024-07-02 11:54:56,936 - __main__ - INFO - Model training and inference completed successfully completed in 2.041541814804077 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 11:54:57,144 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.20804119110107422 seconds
+2024-07-02 11:54:57,302 - __main__ - INFO - Pipeline executed successfully in 38.061856 seconds 
+
+
+2024-07-02 11:56:18,193 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 11:56:18,195 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 11:56:18,199 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 11:56:19,000 - __main__ - INFO - Database connection established
+2024-07-02 11:56:31,364 - __main__ - INFO - Data retrieved from database successfully in 13.08452820777893 seconds
+2024-07-02 11:56:55,190 - __main__ - INFO - Data processing completed successfully in 23.579660654067993 seconds
+2024-07-02 11:56:57,169 - __main__ - INFO - Model training and inference completed successfully completed in 1.971412181854248 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 11:56:57,468 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.2997772693634033 seconds
+2024-07-02 11:56:57,684 - __main__ - INFO - Pipeline executed successfully in 39.490890 seconds 
+
+
+2024-07-02 11:58:24,226 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 11:58:24,231 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 11:58:24,234 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 11:58:24,984 - __main__ - INFO - Database connection established
+2024-07-02 11:58:37,442 - __main__ - INFO - Data retrieved from database successfully in 13.167640686035156 seconds
+2024-07-02 11:58:56,685 - __main__ - INFO - Data processing completed successfully in 19.111708402633667 seconds
+2024-07-02 11:58:58,433 - __main__ - INFO - Model training and inference completed successfully completed in 1.7389497756958008 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 11:58:58,601 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.1669304370880127 seconds
+2024-07-02 11:58:58,748 - __main__ - INFO - Pipeline executed successfully in 34.520365 seconds 
+
+
+2024-07-02 12:00:42,536 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 12:00:42,537 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 12:00:42,539 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 12:00:43,403 - __main__ - INFO - Database connection established
+2024-07-02 12:00:59,504 - __main__ - INFO - Data retrieved from database successfully in 16.91202402114868 seconds
+2024-07-02 12:01:22,406 - __main__ - INFO - Data processing completed successfully in 22.84126377105713 seconds
+2024-07-02 12:01:24,463 - __main__ - INFO - Model training and inference completed successfully completed in 2.050628423690796 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 12:01:24,657 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.1941235065460205 seconds
+2024-07-02 12:01:24,815 - __main__ - INFO - Pipeline executed successfully in 42.278420 seconds 
+
+
+2024-07-02 12:02:26,004 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 12:02:26,006 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 12:02:26,007 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 12:02:26,866 - __main__ - INFO - Database connection established
+2024-07-02 12:02:41,771 - __main__ - INFO - Data retrieved from database successfully in 15.71980881690979 seconds
+2024-07-02 12:03:06,756 - __main__ - INFO - Data processing completed successfully in 24.938186407089233 seconds
+2024-07-02 12:03:09,346 - __main__ - INFO - Model training and inference completed successfully completed in 2.5810155868530273 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 12:03:09,661 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.31412196159362793 seconds
+2024-07-02 12:03:09,891 - __main__ - INFO - Pipeline executed successfully in 43.885999 seconds 
+
+
+2024-07-02 12:06:18,205 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 12:06:18,206 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 12:06:18,208 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 12:06:18,957 - __main__ - INFO - Database connection established
+2024-07-02 12:06:36,024 - __main__ - INFO - Data retrieved from database successfully in 17.776813507080078 seconds
+2024-07-02 12:06:55,725 - __main__ - INFO - Data processing completed successfully in 19.670225381851196 seconds
+2024-07-02 12:06:57,525 - __main__ - INFO - Model training and inference completed successfully completed in 1.795677661895752 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 12:06:57,828 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.3032231330871582 seconds
+2024-07-02 12:06:57,973 - __main__ - INFO - Pipeline executed successfully in 39.768105 seconds 
+
+

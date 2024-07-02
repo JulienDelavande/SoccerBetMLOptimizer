@@ -63,16 +63,11 @@ def infer__RSF_PR_LR__pipeline(date_stop=None):
     #### Data processing ####
     start_data_processing = time.time()
     try:
+        date_stop = date_stop if date_stop else datetime.datetime.now()
         fbref_results_df__sofifa_merged = merge_sofifa_fbref_results(fbref_results_df, sofifa_teams_stats_df)
-        fbref_results_df__sofifa_merged__data_formated = format_sofifa_fbref_data(fbref_results_df__sofifa_merged)
+        fbref_results_df__sofifa_merged__data_formated = format_sofifa_fbref_data(fbref_results_df__sofifa_merged, date_stop=date_stop)
         fbref_results_df__sofifa_merged__data_formated__signals_added = add_signals(fbref_results_df__sofifa_merged__data_formated, date_stop=date_stop)
         
-        date_stop = date_stop if date_stop else datetime.datetime.now()
-        date_col = 'date_'
-        fbref_results_df__sofifa_merged__data_formated__signals_added[date_col] = pd.to_datetime(fbref_results_df__sofifa_merged__data_formated__signals_added['date'])
-        time_col = 'time_'
-        fbref_results_df__sofifa_merged__data_formated__signals_added[time_col] = fbref_results_df__sofifa_merged__data_formated__signals_added['time'].apply(lambda x: pd.to_timedelta(x.strftime('%H:%M:%S')) if pd.notnull(x) else pd.to_timedelta('0 days'))
-        fbref_results_df__sofifa_merged__data_formated__signals_added['datetime'] = fbref_results_df__sofifa_merged__data_formated__signals_added[date_col] + fbref_results_df__sofifa_merged__data_formated__signals_added[time_col]
         rule_is_before_datetime = fbref_results_df__sofifa_merged__data_formated__signals_added["datetime"] < date_stop
         fbref_results_df__sofifa_merged__data_formated__signals_added__train = fbref_results_df__sofifa_merged__data_formated__signals_added[rule_is_before_datetime]
         fbref_results_df__sofifa_merged__data_formated__signals_added__infer = fbref_results_df__sofifa_merged__data_formated__signals_added[~rule_is_before_datetime]
