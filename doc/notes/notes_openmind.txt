@@ -1,6 +1,8 @@
 - Introduction sur le sujet
-	- Je vais vouc présenter le travail que j'ai fait dans le cadre de mon stage qui consiste en l'optimsation des gains dans les paris sportifs
+	- Je vais vous présenter le travail que j'ai fait dans le cadre de mon stage qui consiste en l'optimsation des gains dans les paris sportifs
 	- Les paris sportifs existent depuis longtemps et représente une part énorme des transactions
+	- Point de vue business - finance
+
 - Formalisation du problème
 	- Comment fonctionnent les paris sportifs : cas du foot et des côtes dynamiques (exemples d'autres types de côtes)
 		- Les bookmakers fournissent une côte par issue d'un match (score, action, résultats...)
@@ -11,8 +13,8 @@
 	- Exemple des issues d'un match de foot pour fixer les idées.
 		- On suppose que les issues du match suivent une loi de probabilitées 'vraie'
 		- Le bookmaker et le joueur démarrent avec une cagnotte
+
 - Etat de l'art
-	- Séparation du problème -> prediction des issues features / architectures
 	- Point de vue du bookmaker : (La méthode utilisée est secrete mais quelques recherches nous permettent d'inférer les méthode utilisée)
 		- Méthode 1:
 			- Equilibrer le pot, tracking de là ou sont placer les mises et bouger les cotes en fonction de là ou sont placer les mise en rajoutant une marge
@@ -20,11 +22,32 @@
 			- prédiction des probilités des issues 1 / probilité calculée + marge
 			- Ainsi si le bookmaker s'approche de la probabilité 'vraie' et que tous les joueurs possèdent cette proba vraie il se fera de l'argent sur la marge
 			- On peut supposer que la probabiltées des joueurs est plus mauvaise que celle du bookmaker donc le bookmaker se fera à la fois de l'argent sur l'erreur à la proba vraie + la marge
-		- Méthode 3:
-			- Un mélange des deux méthodes précédentes
-		- En prédisant la où les parieurs vont le plus parier, le bookmaker peut tirer parti de ce biais et bouger les côtes en défaveur 
-	- Portfolio management
-	- Tout en un
+		- Méthode 3: (méthode utilisée à priori)
+			- Un mélange des deux méthodes précédentes, une côte résultant d'un modèle pondéré par les deux métriques.
+			- Permet d'éviter la variance dans les gains du bookmaker
+		- Méthode 4:
+			- Un modèle prédictif de là ou les parieur vont placer leur argent en fonction de la côtes et du match
+			- En prédisant la où les parieurs vont le plus parier, le bookmaker peut tirer parti de ce biais et bouger les côtes en défaveur
+			- Coupler à un modèle de prédiction des issues
+	- Point de vue du joueur :
+		- Méthode 1:
+ 			- Séparation du problème en deux étapes:
+			- Prédiction des probabilité des issues (avec un modèle ml classique ou une architecture plus avancée de deep)
+				- Quelques signaux classiques
+			- Modèle de prévision d'ou placer l'argent en comparant les côtes proposées à notre modèle:
+				- Portfolio management (crière de Kelly, sharp ratio issue d'une fonction d'utilité) techniques purement déterministes
+				- Un modele de deep ?
+		- Methode 2:
+			- Tout en un, un modèle qui prend en entrée les côtes des signaux sur le match et doit prédire la somme à investir pour maximiser les gains
+
+- Implémentation
+	- Choix du positionnement actuel:
+		- Football, beaucoup de données (différentes et en quantitée)
+		- Prédiction de la proba des issues pour les matchs à venir
+			- problème partagé par le bookmaker et le joueur 
+			- difficultée d'obtenir un bon historiques des côtes pour les issues des matchs avec le sprincipaux bookmakers 
+		- Pourquoi ne pas attaquer l
+		
 - Architecture
 - Scrapping data in real time (historical/current)
 - Storing into a database postgres azure

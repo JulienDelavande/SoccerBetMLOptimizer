@@ -1096,3 +1096,138 @@ server closed the connection unexpectedly
 2024-07-02 12:06:57,973 - __main__ - INFO - Pipeline executed successfully in 39.768105 seconds 
 
 
+2024-07-02 14:44:37,362 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 14:44:37,364 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 14:44:37,368 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 14:44:38,188 - __main__ - INFO - Database connection established
+2024-07-02 14:44:50,206 - __main__ - INFO - Data retrieved from database successfully in 12.770164251327515 seconds
+2024-07-02 14:45:10,197 - __main__ - INFO - Data processing completed successfully in 19.972586393356323 seconds
+2024-07-02 14:45:12,114 - __main__ - INFO - Model training and inference completed successfully completed in 1.9172418117523193 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668284
+2        accuracy_home  0.598343
+3        accuracy_draw  0.740331
+4        accuracy_away  0.711418
+5           recall_all  1.350436
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450145
+8          recall_home  0.833107
+9          recall_draw  0.000000
+10         recall_away  0.517329
+11       precision_all  0.347013
+12  weighted_precision  0.388173
+13      precision_home  0.529547
+14      precision_draw  0.000000
+15      precision_away  0.511492
+16        f_mesure_all  0.386964
+17   f_mesure_weighted  0.441272
+18       f_mesure_home  0.647305
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513586
+21            log_loss  0.988879
+22           loss_home  0.305006
+23           loss_draw  0.369589
+24           loss_away  0.314284
+25                 mse  0.196118
+26            mse_home  0.215024
+27            mse_draw  0.190982
+28            mse_away  0.182348
+29       classwise_ECE  0.033908
+30            ECE_home  0.039270
+31            ECE_draw  0.033884
+32            ECE_away  0.028569
+2024-07-02 14:45:12,297 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.18246674537658691 seconds
+2024-07-02 14:45:12,464 - __main__ - INFO - Pipeline executed successfully in 35.102397 seconds 
+
+
+2024-07-02 14:59:45,350 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 15:00:25,594 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 15:00:25,595 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-28 00:00:00
+2024-07-02 15:00:25,595 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 15:00:25,600 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 15:00:26,424 - __main__ - INFO - Database connection established
+2024-07-02 15:00:37,617 - __main__ - INFO - Data retrieved from database successfully in 11.96513295173645 seconds
+2024-07-02 15:00:59,031 - __main__ - INFO - Data processing completed successfully in 21.326696157455444 seconds
+2024-07-02 15:01:01,366 - __main__ - INFO - Model training and inference completed successfully completed in 2.331453561782837 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668441
+2        accuracy_home  0.598527
+3        accuracy_draw  0.739963
+4        accuracy_away  0.711602
+5           recall_all  1.351630
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.450543
+8          recall_home  0.834240
+9          recall_draw  0.000727
+10         recall_away  0.516662
+11       precision_all  0.380153
+12  weighted_precision  0.412931
+13      precision_home  0.529357
+14      precision_draw  0.100000
+15      precision_away  0.511102
+16        f_mesure_all  0.387374
+17   f_mesure_weighted  0.441189
+18       f_mesure_home  0.647539
+19       f_mesure_draw  0.001444
+20       f_mesure_away  0.513139
+21            log_loss  0.988972
+22           loss_home  0.303685
+23           loss_draw  0.371690
+24           loss_away  0.313598
+25                 mse  0.196152
+26            mse_home  0.214838
+27            mse_draw  0.191517
+28            mse_away  0.182102
+29       classwise_ECE  0.033970
+30            ECE_home  0.038727
+31            ECE_draw  0.034482
+32            ECE_away  0.028701
+2024-07-02 15:01:01,547 - __main__ - INFO - 10 results inserted into the database successfully, completed in 0.18080735206604004 seconds
+2024-07-02 15:01:01,701 - __main__ - INFO - Pipeline executed successfully in 36.106483 seconds 
+
+
+2024-07-02 15:10:30,413 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-02 15:10:30,421 - __main__ - INFO - date_stop parameter parsed successfully: 2024-06-23 00:00:00
+2024-07-02 15:10:30,421 - __main__ - INFO - Starting the inference pipeline
+2024-07-02 15:10:30,424 - __main__ - INFO - Environment variables loaded successfully
+2024-07-02 15:10:31,297 - __main__ - INFO - Database connection established
+2024-07-02 15:10:45,186 - __main__ - INFO - Data retrieved from database successfully in 14.688103914260864 seconds
+2024-07-02 15:11:23,686 - __main__ - INFO - Data processing completed successfully in 38.45391511917114 seconds
+2024-07-02 15:11:26,968 - __main__ - INFO - Model training and inference completed successfully completed in 3.272139310836792 seconds, accuray on train test :                metrics    values
+0             accuracy  0.526452
+1    weighted_accuracy  0.669248
+2        accuracy_home  0.599631
+3        accuracy_draw  0.741014
+4        accuracy_away  0.712258
+5           recall_all  1.353181
+6      weighted_recall  0.526452
+7    balanced_accuracy  0.451060
+8          recall_home  0.834635
+9          recall_draw  0.000725
+10         recall_away  0.517822
+11       precision_all  0.380979
+12  weighted_precision  0.414645
+13      precision_home  0.530998
+14      precision_draw  0.100000
+15      precision_away  0.511939
+16        f_mesure_all  0.388184
+17   f_mesure_weighted  0.442825
+18       f_mesure_home  0.648896
+19       f_mesure_draw  0.001439
+20       f_mesure_away  0.514216
+21            log_loss  0.988832
+22           loss_home  0.304641
+23           loss_draw  0.371147
+24           loss_away  0.313044
+25                 mse  0.196049
+26            mse_home  0.214985
+27            mse_draw  0.191110
+28            mse_away  0.182053
+29       classwise_ECE  0.032964
+30            ECE_home  0.037237
+31            ECE_draw  0.032793
+32            ECE_away  0.028860
+2024-07-02 15:11:27,207 - __main__ - INFO - 22 results inserted into the database successfully, completed in 0.23971080780029297 seconds
+2024-07-02 15:11:27,492 - __main__ - INFO - Pipeline executed successfully in 57.079466 seconds 
+
+
