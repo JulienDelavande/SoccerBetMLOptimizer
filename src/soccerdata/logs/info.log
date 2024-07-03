@@ -1,0 +1,284 @@
+INFO 2024-07-03 08:09:45,683 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-03 08:09:45,868 [_config.py:<module>:180]
+Custom league dict loaded from /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/league_dict.json.
+
+INFO 2024-07-03 08:11:33,763 [clientserver.py:wait_for_commands:600]
+Received command c on object id p0
+
+INFO 2024-07-03 08:11:46,948 [clientserver.py:wait_for_commands:600]
+Received command c on object id p0
+
+INFO 2024-07-03 08:11:51,254 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-03 08:11:51,340 [_config.py:<module>:180]
+Custom league dict loaded from /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/league_dict.json.
+
+INFO 2024-07-03 08:11:51,938 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:77]
+--- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+
+INFO 2024-07-03 08:11:52,449 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:93]
+Connexion a la base de donnees
+
+INFO 2024-07-03 08:11:52,452 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:94]
+DB_USER: Consultant
+
+INFO 2024-07-03 08:11:52,503 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:104]
+Chargement des donnees de SoFIFA
+
+INFO 2024-07-03 08:11:52,508 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:105]
+use_cache: False
+
+INFO 2024-07-03 08:11:52,511 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:106]
+scrap_all: False
+
+INFO 2024-07-03 08:11:52,514 [sofifa_teams_stats.py:scrap_data_SOFIFA:29]
+Chargement des donnees des equipes big 5 - latest
+
+INFO 2024-07-03 08:11:52,518 [_common.py:__init__:92]
+Saving cached data to /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/data/SoFIFA
+
+INFO 2024-07-03 08:12:21,887 [sofifa.py:read_team_ratings:346]
+[1/5] Retrieving teams for ENG-Premier League in Jun 26, 2024 edition
+
+INFO 2024-07-03 08:12:23,283 [sofifa.py:read_team_ratings:346]
+[2/5] Retrieving teams for ESP-La Liga in Jun 26, 2024 edition
+
+INFO 2024-07-03 08:12:24,638 [sofifa.py:read_team_ratings:346]
+[3/5] Retrieving teams for ITA-Serie A in Jun 26, 2024 edition
+
+INFO 2024-07-03 08:12:26,181 [sofifa.py:read_team_ratings:346]
+[4/5] Retrieving teams for GER-Bundesliga in Jun 26, 2024 edition
+
+INFO 2024-07-03 08:12:27,540 [sofifa.py:read_team_ratings:346]
+[5/5] Retrieving teams for FRA-Ligue 1 in Jun 26, 2024 edition
+
+INFO 2024-07-03 08:12:28,983 [sofifa_teams_stats.py:scrap_data_SOFIFA:29]
+Chargement des donnees des equipes international - latest
+
+INFO 2024-07-03 08:12:28,987 [_common.py:__init__:92]
+Saving cached data to /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/data/SoFIFA
+
+INFO 2024-07-03 08:13:06,176 [sofifa_teams_stats.py:convert_data_types:47]
+Conversion des types de donnees
+
+INFO 2024-07-03 08:13:06,277 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:116]
+Insertion des donnees dans la base de donnees
+
+INFO 2024-07-03 08:13:06,535 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:131]
+Insertion des nouvelles donnees en cours...
+
+INFO 2024-07-03 08:13:06,564 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:145]
+Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+
+INFO 2024-07-03 08:13:06,590 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:154]
+Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+
+
+INFO 2024-07-03 08:16:51,208 [clientserver.py:wait_for_commands:600]
+Received command c on object id p0
+
+INFO 2024-07-03 08:16:55,586 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-03 08:16:55,665 [_config.py:<module>:180]
+Custom league dict loaded from /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/league_dict.json.
+
+INFO 2024-07-03 08:16:55,999 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:77]
+--- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+
+INFO 2024-07-03 08:16:56,492 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:93]
+Connexion a la base de donnees
+
+INFO 2024-07-03 08:16:56,496 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:94]
+DB_USER: Consultant
+
+INFO 2024-07-03 08:16:56,530 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:104]
+Chargement des donnees de SoFIFA
+
+INFO 2024-07-03 08:16:56,533 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:105]
+use_cache: False
+
+INFO 2024-07-03 08:16:56,537 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:106]
+scrap_all: False
+
+INFO 2024-07-03 08:16:56,541 [sofifa_teams_stats.py:scrap_data_SOFIFA:29]
+Chargement des donnees des equipes big 5 - latest
+
+INFO 2024-07-03 08:16:56,545 [_common.py:__init__:92]
+Saving cached data to /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/data/SoFIFA
+
+INFO 2024-07-03 08:17:45,315 [sofifa.py:read_team_ratings:346]
+[1/5] Retrieving teams for ENG-Premier League in Jun 26, 2024 edition
+
+INFO 2024-07-03 08:17:47,660 [sofifa.py:read_team_ratings:346]
+[2/5] Retrieving teams for ESP-La Liga in Jun 26, 2024 edition
+
+INFO 2024-07-03 08:17:49,206 [sofifa.py:read_team_ratings:346]
+[3/5] Retrieving teams for ITA-Serie A in Jun 26, 2024 edition
+
+INFO 2024-07-03 08:17:50,871 [sofifa.py:read_team_ratings:346]
+[4/5] Retrieving teams for GER-Bundesliga in Jun 26, 2024 edition
+
+INFO 2024-07-03 08:17:52,404 [sofifa.py:read_team_ratings:346]
+[5/5] Retrieving teams for FRA-Ligue 1 in Jun 26, 2024 edition
+
+INFO 2024-07-03 08:17:54,037 [sofifa_teams_stats.py:scrap_data_SOFIFA:29]
+Chargement des donnees des equipes international - latest
+
+INFO 2024-07-03 08:17:54,042 [_common.py:__init__:92]
+Saving cached data to /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/data/SoFIFA
+
+INFO 2024-07-03 08:18:28,729 [sofifa_teams_stats.py:convert_data_types:47]
+Conversion des types de donnees
+
+INFO 2024-07-03 08:18:28,815 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:116]
+Insertion des donnees dans la base de donnees
+
+INFO 2024-07-03 08:18:29,063 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:131]
+Insertion des nouvelles donnees en cours...
+
+INFO 2024-07-03 08:18:29,088 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:145]
+Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+
+INFO 2024-07-03 08:18:29,117 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:154]
+Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+
+
+INFO 2024-07-03 12:32:16,783 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-03 12:32:17,080 [_config.py:<module>:180]
+Custom league dict loaded from /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/league_dict.json.
+
+INFO 2024-07-03 12:47:52,383 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-03 12:47:52,623 [_config.py:<module>:180]
+Custom league dict loaded from /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/league_dict.json.
+
+INFO 2024-07-03 12:47:52,657 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-03 12:47:52,751 [_config.py:<module>:180]
+Custom league dict loaded from /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/config/league_dict.json.
+
+INFO 2024-07-03 12:47:52,985 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:86]
+--- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+
+INFO 2024-07-03 12:47:53,258 [fbref_results.py:insert_data_fbref_results_table:103]
+--- Debut de l'insertion des donnees dans la table fbref_results
+
+INFO 2024-07-03 12:47:53,316 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:102]
+Connexion a la base de donnees
+
+INFO 2024-07-03 12:47:53,320 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:103]
+DB_USER: Consultant
+
+INFO 2024-07-03 12:47:53,367 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:113]
+Chargement des donnees de SoFIFA
+
+INFO 2024-07-03 12:47:53,370 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:114]
+use_cache: False
+
+INFO 2024-07-03 12:47:53,374 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:115]
+scrap_all: False
+
+INFO 2024-07-03 12:47:53,378 [sofifa_teams_stats.py:scrap_data_SOFIFA:38]
+Chargement des donnees des equipes big 5 - latest
+
+INFO 2024-07-03 12:47:53,382 [_common.py:__init__:92]
+Saving cached data to /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/data/SoFIFA
+
+INFO 2024-07-03 12:47:53,564 [fbref_results.py:insert_data_fbref_results_table:116]
+Connexion a la base de donnees
+
+INFO 2024-07-03 12:47:53,568 [fbref_results.py:insert_data_fbref_results_table:117]
+DB_USER: Consultant
+
+INFO 2024-07-03 12:47:53,602 [fbref_results.py:insert_data_fbref_results_table:127]
+Chargement des donnees de Fbref
+
+INFO 2024-07-03 12:47:53,605 [fbref_results.py:insert_data_fbref_results_table:128]
+get_current_season_only: True
+
+INFO 2024-07-03 12:47:53,609 [fbref_results.py:insert_data_fbref_results_table:129]
+use_cache: False
+
+INFO 2024-07-03 12:47:53,613 [fbref_results.py:scrap_data_fbref:37]
+Chargement des donnees des matchs INT-World Cup
+
+INFO 2024-07-03 12:47:53,616 [_common.py:__init__:92]
+Saving cached data to /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/data/FBref
+
+INFO 2024-07-03 12:47:53,831 [fbref_results.py:scrap_data_fbref:48]
+Chargement des donnees des matchs INT-European Championships
+
+INFO 2024-07-03 12:47:53,836 [_common.py:__init__:92]
+Saving cached data to /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/data/FBref
+
+INFO 2024-07-03 12:48:18,266 [fbref_results.py:scrap_data_fbref:57]
+Chargement des donnees des matchs Big 5 European Leagues Combined
+
+INFO 2024-07-03 12:48:18,270 [_common.py:__init__:92]
+Saving cached data to /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/data/FBref
+
+INFO 2024-07-03 12:48:25,583 [sofifa.py:read_team_ratings:346]
+[1/5] Retrieving teams for ENG-Premier League in Jun 26, 2024 edition
+
+INFO 2024-07-03 12:48:27,164 [sofifa.py:read_team_ratings:346]
+[2/5] Retrieving teams for ESP-La Liga in Jun 26, 2024 edition
+
+INFO 2024-07-03 12:48:28,976 [sofifa.py:read_team_ratings:346]
+[3/5] Retrieving teams for ITA-Serie A in Jun 26, 2024 edition
+
+INFO 2024-07-03 12:48:30,571 [sofifa.py:read_team_ratings:346]
+[4/5] Retrieving teams for GER-Bundesliga in Jun 26, 2024 edition
+
+INFO 2024-07-03 12:48:32,103 [sofifa.py:read_team_ratings:346]
+[5/5] Retrieving teams for FRA-Ligue 1 in Jun 26, 2024 edition
+
+INFO 2024-07-03 12:48:33,618 [sofifa_teams_stats.py:scrap_data_SOFIFA:38]
+Chargement des donnees des equipes international - latest
+
+INFO 2024-07-03 12:48:33,622 [_common.py:__init__:92]
+Saving cached data to /Workspace/Users/jdelavande@beijafloregraphene.onmicrosoft.com/optim-sportbet/src/soccerdata/data/SoFIFA
+
+INFO 2024-07-03 12:49:08,200 [sofifa_teams_stats.py:convert_data_types:56]
+Conversion des types de donnees
+
+INFO 2024-07-03 12:49:08,312 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:125]
+Insertion des donnees dans la base de donnees
+
+INFO 2024-07-03 12:49:08,579 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:140]
+Insertion des nouvelles donnees en cours...
+
+INFO 2024-07-03 12:49:08,610 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:154]
+Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+
+INFO 2024-07-03 12:49:08,642 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:163]
+Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+
+
+INFO 2024-07-03 12:49:45,230 [fbref_results.py:convert_data_types_fbref:78]
+Conversion des types de donnees
+
+INFO 2024-07-03 12:49:45,246 [fbref_results.py:insert_data_fbref_results_table:138]
+Insertion des donnees dans la base de donnees
+
+INFO 2024-07-03 12:49:45,701 [fbref_results.py:insert_data_fbref_results_table:154]
+Insertion des nouvelles donnees en cours...
+
+INFO 2024-07-03 12:49:45,794 [fbref_results.py:insert_data_fbref_results_table:168]
+Insertion des nouvelles donnees terminee avec succes, 4 nouvelles lignes inserees
+
+INFO 2024-07-03 12:49:45,832 [fbref_results.py:insert_data_fbref_results_table:177]
+Fin de l'insertion des donnees dans la table fbref_results
+
+
+

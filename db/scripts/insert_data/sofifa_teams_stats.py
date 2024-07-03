@@ -14,7 +14,16 @@ LOG_FOLDER = "logs/"
 LOG_FILE_NAME = "SOFIFA_teams_stats_table.log"
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
-filename = Path(__file__).resolve().parents[2] / LOG_FOLDER / LOG_FILE_NAME
+try:
+    root_path = Path(__file__).resolve().parents[2]
+    print(f'__file__ root file: {root_path}')
+except NameError:
+    root_path = Path(os.getcwd()).resolve().parents[1]
+    print(f'os.getcwd() root file: {root_path}')
+
+#print(f'__main__ {__main__})
+
+filename = root_path / LOG_FOLDER / LOG_FILE_NAME
 logger = logging.getLogger("SOFIFA_teams_stats_table__loger")
 file_handler = logging.FileHandler(filename)
 file_handler.setLevel(logging.INFO)
@@ -153,14 +162,14 @@ def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
     
     logger.info("Fin de l'insertion des donnees dans la table SOFIFA teams stats\n\n")
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Insert SOFIFA teams stats into the database.')
-    parser.add_argument('--use_cache', type=bool, default=False, help='Use cache for the latest data')
-    parser.add_argument('--scrap_all', type=bool, default=False, help='Scrap all data versions')
+#if __name__ == "__main__":
+parser = argparse.ArgumentParser(description='Insert SOFIFA teams stats into the database.')
+parser.add_argument('--use_cache', type=bool, default=False, help='Use cache for the latest data')
+parser.add_argument('--scrap_all', type=bool, default=False, help='Scrap all data versions')
 
-    args = parser.parse_args()
-    use_cache = args.use_cache
-    scrap_all = args.scrap_all
+args = parser.parse_args()
+use_cache = args.use_cache
+scrap_all = args.scrap_all
 
-    insert_data_SOFIFA_teams_stats_table(use_cache=use_cache, scrap_all=scrap_all)
+insert_data_SOFIFA_teams_stats_table(use_cache=use_cache, scrap_all=scrap_all)
     

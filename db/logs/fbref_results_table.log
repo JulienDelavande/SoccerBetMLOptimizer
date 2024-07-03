@@ -265,3 +265,42 @@ LINE 5:             ON CONFLICT index DO UPDATE SET index = EXCLUDED...
 2024-07-02 14:47:47,782 - fbref_results_table__loger - INFO - Fin de l'insertion des donnees dans la table fbref_results
 
 
+2024-07-03 06:32:56,802 - fbref_results_table__loger - INFO - --- Debut de l'insertion des donnees dans la table fbref_results
+2024-07-03 06:32:57,110 - fbref_results_table__loger - INFO - Connexion a la base de donnees
+2024-07-03 06:32:57,113 - fbref_results_table__loger - INFO - DB_USER: Consultant
+2024-07-03 06:32:57,145 - fbref_results_table__loger - INFO - Chargement des donnees de Fbref
+2024-07-03 06:32:57,147 - fbref_results_table__loger - INFO - get_current_season_only: True
+2024-07-03 06:32:57,148 - fbref_results_table__loger - INFO - use_cache: False
+2024-07-03 06:32:57,149 - fbref_results_table__loger - INFO - Chargement des donnees des matchs INT-World Cup
+2024-07-03 06:32:57,155 - fbref_results_table__loger - INFO - Chargement des donnees des matchs INT-European Championships
+2024-07-03 06:32:57,157 - fbref_results_table__loger - ERROR - Erreur lors du chargement des donnees des matchs fbref: 
+                        Invalid league 'INT-European Championships'. Valid leagues are:
+                        ['Big 5 European Leagues Combined',
+ 'ENG-Premier League',
+ 'ESP-La Liga',
+ 'FRA-Ligue 1',
+ 'GER-Bundesliga',
+ "INT-Women's World Cup",
+ 'INT-World Cup',
+ 'ITA-Serie A']
+                        
+2024-07-03 06:32:57,159 - fbref_results_table__loger - INFO - Conversion des types de donnees
+2024-07-03 06:32:57,160 - fbref_results_table__loger - ERROR - Erreur lors de la conversion des types de donnees: 'NoneType' object has no attribute 'reset_index'
+2024-07-03 06:32:57,162 - fbref_results_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-07-03 06:32:57,325 - fbref_results_table__loger - ERROR - Erreur lors de l'insertion des donnees: 'NoneType' object has no attribute 'to_sql'
+2024-07-03 12:47:53,258 - fbref_results_table__loger - INFO - --- Debut de l'insertion des donnees dans la table fbref_results
+2024-07-03 12:47:53,564 - fbref_results_table__loger - INFO - Connexion a la base de donnees
+2024-07-03 12:47:53,568 - fbref_results_table__loger - INFO - DB_USER: Consultant
+2024-07-03 12:47:53,602 - fbref_results_table__loger - INFO - Chargement des donnees de Fbref
+2024-07-03 12:47:53,605 - fbref_results_table__loger - INFO - get_current_season_only: True
+2024-07-03 12:47:53,609 - fbref_results_table__loger - INFO - use_cache: False
+2024-07-03 12:47:53,613 - fbref_results_table__loger - INFO - Chargement des donnees des matchs INT-World Cup
+2024-07-03 12:47:53,831 - fbref_results_table__loger - INFO - Chargement des donnees des matchs INT-European Championships
+2024-07-03 12:48:18,266 - fbref_results_table__loger - INFO - Chargement des donnees des matchs Big 5 European Leagues Combined
+2024-07-03 12:49:45,230 - fbref_results_table__loger - INFO - Conversion des types de donnees
+2024-07-03 12:49:45,246 - fbref_results_table__loger - INFO - Insertion des donnees dans la base de donnees
+2024-07-03 12:49:45,701 - fbref_results_table__loger - INFO - Insertion des nouvelles donnees en cours...
+2024-07-03 12:49:45,794 - fbref_results_table__loger - INFO - Insertion des nouvelles donnees terminee avec succes, 4 nouvelles lignes inserees
+2024-07-03 12:49:45,832 - fbref_results_table__loger - INFO - Fin de l'insertion des donnees dans la table fbref_results
+
+
