@@ -180,3 +180,48 @@
 2024-07-02 15:09:52,673 - __main__ - INFO - Pipeline executed successfully in 36.399246 seconds 
 
 
+2024-07-03 08:51:48,485 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-03 08:51:48,486 - __main__ - INFO - Starting the inference pipeline
+2024-07-03 08:51:48,752 - __main__ - INFO - Environment variables loaded successfully
+2024-07-03 08:51:48,951 - __main__ - INFO - Database connection established
+2024-07-03 08:51:50,662 - __main__ - INFO - Data retrieved from database successfully in 1.8728654384613037 seconds
+2024-07-03 08:52:09,517 - __main__ - INFO - Data processing completed successfully in 18.84579825401306 seconds
+2024-07-03 08:52:09,621 - __main__ - INFO - Model training and inference completed successfully completed in 0.0907449722290039 seconds, accuray on train test :     metrics    values
+0  mse_home  1.487967
+1  mse_away  1.213684
+2   r2_home  0.123186
+3   r2_away  0.095775
+2024-07-03 08:52:09,675 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.04875922203063965 seconds
+2024-07-03 08:52:09,768 - __main__ - INFO - Pipeline executed successfully in 21.282204 seconds 
+
+
+2024-07-03 08:53:11,339 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-03 08:53:11,339 - __main__ - INFO - Starting the inference pipeline
+2024-07-03 08:53:11,638 - __main__ - INFO - Environment variables loaded successfully
+2024-07-03 08:53:11,828 - __main__ - INFO - Database connection established
+2024-07-03 08:53:13,483 - __main__ - INFO - Data retrieved from database successfully in 1.8156275749206543 seconds
+2024-07-03 08:53:32,144 - __main__ - INFO - Data processing completed successfully in 18.65146279335022 seconds
+2024-07-03 08:53:32,233 - __main__ - INFO - Model training and inference completed successfully completed in 0.0758657455444336 seconds, accuray on train test :     metrics    values
+0  mse_home  1.487967
+1  mse_away  1.213684
+2   r2_home  0.123186
+3   r2_away  0.095775
+2024-07-03 08:53:32,287 - __main__ - INFO - 2 results inserted into the database successfully, completed in 0.05273628234863281 seconds
+2024-07-03 08:53:32,379 - __main__ - INFO - Pipeline executed successfully in 21.040448 seconds 
+
+
+2024-07-03 12:49:59,835 - root - INFO - -- Starting the RFS_PR_LR pipeline --
+2024-07-03 12:49:59,836 - __main__ - INFO - Starting the inference pipeline
+2024-07-03 12:50:00,346 - __main__ - INFO - Environment variables loaded successfully
+2024-07-03 12:50:00,568 - __main__ - INFO - Database connection established
+2024-07-03 12:50:02,517 - __main__ - INFO - Data retrieved from database successfully in 2.135995388031006 seconds
+2024-07-03 12:50:22,423 - __main__ - INFO - Data processing completed successfully in 19.89565944671631 seconds
+2024-07-03 12:50:22,625 - __main__ - INFO - Model training and inference completed successfully completed in 0.18215084075927734 seconds, accuray on train test :     metrics    values
+0  mse_home  1.487974
+1  mse_away  1.213654
+2   r2_home  0.123156
+3   r2_away  0.095831
+2024-07-03 12:50:22,683 - __main__ - INFO - 4 results inserted into the database successfully, completed in 0.0579218864440918 seconds
+2024-07-03 12:50:22,816 - __main__ - INFO - Pipeline executed successfully in 22.980519 seconds 
+
+
