@@ -277,3 +277,6 @@ LINE 5:             ON CONFLICT index DO UPDATE SET index = EXCLUDED...
 2024-07-04 16:35:16,623 - fbref_results_table__loger - INFO - Chargement des donnees des matchs INT-World Cup
 2024-07-04 16:35:16,693 - fbref_results_table__loger - INFO - Chargement des donnees des matchs INT-European Championships
 2024-07-04 16:35:20,195 - fbref_results_table__loger - INFO - Chargement des donnees des matchs Big 5 European Leagues Combined
+2024-07-04 16:43:33,008 - fbref_results_table__loger - INFO - Chargement des donnees des matchs INT-World Cup
+2024-07-04 16:43:33,111 - fbref_results_table__loger - INFO - Chargement des donnees des matchs INT-European Championships
+2024-07-04 16:43:36,900 - fbref_results_table__loger - INFO - Chargement des donnees des matchs Big 5 European Leagues Combined
