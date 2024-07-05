@@ -9,8 +9,8 @@ import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
-from utils.test_model_and_infer import test_model_and_infer
-from utils.insert_results_to_db import insert_results_to_db
+from .utils.test_model_and_infer import test_model_and_infer
+from .utils.insert_results_to_db import insert_results_to_db
 from feature_eng.format_df import merge_sofifa_fbref_results, format_sofifa_fbref_data, add_signals
 
 #### LOGGING ####
