@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pandas
+sqlalchemy
+python-dotenv
+unidecode
+cloudscraper
+selenium
+undetected_chromedriver
+packaging
+lxml
+psycopg2-binary

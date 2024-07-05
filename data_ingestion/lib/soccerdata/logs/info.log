@@ -1,0 +1,212 @@
+INFO 2024-07-04 14:48:41,078 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in lib/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-04 14:48:41,128 [_config.py:<module>:180]
+Custom league dict loaded from lib/soccerdata/config/league_dict.json.
+
+INFO 2024-07-04 14:49:31,499 [fbref_results.py:scrap_data_fbref:37]
+Chargement des donnees des matchs INT-World Cup
+
+INFO 2024-07-04 14:49:31,505 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 14:49:31,559 [fbref_results.py:scrap_data_fbref:48]
+Chargement des donnees des matchs INT-European Championships
+
+INFO 2024-07-04 14:49:31,570 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 14:49:44,637 [fbref_results.py:scrap_data_fbref:57]
+Chargement des donnees des matchs Big 5 European Leagues Combined
+
+INFO 2024-07-04 14:49:44,643 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 14:58:21,871 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in lib/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-04 14:58:21,883 [_config.py:<module>:180]
+Custom league dict loaded from lib/soccerdata/config/league_dict.json.
+
+INFO 2024-07-04 14:59:47,850 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:77]
+--- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+
+INFO 2024-07-04 14:59:47,882 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:93]
+Connexion a la base de donnees
+
+INFO 2024-07-04 14:59:47,890 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:94]
+DB_USER: Consultant
+
+ERROR 2024-07-04 14:59:47,945 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:99]
+Erreur lors de la connexion à la base de donnees: No module named 'psycopg2'
+
+INFO 2024-07-04 15:00:24,758 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:77]
+--- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+
+INFO 2024-07-04 15:00:24,786 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:93]
+Connexion a la base de donnees
+
+INFO 2024-07-04 15:00:24,792 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:94]
+DB_USER: Consultant
+
+ERROR 2024-07-04 15:00:24,807 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:99]
+Erreur lors de la connexion à la base de donnees: No module named 'psycopg2'
+
+INFO 2024-07-04 15:05:53,632 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in lib/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-04 15:05:53,658 [_config.py:<module>:180]
+Custom league dict loaded from lib/soccerdata/config/league_dict.json.
+
+INFO 2024-07-04 15:08:48,579 [fbref_results.py:scrap_data_fbref:37]
+Chargement des donnees des matchs INT-World Cup
+
+INFO 2024-07-04 15:08:48,589 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 15:08:48,684 [fbref_results.py:scrap_data_fbref:48]
+Chargement des donnees des matchs INT-European Championships
+
+INFO 2024-07-04 15:08:48,695 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 15:08:52,525 [fbref_results.py:scrap_data_fbref:57]
+Chargement des donnees des matchs Big 5 European Leagues Combined
+
+INFO 2024-07-04 15:08:52,537 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 16:34:13,255 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in lib/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-04 16:34:13,276 [_config.py:<module>:180]
+Custom league dict loaded from lib/soccerdata/config/league_dict.json.
+
+INFO 2024-07-04 16:35:16,623 [fbref_results.py:scrap_data_fbref:37]
+Chargement des donnees des matchs INT-World Cup
+
+INFO 2024-07-04 16:35:16,633 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 16:35:16,693 [fbref_results.py:scrap_data_fbref:48]
+Chargement des donnees des matchs INT-European Championships
+
+INFO 2024-07-04 16:35:16,698 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 16:35:20,195 [fbref_results.py:scrap_data_fbref:57]
+Chargement des donnees des matchs Big 5 European Leagues Combined
+
+INFO 2024-07-04 16:35:20,200 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 16:35:51,794 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:77]
+--- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+
+INFO 2024-07-04 16:35:51,833 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:93]
+Connexion a la base de donnees
+
+INFO 2024-07-04 16:35:51,844 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:94]
+DB_USER: Consultant
+
+ERROR 2024-07-04 16:35:51,942 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:99]
+Erreur lors de la connexion à la base de donnees: No module named 'psycopg2'
+
+INFO 2024-07-04 16:38:03,103 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:77]
+--- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+
+INFO 2024-07-04 16:38:03,133 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:93]
+Connexion a la base de donnees
+
+INFO 2024-07-04 16:38:03,137 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:94]
+DB_USER: Consultant
+
+ERROR 2024-07-04 16:38:03,144 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:99]
+Erreur lors de la connexion à la base de donnees: No module named 'psycopg2'
+
+INFO 2024-07-04 16:42:45,284 [_config.py:<module>:87]
+No custom team name replacements found. You can configure these in lib/soccerdata/config/teamname_replacements.json.
+
+INFO 2024-07-04 16:42:45,301 [_config.py:<module>:180]
+Custom league dict loaded from lib/soccerdata/config/league_dict.json.
+
+INFO 2024-07-04 16:43:33,008 [fbref_results.py:scrap_data_fbref:37]
+Chargement des donnees des matchs INT-World Cup
+
+INFO 2024-07-04 16:43:33,015 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 16:43:33,111 [fbref_results.py:scrap_data_fbref:48]
+Chargement des donnees des matchs INT-European Championships
+
+INFO 2024-07-04 16:43:33,120 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 16:43:36,900 [fbref_results.py:scrap_data_fbref:57]
+Chargement des donnees des matchs Big 5 European Leagues Combined
+
+INFO 2024-07-04 16:43:36,906 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/FBref
+
+INFO 2024-07-04 16:43:51,399 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:77]
+--- Debut de l'insertion des donnees dans la table SOFIFA teams stats
+
+INFO 2024-07-04 16:43:51,437 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:93]
+Connexion a la base de donnees
+
+INFO 2024-07-04 16:43:51,444 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:94]
+DB_USER: Consultant
+
+INFO 2024-07-04 16:43:51,602 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:104]
+Chargement des donnees de SoFIFA
+
+INFO 2024-07-04 16:43:51,606 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:105]
+use_cache: False
+
+INFO 2024-07-04 16:43:51,613 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:106]
+scrap_all: False
+
+INFO 2024-07-04 16:43:51,618 [sofifa_teams_stats.py:scrap_data_SOFIFA:29]
+Chargement des donnees des equipes big 5 - latest
+
+INFO 2024-07-04 16:43:51,624 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/SoFIFA
+
+INFO 2024-07-04 16:44:27,415 [sofifa.py:read_team_ratings:346]
+[1/5] Retrieving teams for ENG-Premier League in Jun 26, 2024 edition
+
+INFO 2024-07-04 16:44:28,616 [sofifa.py:read_team_ratings:346]
+[2/5] Retrieving teams for ESP-La Liga in Jun 26, 2024 edition
+
+INFO 2024-07-04 16:44:29,833 [sofifa.py:read_team_ratings:346]
+[3/5] Retrieving teams for ITA-Serie A in Jun 26, 2024 edition
+
+INFO 2024-07-04 16:44:31,056 [sofifa.py:read_team_ratings:346]
+[4/5] Retrieving teams for GER-Bundesliga in Jun 26, 2024 edition
+
+INFO 2024-07-04 16:44:32,269 [sofifa.py:read_team_ratings:346]
+[5/5] Retrieving teams for FRA-Ligue 1 in Jun 26, 2024 edition
+
+INFO 2024-07-04 16:44:33,489 [sofifa_teams_stats.py:scrap_data_SOFIFA:29]
+Chargement des donnees des equipes international - latest
+
+INFO 2024-07-04 16:44:33,495 [_common.py:__init__:92]
+Saving cached data to lib/soccerdata/data/SoFIFA
+
+INFO 2024-07-04 16:44:59,360 [sofifa_teams_stats.py:convert_data_types:47]
+Conversion des types de donnees
+
+INFO 2024-07-04 16:44:59,378 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:116]
+Insertion des donnees dans la base de donnees
+
+INFO 2024-07-04 16:44:59,665 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:131]
+Insertion des nouvelles donnees en cours...
+
+INFO 2024-07-04 16:44:59,698 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:145]
+Insertion des nouvelles donnees terminee avec succes, 0 nouvelles lignes inserees
+
+INFO 2024-07-04 16:44:59,738 [sofifa_teams_stats.py:insert_data_SOFIFA_teams_stats_table:154]
+Fin de l'insertion des donnees dans la table SOFIFA teams stats
+
+
+
