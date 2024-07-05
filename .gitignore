@@ -6,5 +6,4 @@
 __pycache__/
 
 *.pyc
-/*.eeg-info/**
-optibet_lib.egg-info/**
+*.egg-info/
