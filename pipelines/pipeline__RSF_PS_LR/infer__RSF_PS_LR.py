@@ -9,8 +9,8 @@ import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
-from utils.test_model_and_infer import test_model_and_infer
-from utils.insert_results_to_db import insert_results_to_db
+from .utils.test_model_and_infer import test_model_and_infer
+from .utils.insert_results_to_db import insert_results_to_db
 from feature_eng.format_df import merge_sofifa_fbref_results, format_sofifa_fbref_data, add_signals
 
 #### LOGGING ####
@@ -23,7 +23,7 @@ filename = Path(__file__).resolve().parents[1] / LOG_FOLDER / LOG_FILE_NAME
 logging.basicConfig(filename=filename, level=logging.DEBUG, format=LOG_FORMAT)
 logger = logging.getLogger(__name__)
 
-def infer__RSF_PR_LR__pipeline(date_stop=None):
+def infer__RSF_PS_LR__pipeline(date_stop=None):
     logger.info("Starting the inference pipeline")
     
 
@@ -121,7 +121,7 @@ if __name__ == "__main__":
             raise
 
     try:
-        metrics_train_set, fbref_results_df__sofifa_merged__data_formated__signals_added__infered = infer__RSF_PR_LR__pipeline(date_stop=date_stop)
+        metrics_train_set, fbref_results_df__sofifa_merged__data_formated__signals_added__infered = infer__RSF_PS_LR__pipeline(date_stop=date_stop)
         end_time = time.time()
         duration = end_time - start_time
         logger.info(f"Pipeline executed successfully in {duration:2f} seconds \n\n")
