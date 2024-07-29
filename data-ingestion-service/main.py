@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 
 from app.insert_data.fbref_results import scrap_data_fbref
 from app.insert_data.sofifa_teams_stats import insert_data_SOFIFA_teams_stats_table
+from app.insert_data.the_odds_api_odds import ingest_odds_the_odds_api
+import app._config
 
 
 app = FastAPI()
@@ -22,6 +24,14 @@ def insert_data_fbref_results_table(get_current_season_only: bool = True, use_ca
 def insert_data_fbref_results_table():
     try:
         insert_data_SOFIFA_teams_stats_table()
+        return {"status": "success"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/the_odds_api/odds")
+def insert_data_the_odds_api_odds():
+    try:
+        ingest_odds_the_odds_api()
         return {"status": "success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

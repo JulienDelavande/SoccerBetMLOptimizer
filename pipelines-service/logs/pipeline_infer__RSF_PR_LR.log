@@ -1550,3 +1550,72 @@ server closed the connection unexpectedly
 31            ECE_draw  0.034035
 32            ECE_away  0.030252
 2024-07-08 15:20:18,391 - pipelines.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - 2 results inserted into the database successfully, completed in 0.19204092025756836 seconds
+2024-07-09 16:13:33,780 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Starting the inference pipeline
+2024-07-09 16:13:33,801 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Environment variables loaded successfully
+2024-07-09 16:13:33,827 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): mlflow:5000
+2024-07-09 16:13:33,834 - urllib3.connectionpool - DEBUG - http://mlflow:5000 "POST /api/2.0/mlflow/experiments/create HTTP/11" 200 43
+2024-07-09 16:13:55,100 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - ERROR - Error retrieving data from the database: (psycopg2.OperationalError) connection to server at "soccerodds-psql-db.postgres.database.azure.com" (4.233.83.213), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2024-07-09 16:14:56,447 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Starting the inference pipeline
+2024-07-09 16:14:56,466 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Environment variables loaded successfully
+2024-07-09 16:14:56,473 - urllib3.connectionpool - DEBUG - Resetting dropped connection: mlflow
+2024-07-09 16:14:56,487 - urllib3.connectionpool - DEBUG - http://mlflow:5000 "POST /api/2.0/mlflow/experiments/create HTTP/11" 400 94
+2024-07-09 16:15:04,037 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Starting the inference pipeline
+2024-07-09 16:15:04,058 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Environment variables loaded successfully
+2024-07-09 16:15:04,067 - urllib3.connectionpool - DEBUG - Resetting dropped connection: mlflow
+2024-07-09 16:15:04,072 - urllib3.connectionpool - DEBUG - http://mlflow:5000 "POST /api/2.0/mlflow/experiments/create HTTP/11" 400 94
+2024-07-09 16:19:32,473 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Starting the inference pipeline
+2024-07-09 16:19:32,482 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Environment variables loaded successfully
+2024-07-09 16:26:35,480 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Starting the inference pipeline
+2024-07-09 16:26:35,494 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Environment variables loaded successfully
+2024-07-09 16:26:35,506 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): mlflow:5000
+2024-07-09 16:26:35,509 - urllib3.connectionpool - DEBUG - http://mlflow:5000 "GET /api/2.0/mlflow/experiments/get-by-name?experiment_name=RSF_PR_LR HTTP/11" 404 103
+2024-07-09 16:26:37,447 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Database connection established
+2024-07-09 16:26:49,180 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Data retrieved from database successfully in 13.618951797485352 seconds
+2024-07-09 16:27:16,944 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Data processing completed successfully in 27.51869797706604 seconds
+2024-07-09 16:27:16,983 - git.cmd - DEBUG - Popen(['git', 'version'], cwd=/pipelines-service, stdin=None, shell=False, universal_newlines=False)
+2024-07-09 16:27:16,999 - urllib3.connectionpool - DEBUG - Resetting dropped connection: mlflow
+2024-07-09 16:27:17,008 - urllib3.connectionpool - DEBUG - http://mlflow:5000 "POST /api/2.0/mlflow/runs/create HTTP/11" 200 851
+2024-07-09 16:27:21,888 - urllib3.connectionpool - DEBUG - Resetting dropped connection: mlflow
+2024-07-09 16:27:21,905 - urllib3.connectionpool - DEBUG - http://mlflow:5000 "POST /api/2.0/mlflow/runs/log-batch HTTP/11" 200 2
+2024-07-09 16:27:21,918 - urllib3.connectionpool - DEBUG - Resetting dropped connection: mlflow
+2024-07-09 16:27:21,922 - urllib3.connectionpool - DEBUG - http://mlflow:5000 "POST /api/2.0/mlflow/runs/log-parameter HTTP/11" 200 2
+2024-07-09 16:27:21,946 - urllib3.connectionpool - DEBUG - Resetting dropped connection: mlflow
+2024-07-09 16:27:21,952 - urllib3.connectionpool - DEBUG - http://mlflow:5000 "POST /api/2.0/mlflow/runs/update HTTP/11" 200 421
+2024-07-09 16:27:21,959 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - Model training and inference completed successfully completed in 5.008488893508911 seconds, accuray on train test :                metrics    values
+0             accuracy  0.525046
+1    weighted_accuracy  0.668318
+2        accuracy_home  0.598527
+3        accuracy_draw  0.740700
+4        accuracy_away  0.710866
+5           recall_all  1.349842
+6      weighted_recall  0.525046
+7    balanced_accuracy  0.449947
+8          recall_home  0.834333
+9          recall_draw  0.000000
+10         recall_away  0.515509
+11       precision_all  0.347066
+12  weighted_precision  0.388433
+13      precision_home  0.529323
+14      precision_draw  0.000000
+15      precision_away  0.511873
+16        f_mesure_all  0.386872
+17   f_mesure_weighted  0.441356
+18       f_mesure_home  0.647567
+19       f_mesure_draw  0.000000
+20       f_mesure_away  0.513049
+21            log_loss  0.988853
+22           loss_home  0.304124
+23           loss_draw  0.369535
+24           loss_away  0.315193
+25                 mse  0.196084
+26            mse_home  0.214847
+27            mse_draw  0.190929
+28            mse_away  0.182478
+29       classwise_ECE  0.034784
+30            ECE_home  0.040334
+31            ECE_draw  0.034334
+32            ECE_away  0.029683
+2024-07-09 16:27:22,508 - app.pipeline__RSF_PR_LR.infer__RSF_PR_LR - INFO - 1 results inserted into the database successfully, completed in 0.5485124588012695 seconds

@@ -1,26 +1,16 @@
 import soccerdata as sd
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 import pandas as pd
-from dotenv import load_dotenv
-import os
 import logging
 import argparse
-import sys
-from pathlib import Path
+from app._config import DB_TN_SOFIFA_TEAMS_STATS
+from app._config import engine
 
-
-#### LOGGING ####
-LOG_FOLDER = "logs/"
-LOG_FILE_NAME = "SOFIFA_teams_stats_table.log"
-LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-
-filename = Path(__file__).resolve().parents[2] / LOG_FOLDER / LOG_FILE_NAME
-logger = logging.getLogger("SOFIFA_teams_stats_table__loger")
-file_handler = logging.FileHandler(filename)
-file_handler.setLevel(logging.INFO)
-formatter = logging.Formatter(LOG_FORMAT)
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+#### VARIABLES ####
+KEY_1 = 'team'
+KEY_2 = 'update'
+DN_TN_TEMP_TABLE = 'temp_table'
+logger = logging.getLogger("fbref_results")
 
 
 def scrap_data_SOFIFA(teams='big 5', use_cache=False, scrap_all=False, KEY_1='team', KEY_2='update'):
@@ -75,30 +65,7 @@ def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
     """Inserer les donnees des equipes de SoFIFA dans la table SOFIFA teams stats"""
 
     logger.info("--- Debut de l'insertion des donnees dans la table SOFIFA teams stats")
-
-    #### VARIABLES ####
-    load_dotenv()
-    DB_USER = os.getenv("DB_USER")
-    DB_PASSWORD = os.getenv('DB_PASSWORD')
-    DB_HOST = os.getenv('DB_HOST')
-    DB_PORT = os.getenv('DB_PORT')
-    DB_NAME = os.getenv('DB_NAME')
-    DB_TN_SOFIFA_TEAMS_STATS = os.getenv('DB_TN_SOFIFA_TEAMS_STATS')
-    KEY_1 = 'team'
-    KEY_2 = 'update'
-    DN_TN_TEMP_TABLE = 'temp_table'
-
-
-    #### CONNECTION A LA BASE DE DONNEES ####
-    logger.info("Connexion a la base de donnees")
-    logger.info(f"DB_USER: {DB_USER}")
-    try:
-        connection_url = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-        engine = create_engine(connection_url)
-    except Exception as e:
-        logger.error(f"Erreur lors de la connexion à la base de donnees: {e}")
-        return
-
+    
 
     #### SCRAPPING SOFIFA TEAMS DATA ####
     logger.info("Chargement des donnees de SoFIFA")

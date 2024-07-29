@@ -1,51 +1,35 @@
-import os
 import logging
 import argparse
 import datetime
-from pathlib import Path
 import time
 
 import pandas as pd
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
+import mlflow
 
 from .utils.test_model_and_infer import test_model_and_infer
 from .utils.insert_results_to_db import insert_results_to_db
 from feature_eng.format_df import merge_sofifa_fbref_results, format_sofifa_fbref_data, add_signals
+from app._config import DB_TN_FBREF_RESULTS, DB_TN_SOFIFA_TEAMS_STATS, DB_TN_MODELS_RESULTS, MLFLOW_TRACKING_URI
+from app._config import engine
 
-#### LOGGING ####
-LOG_FOLDER = "logs/"
-LOG_FILE_NAME = "pipeline_infer__RSF_PR_PS.log"
-LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
-filename = Path(__file__).resolve().parents[2] / LOG_FOLDER / LOG_FILE_NAME
+#### settings ####
+MLFLOW_EXPERIMENT_NAME = "RSF_PS_LR"
+logger = logging.getLogger("RSF_PS_LR")
 
-logging.basicConfig(filename=filename, level=logging.DEBUG, format=LOG_FORMAT)
-logger = logging.getLogger(__name__)
 
 def infer__RSF_PS_LR__pipeline(date_stop=None):
+    start_pipeline = time.time()
     logger.info("Starting the inference pipeline")
-    
-
-    #### Load env var ####
-    load_dotenv()
-    DB_USER = os.getenv('DB_USER')
-    DB_PASSWORD = os.getenv('DB_PASSWORD')
-    DB_HOST = os.getenv('DB_HOST')
-    DB_PORT = os.getenv('DB_PORT')
-    DB_NAME = os.getenv('DB_NAME')
-
-    DB_TN_FBREF_RESULTS = os.getenv('DB_TN_FBREF_RESULTS')
-    DB_TN_SOFIFA_TEAMS_STATS = os.getenv('DB_TN_SOFIFA_TEAMS_STATS')
-    DB_TN_MODELS_RESULTS = os.getenv('DB_TN_MODELS_RESULTS')
-
-    logger.info("Environment variables loaded successfully")
-
+        
+    #### MLflow setup ####
+    mlflow.set_tracking_uri(uri=MLFLOW_TRACKING_URI)
+    if not mlflow.get_experiment_by_name(MLFLOW_EXPERIMENT_NAME):
+        mlflow.create_experiment(MLFLOW_EXPERIMENT_NAME)
+    mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
 
     #### Connection to the database and retrieve data ####
-    connection_url = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-    engine = create_engine(connection_url)
-
     start_data_retrieval = time.time()
     try:
         with engine.connect() as connection:
@@ -76,14 +60,18 @@ def infer__RSF_PS_LR__pipeline(date_stop=None):
     except Exception as e:
         logger.error(f"Error during data processing: {e}")
         raise
+    
 
     #### Train and test the model and infer the results ####
     start_train_test_inference = time.time()
     try:
-        metrics_train_set, fbref_results_df__sofifa_merged__data_formated__signals_added__infered = test_model_and_infer(
-            fbref_results_df__sofifa_merged__data_formated__signals_added__train, 
-            fbref_results_df__sofifa_merged__data_formated__signals_added__infer
-        )
+        with mlflow.start_run():
+            metrics_train_set, fbref_results_df__sofifa_merged__data_formated__signals_added__infered = test_model_and_infer(
+                fbref_results_df__sofifa_merged__data_formated__signals_added__train, 
+                fbref_results_df__sofifa_merged__data_formated__signals_added__infer
+            )
+            mlflow.log_metrics({metric['metrics']: metric['values'] for metric in metrics_train_set.to_dict('records')})
+            mlflow.log_param("date_stop", str(date_stop))
         logger.info(f"Model training and inference completed successfully completed in {time.time() - start_train_test_inference} seconds, accuray on train test : {metrics_train_set}")
     except Exception as e:
         logger.error(f"Error during model training and inference: {e}")
@@ -99,7 +87,7 @@ def infer__RSF_PS_LR__pipeline(date_stop=None):
     except Exception as e:
         logger.error(f"Error inserting results into the database: {e}")
         raise
-    
+    logger.info(f"Pipeline completed in {time.time() - start_pipeline} seconds")
     return metrics_train_set, fbref_results_df__sofifa_merged__data_formated__signals_added__infered
 
 

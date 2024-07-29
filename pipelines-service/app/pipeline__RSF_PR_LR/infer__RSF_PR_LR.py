@@ -2,12 +2,10 @@ import os
 import logging
 import argparse
 import datetime
-from pathlib import Path
 import time
 
 import pandas as pd
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 
 import mlflow
 import mlflow.sklearn
@@ -15,39 +13,26 @@ import mlflow.sklearn
 from .utils.test_model_and_infer import test_model_and_infer
 from .utils.insert_results_to_db import insert_results_to_db
 from feature_eng.format_df import merge_sofifa_fbref_results, format_sofifa_fbref_data, add_signals
+from app._config import DB_TN_FBREF_RESULTS, DB_TN_SOFIFA_TEAMS_STATS, DB_TN_MODELS_RESULTS, MLFLOW_TRACKING_URI
+from app._config import engine
 
-#### LOGGING ####
-LOG_FOLDER = "logs/"
-LOG_FILE_NAME = "pipeline_infer__RSF_PR_LR.log"
-LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
-filename = Path(__file__).resolve().parents[2] / LOG_FOLDER / LOG_FILE_NAME
-
-logging.basicConfig(filename=filename, level=logging.DEBUG, format=LOG_FORMAT)
-logger = logging.getLogger(__name__)
+#### settings ####
+MLFLOW_EXPERIMENT_NAME = "RSF_PR_LR"
+logger = logging.getLogger("RSF_PR_LR")
 
 def infer__RSF_PR_LR__pipeline(date_stop=None):
+    start_pipeline = time.time()
     logger.info("Starting the inference pipeline")
-    
 
-    #### Load env var ####
-    load_dotenv()
-    DB_USER = os.getenv('DB_USER')
-    DB_PASSWORD = os.getenv('DB_PASSWORD')
-    DB_HOST = os.getenv('DB_HOST')
-    DB_PORT = os.getenv('DB_PORT')
-    DB_NAME = os.getenv('DB_NAME')
-
-    DB_TN_FBREF_RESULTS = os.getenv('DB_TN_FBREF_RESULTS')
-    DB_TN_SOFIFA_TEAMS_STATS = os.getenv('DB_TN_SOFIFA_TEAMS_STATS')
-    DB_TN_MODELS_RESULTS = os.getenv('DB_TN_MODELS_RESULTS')
-
-    logger.info("Environment variables loaded successfully")
+    #### MLflow setup ####
+    mlflow.set_tracking_uri(uri=MLFLOW_TRACKING_URI)
+    if not mlflow.get_experiment_by_name(MLFLOW_EXPERIMENT_NAME):
+        mlflow.create_experiment(MLFLOW_EXPERIMENT_NAME)
+    mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
 
 
     #### Connection to the database and retrieve data ####
-    connection_url = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-    engine = create_engine(connection_url)
 
     start_data_retrieval = time.time()
     try:
@@ -109,6 +94,7 @@ def infer__RSF_PR_LR__pipeline(date_stop=None):
         logger.error(f"Error inserting results into the database: {e}")
         raise
     
+    logger.info(f"Pipeline completed in {time.time() - start_pipeline} seconds")
     return train_test_metrics, fbref_results_df__sofifa_merged__data_formated__signals_added__infered
 
 
