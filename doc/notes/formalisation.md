@@ -95,6 +95,8 @@ $ROI_{bookmaker}(T) = \frac{\sum_{t=0}^TG_{bookmaker}(t)}{B_{bookmaker}(t=0)} = 
 
 ### Probabilités vraies
 
+Chaque issue $\omega_i^k$ d'un match $m_k$ a une probabilité de se réaliser $r_i^k$ qui est inconnue.
+
 **Hypothèse**:\
 On suppose qu'il existe $Y$ un vecteur de variables aléatoires qui repésente la description de l'état du monde à un temps $t$ donné. $Y$ est un vecteur de variables aléatoires qui représente l'ensemble des informations disponibles à un temps $t$ donné. $Y$ peut contenir des informations sur les matchs, les joueurs, les résultats des matchs précédents, etc.
 
@@ -211,10 +213,44 @@ $$
 \text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M}  \text{Var}[\sum_{i=1}^{N} f_i^k \times (o_i^k \times X_i^k - 1)(t)]
 $$
 
+$$
+\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M} [\sum_{i=1}^{N} \text{Var}[f_i^k \times (o_i^k \times X_i^k - 1)(t)] + \sum_{j \neq i}^{N} \text{Cov}[f_i^k \times (o_i^k \times X_i^k - 1)(t), f_j^k \times (o_j^k \times X_j^k - 1)(t)]]
+$$
+
+$$
+\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M}  [\sum_{i=1}^{N} (f_i^k)^2 (o_i^k)^2  \text{Var}[X_i^k](t) + 2 \sum_{j \leq i}^{N} f_i^k f_j^k  o_i^k  o_j^k \text{Cov}[X_i^k, X_j^k](t)]
+$$
+
+
+Les varaibles sont binaires $X_i^k \in \{0, 1\}$ et $X_j^k \in \{0, 1\}$, on a alors
+
+$$
+\text{Var}[X_i^k] = (1 - r_i^k)r_i^k + r_i^k(1 - r_i^k)
+$$
+
+$$
+\text{Var}[X_i^k] = r_i^k(1 - r_i^k)
+$$
+
+**Condition**:\
+Si on a que pour un match $k$, car si une issue se réalise les autres non. On a alors  $P(X_i^k = 1, X_j^k = 1) = 0$ et $\text{Cov}[X_i^k, X_j^k] = -r_i^k r_j^k$
+
+$$
+\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M}  [\sum_{i=1}^{N} (f_i^k)^2 (o_i^k)^2  r_i^k(1 - r_i^k) - 2 \sum_{j \leq i}^{N} f_i^k f_j^k  o_i^k  o_j^k r_i^k r_j^k]
+$$
+
+$$
+\text{Cov}(X,Y) = \sum_{i=1}^{N} \sum_{j=1}^{N} P(X=x_i et Y=y_i) - E[X]E[Y]
+$$
+
 De même pour le bookmaker.
 
 $$
 \text{Var}[G_{bookmaker}(t)] = \sum_{k=1}^{M}  \text{Var}[\sum_{i=1}^{N} f_i^k \times (1 - o_i^k \times X_i^k)(t)]
+$$
+
+$$
+\text{Var}[G_{bookmaker}(t)] = \text{Var}[G_{joueur}(t)]
 $$
 
 
@@ -328,5 +364,66 @@ $
 
 
 
+## Problème d'optimisation
+
+### Esperance de gain pour l'utilité
+
+On peut alors chercher les fractions $f_i^k$ qui maximisent l'espérance de gain pour l'utilité.
+
+$
+U_{joueur}(t) = \mathbb{E}[G_{joueur}(t)]
+$
+
+$
+U_{joueur}(t) = \sum_{k=1}^{M} \sum_{i=1}^{N} f_i^k \times (o_i^k \times r_i^k - 1)(t)
+$
+
+On peut alors chercher $f_i^k$ qui maximise l'espérance de gain pour l'utilité.
+
+$
+\argmax_{f_i^k} U_{joueur}(t)
+$
+
+Sous les conditions
+
+$
+f_i^k \in [0, 1]
+$
+
+$
+\sum_{i=1}^{N} f_i^k \leq 1
+$
+
+### Kelly pour l'utilité
+
+$
+U_{joueur}(t) = \mathbb{E}[log(G_{joueur}(t))]
+$
+
+$
+U_{joueur}(t) = \mathbb{E}[log(\sum_{k=1}^{M} \sum_{i=1}^{N} f_i^k \times (o_i^k \times X_i^k - 1))(t)]
+$
+
+On peut alors chercher $f_i^k$ qui maximise l'espérance de gain pour l'utilité.
+
+Sous les conditions
+
+$
+f_i^k \in [0, 1]
+$
+
+$
+\sum_{i=1}^{N} f_i^k \leq 1
+$
+
+### Sharpe Ratio pour l'utilité
+
+$
+U_{joueur}(t) = \dfrac{\mathbb{E}[G_{joueur}(t)]}{\sqrt{\text{Var}[G_{joueur}(t)]}}
+$
+
+$
+U_{joueur}(t) = \dfrac{\sum_{k=1}^{M} \sum_{i=1}^{N} f_i^k \times (o_i^k \times r_i^k - 1)(t)}{\sqrt{\sum_{k=1}^{M}  \text{Var}[\sum_{i=1}^{N} f_i^k \times (o_i^k \times X_i^k - 1)(t)]}}
+$
 
 
