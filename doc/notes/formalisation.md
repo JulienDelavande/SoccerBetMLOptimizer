@@ -236,12 +236,14 @@ $$
 Si on a que pour un match $k$, car si une issue se réalise les autres non. On a alors  $P(X_i^k = 1, X_j^k = 1) = 0$ et $\text{Cov}[X_i^k, X_j^k] = -r_i^k r_j^k$
 
 $$
-\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M}  [\sum_{i=1}^{N} (f_i^k)^2 (o_i^k)^2  r_i^k(1 - r_i^k) - 2 \sum_{j \leq i}^{N} f_i^k f_j^k  o_i^k  o_j^k r_i^k r_j^k]
+\text{Cov}(X,Y) = \sum_{i=1}^{N} \sum_{j=1}^{N} x_i y_jP(X=x_i,  Y=y_j) - E[X]E[Y]
 $$
 
 $$
-\text{Cov}(X,Y) = \sum_{i=1}^{N} \sum_{j=1}^{N} P(X=x_i et Y=y_i) - E[X]E[Y]
+\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M}  [\sum_{i=1}^{N} (f_i^k)^2 (o_i^k)^2  r_i^k(1 - r_i^k) - 2 \sum_{j \leq i}^{N} f_i^k f_j^k  o_i^k  o_j^k r_i^k r_j^k]
 $$
+
+
 
 De même pour le bookmaker.
 
@@ -368,62 +370,121 @@ $
 
 ### Esperance de gain pour l'utilité
 
-On peut alors chercher les fractions $f_i^k$ qui maximisent l'espérance de gain pour l'utilité.
-
-$
+$$
 U_{joueur}(t) = \mathbb{E}[G_{joueur}(t)]
-$
+$$
 
-$
+$$
 U_{joueur}(t) = \sum_{k=1}^{M} \sum_{i=1}^{N} f_i^k \times (o_i^k \times r_i^k - 1)(t)
-$
+$$
 
 On peut alors chercher $f_i^k$ qui maximise l'espérance de gain pour l'utilité.
 
-$
+$$
 \argmax_{f_i^k} U_{joueur}(t)
-$
+$$
 
 Sous les conditions
 
-$
+$$
 f_i^k \in [0, 1]
-$
+$$
 
-$
+
+$$
 \sum_{i=1}^{N} f_i^k \leq 1
-$
+$$
+
+---
 
 ### Kelly pour l'utilité
 
-$
+$$
 U_{joueur}(t) = \mathbb{E}[log(G_{joueur}(t))]
-$
+$$
 
-$
+$$
 U_{joueur}(t) = \mathbb{E}[log(\sum_{k=1}^{M} \sum_{i=1}^{N} f_i^k \times (o_i^k \times X_i^k - 1))(t)]
-$
+$$
+
+Si on considère que  $ 1 - G_{joueur}(t) $ est proche de 0, on peut approximer 
+
+$$
+log(G_{joueur}(t)) = log(1 - (-G_{joueur}(t)+1))
+$$
+
+$$
+log(G_{joueur}(t)) = -(-G_{joueur}(t)+1) - \dfrac{(-G_{joueur}(t)+1)^2}{2} - \dfrac{(-G_{joueur}(t)+1)^3}{3} - o((-G_{joueur}(t)+1)^4)
+$$
+
+$$
+log(G_{joueur}(t)) \approx G_{joueur}(t)-1 - \dfrac{(-G_{joueur}(t)+1)^2}{2}
+$$
+
+$$
+log(G_{joueur}(t)) \approx G_{joueur}(t)-1 - \dfrac{G_{joueur}(t)^2}{2} + G_{joueur}(t) - \dfrac{1}{2}
+$$
+
+$$
+log(G_{joueur}(t)) \approx 2 \times G_{joueur}(t) - \dfrac{G_{joueur}(t)^2}{2} - \dfrac{3}{2}
+$$
+
+$$
+\text{E}[log(G_{joueur}(t))] \approx 2 \times \text{E}[G_{joueur}(t)] - \dfrac{\text{E}[G_{joueur}(t)^2]}{2} - \dfrac{3}{2}
+$$
+
+$$
+\text{E}[log(G_{joueur}(t))] \approx 2 \times \text{E}[G_{joueur}(t)] - \dfrac{\text{Var}[G_{joueur}(t)] + \text{E}[G_{joueur}(t)]^2}{2} - \dfrac{3}{2}
+$$
 
 On peut alors chercher $f_i^k$ qui maximise l'espérance de gain pour l'utilité.
 
+$$
+\argmax_{f_i^k} U_{joueur}(t)
+$$
+
 Sous les conditions
 
-$
+$$
 f_i^k \in [0, 1]
-$
+$$
 
-$
+$$
 \sum_{i=1}^{N} f_i^k \leq 1
-$
+$$
+
+---
 
 ### Sharpe Ratio pour l'utilité
 
-$
+$$
 U_{joueur}(t) = \dfrac{\mathbb{E}[G_{joueur}(t)]}{\sqrt{\text{Var}[G_{joueur}(t)]}}
-$
+$$
 
-$
+$$
 U_{joueur}(t) = \dfrac{\sum_{k=1}^{M} \sum_{i=1}^{N} f_i^k \times (o_i^k \times r_i^k - 1)(t)}{\sqrt{\sum_{k=1}^{M}  \text{Var}[\sum_{i=1}^{N} f_i^k \times (o_i^k \times X_i^k - 1)(t)]}}
-$
+$$
+
+Si pour chaque match $k$, on a que si une issue se réalise les autres non.
+
+$$
+U_{joueur}(t) = \dfrac{\sum_{k=1}^{M} \sum_{i=1}^{N} f_i^k \times (o_i^k \times r_i^k - 1)(t)}{\sqrt{\sum_{k=1}^{M}  [\sum_{i=1}^{N} (f_i^k)^2 (o_i^k)^2  r_i^k(1 - r_i^k) - 2 \sum_{j \leq i}^{N} f_i^k f_j^k  o_i^k  o_j^k r_i^k r_j^k]}}
+$$
+
+On peut alors chercher $f_i^k$ qui maximise le Sharpe Ratio pour l'utilité.
+
+$$
+\argmax_{f_i^k} U_{joueur}(t)
+$$
+
+Sous les conditions
+
+$$
+f_i^k \in [0, 1]
+$$
+
+$$
+\sum_{i=1}^{N} f_i^k \leq 1
+$$
 
 
