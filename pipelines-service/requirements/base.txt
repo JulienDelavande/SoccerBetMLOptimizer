@@ -7,3 +7,4 @@ psycopg2-binary
 scikit-learn
 trueskill
 mlflow
+rich

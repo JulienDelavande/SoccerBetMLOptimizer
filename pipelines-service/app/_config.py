@@ -7,7 +7,7 @@ import logging
 import sys
 from pathlib import Path
 from rich.logging import RichHandler
-from logs.postgressqlhandler import PostgreSQLHandler
+from logger.postgressqlhandler import PostgreSQLHandler
 
 # environment variables
 load_dotenv()
@@ -20,6 +20,8 @@ DB_TN_FBREF_RESULTS = os.getenv('DB_TN_FBREF_RESULTS')
 DB_TN_SOFIFA_TEAMS_STATS = os.getenv('DB_TN_SOFIFA_TEAMS_STATS')
 DB_TN_MODELS_RESULTS = os.getenv('DB_TN_MODELS_RESULTS')
 MLFLOW_TRACKING_URI = os.getenv('MLFLOW_TRACKING_URI')
+DB_TN_ODDS = os.getenv('DB_TN_ODDS')
+DB_TN_OPTIM_RESULTS = os.getenv('DB_TN_OPTIM_RESULTS')
 
 # database connection
 db_url = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'

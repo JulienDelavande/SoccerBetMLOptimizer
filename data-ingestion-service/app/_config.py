@@ -8,10 +8,10 @@ import logging
 import sys
 from pathlib import Path
 from rich.logging import RichHandler
-from logs.postgressqlhandler import PostgreSQLHandler
+from logger.postgressqlhandler import PostgreSQLHandler
 
 # environment variables
-load_dotenv()
+load_dotenv('ing.env')
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
