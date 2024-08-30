@@ -1,15 +1,16 @@
 import requests
 from sqlalchemy import text
 import logging
+import pandas as pd
 
 from app._config import DB_TN_ODDS_TEMP, DB_TN_ODDS, THE_ODDS_API_KEY, engine
 from feature_eng.odds.odds_extraction import json_to_pandas_the_odds_api_get_odds
 
 
-sport = 'Soccer'
+sports = ['soccer_france_ligue_one', 'soccer_spain_la_liga', 'soccer_italy_serie_a', 'soccer_germany_bundesliga', 'soccer_epl']
 regions = 'eu'
 markets = 'h2h'
-url = f'https://api.the-odds-api.com/v4/sports/{sport}/odds/?apiKey={THE_ODDS_API_KEY}&regions={regions}&markets={markets}'
+urls = [f'https://api.the-odds-api.com/v4/sports/{sport}/odds/?apiKey={THE_ODDS_API_KEY}&regions={regions}&markets={markets}' for sport in sports]
 
 logger = logging.getLogger("the_odds_api")
 
@@ -40,8 +41,9 @@ drop_table_query = f"DROP TABLE IF EXISTS {DB_TN_ODDS_TEMP}"
 
 def ingest_odds_the_odds_api():
     try:
-        response = requests.get(url)
-        df_odds = json_to_pandas_the_odds_api_get_odds(response.json())
+        responses = [requests.get(url) for url in urls]
+        dfs_odds = [json_to_pandas_the_odds_api_get_odds(response.json()) for response in responses]
+        df_odds = pd.concat(dfs_odds, ignore_index=True)
         logger.info("Cotes récupérérées avec succces depuis l'API The Odds Api")
     except Exception as e:
         logger.error(f"Erreur lors de la recuperation des donnees: {e}")

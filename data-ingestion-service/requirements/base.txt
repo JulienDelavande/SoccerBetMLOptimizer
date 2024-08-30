@@ -10,3 +10,4 @@ undetected_chromedriver
 packaging
 lxml
 psycopg2-binary
+rich

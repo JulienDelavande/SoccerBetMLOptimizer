@@ -214,18 +214,18 @@ $$
 $$
 
 $$
-\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M} [\sum_{i=1}^{N} \text{Var}[f_i^k \times (o_i^k \times X_i^k - 1)(t)] + \sum_{j \neq i}^{N} \text{Cov}[f_i^k \times (o_i^k \times X_i^k - 1)(t), f_j^k \times (o_j^k \times X_j^k - 1)(t)]]
+\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M} [\sum_{i=1}^{N} \text{Var}[f_i^k \times (o_i^k \times X_i^k - 1)(t)] + \sum_{j \ne i}^{N} \text{Cov}[f_i^k \times (o_i^k \times X_i^k - 1)(t), f_j^k \times (o_j^k \times X_j^k - 1)(t)]]
 $$
 
 $$
-\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M}  [\sum_{i=1}^{N} (f_i^k)^2 (o_i^k)^2  \text{Var}[X_i^k](t) + 2 \sum_{j \leq i}^{N} f_i^k f_j^k  o_i^k  o_j^k \text{Cov}[X_i^k, X_j^k](t)]
+\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M}  [\sum_{i=1}^{N} (f_i^k)^2 (o_i^k)^2  \text{Var}[X_i^k](t) + 2 \sum_{j < i}^{N} f_i^k f_j^k  o_i^k  o_j^k \text{Cov}[X_i^k, X_j^k](t)]
 $$
 
 
-Les varaibles sont binaires $X_i^k \in \{0, 1\}$ et $X_j^k \in \{0, 1\}$, on a alors
+Les variables sont binaires $X_i^k \in \{0, 1\}$ et $X_j^k \in \{0, 1\}$, on a alors
 
 $$
-\text{Var}[X_i^k] = (1 - r_i^k)r_i^k + r_i^k(1 - r_i^k)
+\text{Var}[X_i^k] = (1 - r_i^k)(r_i^k)^2 + r_i^k(1 - r_i^k)^2
 $$
 
 $$
@@ -240,7 +240,7 @@ $$
 $$
 
 $$
-\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M}  [\sum_{i=1}^{N} (f_i^k)^2 (o_i^k)^2  r_i^k(1 - r_i^k) - 2 \sum_{j \leq i}^{N} f_i^k f_j^k  o_i^k  o_j^k r_i^k r_j^k]
+\text{Var}[G_{joueur}(t)] = \sum_{k=1}^{M}  [\sum_{i=1}^{N} (f_i^k)^2 (o_i^k)^2  r_i^k(1 - r_i^k) - 2 \sum_{j < i}^{N} f_i^k f_j^k  o_i^k  o_j^k r_i^k r_j^k]
 $$
 
 
@@ -264,7 +264,7 @@ $$
 Le critère de Kelly peut être considéré comme une certaine forme de la fonction d'utilité. Il est défini comme suit, pour $t$ fixé:
 
 $
-U^{kelly}_{joueur} = \mathbb{E}[\log(G_{joueur})] 
+U^{kelly}_{joueur} = \mathbb{E}[\log(G_{joueur} + 1)] 
 $
 
 On suppose que les mêmes matchs sont joués un grand nombre de fois T.
@@ -400,42 +400,30 @@ $$
 ### Kelly pour l'utilité
 
 $$
-U_{joueur}(t) = \mathbb{E}[log(G_{joueur}(t))]
+U_{joueur}(t) = \mathbb{E}[log(G_{joueur}(t) + 1)]
 $$
 
 $$
-U_{joueur}(t) = \mathbb{E}[log(\sum_{k=1}^{M} \sum_{i=1}^{N} f_i^k \times (o_i^k \times X_i^k - 1))(t)]
+U_{joueur}(t) = \mathbb{E}[log(\sum_{k=1}^{M} \sum_{i=1}^{N} f_i^k \times (o_i^k \times X_i^k - 1) + 1)(t)]
 $$
 
-Si on considère que  $ 1 - G_{joueur}(t) $ est proche de 0, on peut approximer 
+Si on considère que  $ G_{joueur}(t) $ est proche de 0, on peut approximer ( $ G_{joueur}(t) \in [-1, +\infty[$)
 
 $$
-log(G_{joueur}(t)) = log(1 - (-G_{joueur}(t)+1))
+log(G_{joueur}(t) + 1) \approx G_{joueur}(t) - \dfrac{G_{joueur}(t)^2}{2}
 $$
 
-$$
-log(G_{joueur}(t)) = -(-G_{joueur}(t)+1) - \dfrac{(-G_{joueur}(t)+1)^2}{2} - \dfrac{(-G_{joueur}(t)+1)^3}{3} - o((-G_{joueur}(t)+1)^4)
-$$
+Donc
 
 $$
-log(G_{joueur}(t)) \approx G_{joueur}(t)-1 - \dfrac{(-G_{joueur}(t)+1)^2}{2}
+U_{joueur}(t) \approx \mathbb{E}[G_{joueur}(t)] - \dfrac{\mathbb{E}[G_{joueur}(t)^2]}{2}
 $$
 
 $$
-log(G_{joueur}(t)) \approx G_{joueur}(t)-1 - \dfrac{G_{joueur}(t)^2}{2} + G_{joueur}(t) - \dfrac{1}{2}
+U_{joueur}(t) \approx \mathbb{E}[G_{joueur}(t)] - \dfrac{\mathbb{E}[G_{joueur}(t)]^2 + \mathbb{V}[G_{joueur}(t)]}{2}
 $$
 
-$$
-log(G_{joueur}(t)) \approx 2 \times G_{joueur}(t) - \dfrac{G_{joueur}(t)^2}{2} - \dfrac{3}{2}
-$$
 
-$$
-\text{E}[log(G_{joueur}(t))] \approx 2 \times \text{E}[G_{joueur}(t)] - \dfrac{\text{E}[G_{joueur}(t)^2]}{2} - \dfrac{3}{2}
-$$
-
-$$
-\text{E}[log(G_{joueur}(t))] \approx 2 \times \text{E}[G_{joueur}(t)] - \dfrac{\text{Var}[G_{joueur}(t)] + \text{E}[G_{joueur}(t)]^2}{2} - \dfrac{3}{2}
-$$
 
 On peut alors chercher $f_i^k$ qui maximise l'espérance de gain pour l'utilité.
 
