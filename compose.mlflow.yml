@@ -1,0 +1,11 @@
+name: mlflow
+
+services:
+  mlflow:
+    build:
+       context: ./mlflow
+       dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env

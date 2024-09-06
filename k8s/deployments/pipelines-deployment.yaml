@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pipelines
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pipelines
+  template:
+    metadata:
+      labels:
+        app: pipelines
+    spec:
+      containers:
+      - name: pipelines
+        image: optimsportbets.azurecr.io/optim-sportbet-pipelines:1.0
+        ports:
+        - containerPort: 8001
+        envFrom:
+        - configMapRef:
+            name: global-config
+        - secretRef:
+            name: global-secrets
+      imagePullSecrets:
+      - name: acr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pipelines-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8001
+    targetPort: 8001
+  selector:
+    app: pipelines

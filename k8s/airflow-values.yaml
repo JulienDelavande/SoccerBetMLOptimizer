@@ -1,0 +1,21 @@
+dags:
+  persistence:
+    enabled: false
+  gitSync:
+    enabled: true
+    repo: https://dev.azure.com/jdelavande/_git/optim-sportbet
+    branch: dev
+    rev: HEAD
+    depth: 1
+    maxFailures: 5
+    subPath: "airflow/dags"
+    wait: 60
+    containerName: git-sync
+    uid: 65533
+    credentialsSecret: airflow-azure-devops-secret
+    sshKeySecret: null
+
+extraEnvFrom: |-
+  - configMapRef:
+      name: global-config
+

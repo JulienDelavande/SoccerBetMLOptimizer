@@ -16,6 +16,8 @@ x-airflow-common:
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
+  env_file:
+    - .env
   volumes:
     - ${AIRFLOW_PROJ_DIR:-./airflow}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-./airflow}/logs:/opt/airflow/logs
@@ -41,8 +43,6 @@ services:
       - "8000:8000"
     env_file:
       - ./data-ingestion-service/ing.env
-    volumes:
-      - ./data-ingestion-service:/data-ingestion-service
     networks:
       - optim-sportbet-network
 
@@ -54,21 +54,19 @@ services:
       - "8001:8001"
     env_file:
       - ./pipelines-service/pipe.env
-    volumes:
-      - ./pipelines-service:/pipelines-service
     networks:
       - optim-sportbet-network
 
   mlflow:
     build:
       context: ./mlflow
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
-    volumes:
-      - ./mlflow:/mlflow
+    env_file:
+      - .env
     networks:
       - optim-sportbet-network
-    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri 'postgresql+psycopg2://Consultant:Graphene2024!@soccerodds-psql-db.postgres.database.azure.com:5432/postgres'
 
   postgres:
     image: postgres:13

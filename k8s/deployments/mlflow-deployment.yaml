@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - name: mlflow
+        image: optimsportbets.azurecr.io/optim-sportbet-mlflow:1.2
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - configMapRef:
+            name: global-config
+        - secretRef:
+            name: global-secrets
+      imagePullSecrets:
+      - name: acr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: mlflow
