@@ -11,3 +11,5 @@ __pycache__/
 **/soccerdata/data/*
 **/soccerdata/logs/*
 **/logs/*
+
+k8s/secrets/
