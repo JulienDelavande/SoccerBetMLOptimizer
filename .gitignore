@@ -1,7 +1,8 @@
 *\venv*
 
 *.ipynb_checkpoints
-*.env
+secrets.env
+old.env
 
 __pycache__/
 
@@ -13,3 +14,5 @@ __pycache__/
 **/logs/*
 
 k8s/secrets/
+
+.pid

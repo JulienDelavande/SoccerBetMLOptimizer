@@ -32,11 +32,15 @@ def infer__RSF_PS_LR__pipeline_route(date_stop=None):
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.get("/optim")
-def resolve_fik_route(datetime_first_match=None, model='RSF_PR_LR'):
+def resolve_fik_route(datetime_first_match=None, model='RSF_PR_LR', n_match = None, bookmakers = None):
     try:
         if datetime_first_match:
             datetime_first_match = datetime.datetime.strptime(datetime_first_match, "%Y-%m-%d %H:%M:%S")
-        find__of(datetime_first_match=datetime_first_match, model=model)
-        return {"status": "success"}
+        if n_match:
+            n_match = int(n_match)
+        if bookmakers:
+            bookmakers = bookmakers.split(',')
+        datetime_optim = find__of(datetime_first_match=datetime_first_match, model=model, n_match=n_match, bookmakers=bookmakers)
+        return {"status": "success", "datetime_optim": datetime_optim}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

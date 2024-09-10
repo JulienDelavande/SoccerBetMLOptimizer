@@ -3,40 +3,63 @@ kind: ConfigMap
 metadata:
   name: global-config
 data:
-  # Azure PostgreSQL DB
-  DB_USER: Consultant
-  DB_HOST: soccerodds-psql-db.postgres.database.azure.com
-  DB_PORT: "5432"
-  DB_NAME: postgres
-  DB_TN_MATCHES: matches
-  DB_TN_ODDS_EURO: odds_euro
-  DB_TN_MATCHES_EURO: matches_euro
-  DB_TN_MIGRATION_HISTORY: migration_history
-  DB_TN_MATCHES_BIG5: matches_big5
-  DB_TN_MATCHES_WC: matches_wc
-  DB_TN_FBREF_RESULTS: fbref_results
-  DB_TN_SOFIFA_TEAMS_STATS: sofifa_teams_stats
-  DB_TN_MODELS_RESULTS: models_results
-  DB_TN_LOGS: logs
-  DB_TN_ODDS: soccer_odds
-  DB_TN_OPTIM_RESULTS: optim_results
+# Description: Environment variables for k8s deployments
 
-  # Data Ingestion Service
-  DATA_INGESTION_SERVICE_NAME: data-ingestion-service
-  DATA_INGESTION_SERVICE_NPORT: "8000"
-  DATA_INGESTION_SERVICE_PROTOCOL: http
-  DATA_INGESTION_FBREF_ENDPOINT: fbref
-  DATA_INGESTION_SOFIFA_TEAM_STATS_ENDPOINT: sofifa/team_stats
-  DATA_INGESTION_THE_ODDS_API_ODDS_ENDPOINT: the_odds_api/odds
-  SOCCERDATA_DIR: lib/soccerdata
+# Data Ingestion
+  ## API
+  DATA_INGESTION_PROTOCOL : http
+  DATA_INGESTION_HOST : data-ingestion-service
+  DATA_INGESTION_PORT : "8200"
+  DATA_INGESTION_ENDPOINT_FBREF : fbref
+  DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS : the_odds_api/odds
+  ## Other
+  SOCCERDATA_DIR : lib/soccerdata
 
-  # Pipelines Service
-  PIPELINES_SERVICE_NAME: pipelines-service
-  PIPELINES_SERVICE_NPORT: "8001"
-  PIPELINES_SERVICE_PROTOCOL: http
-  PIPELINES_SERVICE_INFERENCE_ENDPOINT: infer/RSF_PR_LR
-  PIPELINES_SERVICE_OPTIMIZATION_ENDPOINT: optim
+  # Pipelines
+  ## API
+  PIPELINES_PROTOCOL : http
+  PIPELINES_HOST : pipelines-service
+  PIPELINES_PORT : "8201"
+  PIPELINES_ENDPOINT_INFERENCE : infer/RSF_PR_LR
+  PIPELINES_ENDPOINT_OPTIMIZATION : optim
 
-  # MLflow
-  MLFLOW_TRACKING_URI:  http://mlflow-service:5000
-  MLFLOW_WEBSERVER_CONTAINER_PORT: "5000"
+  # MLFLOW
+  ## API
+  MLFLOW_PROTOCOL : http
+  MLFLOW_HOST : mlflow-service
+  MLFLOW_WEBSERVER_PORT : "8202"
+
+  # App-backend
+  ## API
+  APP_BACKEND_PROTOCOL : http
+  APP_BACKEND_HOST : app-backend-service
+  APP_BACKEND_PORT : "8203"
+
+  # App-frontend
+  ## API
+  APP_FRONTEND_PROTOCOL : http
+  APP_FRONTEND_URL : app-frontend-service
+  APP_FRONTEND_PORT : "8204"
+
+  # DATABASE
+  ## API
+  DB_TYPE : postgresql
+  DB_PILOT : psycopg2
+  DB_USER : Consultant
+  DB_HOST : soccerodds-psql-db.postgres.database.azure.com
+  DB_PORT : "5432"
+  ## Structure
+  DB_PORT : "5432"
+  DB_NAME : postgres
+  DB_TN_MATCHES : matches
+  DB_TN_ODDS_EURO : odds_euro
+  DB_TN_MATCHES_EURO : matches_euro
+  DB_TN_MIGRATION_HISTORY : migration_history
+  DB_TN_MATCHES_BIG5 : matches_big5
+  DB_TN_MATCHES_WC : matches_wc
+  DB_TN_FBREF_RESULTS : fbref_results
+  DB_TN_SOFIFA_TEAMS_STATS : sofifa_teams_stats
+  DB_TN_MODELS_RESULTS : models_results
+  DB_TN_LOGS : logs
+  DB_TN_ODDS : soccer_odds
+  DB_TN_OPTIM_RESULTS : optim_results
