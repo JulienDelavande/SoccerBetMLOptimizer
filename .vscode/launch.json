@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Module",
+            "type": "python",
+            "request": "launch",
+            "module": "app.insert_data.the_odds_api_odds",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/data-ingestion-service" 
+        }
+    ]
+}

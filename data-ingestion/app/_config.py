@@ -11,7 +11,12 @@ from rich.logging import RichHandler
 from logger.postgressqlhandler import PostgreSQLHandler
 
 # environment variables
-load_dotenv('ing.env')
+ENV_VARS_REQUIRED = ["DB_TYPE", "DB_PILOT", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", 
+                     "DB_NAME", "DB_TN_FBREF_RESULTS", "DB_TN_SOFIFA_TEAMS_STATS", "DB_TN_ODDS_TEMP", 
+                     "DB_TN_ODDS", "THE_ODDS_API_KEY"]
+
+DB_TYPE = os.getenv('DB_TYPE')
+DB_PILOT = os.getenv('DB_PILOT')
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
@@ -24,8 +29,12 @@ DB_TN_ODDS = os.getenv('DB_TN_ODDS')
 THE_ODDS_API_KEY = os.getenv('THE_ODDS_API_KEY')
 
 # database connection
-db_url = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-engine = create_engine(db_url)
+DB_URL = f'{DB_TYPE}+{DB_PILOT}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+engine = create_engine(DB_URL)
+
+for var in ENV_VARS_REQUIRED:
+    if not os.getenv(var):
+        raise ValueError(f"Missing environment variable: {var}")
 
 # logger
 LOGS_DIR = Path(__file__).parent.parent / "logs"

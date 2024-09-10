@@ -52,7 +52,7 @@ mapping_dict = {
 }
 
 
-def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_PR_LR') -> None:
+def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_PR_LR', n_match : int = None, bookmakers : list[str] =  None) -> datetime.datetime:
 
     # Retrieve data from the database
     start_data_retrieval = time.time()
@@ -85,6 +85,10 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         df_odds__last_odds__home_draw = pd.merge(df_odds__last_odds__home, df_odds__last_odds__draw, on=['match_id', 'bookmaker_key'], how='inner')
         df_odds__last_odds__home_draw_away = pd.merge(df_odds__last_odds__home_draw, df_odds__last_odds__away, on=['match_id', 'bookmaker_key'], how='inner')
 
+        # keep only the bookmakers in the list
+        if bookmakers:
+            df_odds__last_odds__home_draw_away = df_odds__last_odds__home_draw_away[df_odds__last_odds__home_draw_away['bookmaker_key'].isin(bookmakers)]
+
         # Keep only the highest odds for each outcome
         max_odds_df = df_odds__last_odds__home_draw_away.groupby('match_id').agg({
             'odds_home': 'max',
@@ -110,6 +114,13 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         # Merge the models results with the odds
         df_models_results_joined = df_models_results_last_infered.merge(max_odds_df_all_mapped, left_on=['home_team', 'away_team', 'date_match'], right_on=['home_team', 'away_team', 'date_match'], how='inner')
 
+        # Sort by date start
+        df_models_results_joined = df_models_results_joined.sort_values(by=['date_match', 'time_match'], ascending=False)
+
+        # Keep only the n_match first matches
+        if n_match:
+            df_models_results_joined = df_models_results_joined.head(n_match)
+
         # Compute the numpy arrays of odds (o) and probabilities (r)
         o = df_models_results_joined[['odds_home', 'odds_draw', 'odds_away']].to_numpy()
         r = df_models_results_joined[['prob_home_win', 'prob_draw', 'prob_away_win']].to_numpy()
@@ -128,7 +139,8 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         result_kelly = resolve_fik(o, r, player_utility_kelly_criteria)
         result_kelly[result_kelly < 1e-10] = 0
         df_models_results_joined[['f_home_kelly', 'f_draw_kelly', 'f_away_kelly']] = result_kelly
-        df_models_results_joined['datetime_optim'] = datetime.datetime.now()
+        datetime_optim = datetime.datetime.now()
+        df_models_results_joined['datetime_optim'] = datetime_optim
         logger.info(f"Kelly computed in {time.time() - start_invest:.2f} seconds")
     except Exception as e:
         logger.error(f"Error while computing the bankroll fraction to invest: {e}")
@@ -150,11 +162,43 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         logger.error(f"Error while exporting the data: {e}")
         return None
     
+    return datetime_optim
+    
 
 if __name__ == '__main__':
+    bookmaker_keys = [
+    "onexbet",
+    "sport888",
+    "betclic",
+    "betanysports",
+    "betfair_ex_eu",
+    "betonlineag",
+    "betsson",
+    "betvictor",
+    "coolbet",
+    "everygame",
+    "gtbets",
+    "livescorebet_eu",
+    "marathonbet",
+    "matchbook",
+    "mybookieag",
+    "nordicbet",
+    "pinnacle",
+    "suprabets",
+    "tipico_de",
+    "unibet_eu",
+    "williamhill"
+]
+    bookmaker_keys = [
+    "onexbet",
+    "sport888",
+    "betclic"
+        ]
+    
+    n_match = 10
     logging.info("-- Starting the OF pipeline --")
     datetime_first_match = '2024-08-26 00:00:00'
     model =  'RSF_PR_LR'
-    find__of(datetime_first_match=datetime_first_match, model=model)
+    find__of(datetime_first_match=datetime_first_match, model=model, n_match=n_match, bookmakers=bookmaker_keys)
     logging.info("-- Pipeline completed --")
     print("Pipeline completed")

@@ -40,6 +40,11 @@ WHERE NOT EXISTS (
 drop_table_query = f"DROP TABLE IF EXISTS {DB_TN_ODDS_TEMP}"
 
 def ingest_odds_the_odds_api():
+    df_odds = get_odds()
+    put_odds_in_db(df_odds)
+    return
+
+def get_odds():
     try:
         responses = [requests.get(url) for url in urls]
         dfs_odds = [json_to_pandas_the_odds_api_get_odds(response.json()) for response in responses]
@@ -47,8 +52,9 @@ def ingest_odds_the_odds_api():
         logger.info("Cotes récupérérées avec succces depuis l'API The Odds Api")
     except Exception as e:
         logger.error(f"Erreur lors de la recuperation des donnees: {e}")
-        return
-
+    return df_odds
+    
+def put_odds_in_db(df_odds):
     try:
         with engine.begin() as conn:
             df_odds.to_sql(DB_TN_ODDS_TEMP, engine, if_exists='replace', index=False)
@@ -60,9 +66,8 @@ def ingest_odds_the_odds_api():
     except Exception as e:
         logger.error(f"Erreur lors de l'insertion des donnees: {e}")
         return
-    
-    return
 
 if __name__ == '__main__':
-    ingest_odds_the_odds_api()
+    df = get_odds()
+    df.to_csv('odds.csv', index=False)
 

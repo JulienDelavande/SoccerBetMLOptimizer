@@ -1,93 +1,332 @@
-# SportBet-optim
-
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.headmind.com/ai-blockchain/headmind-ai/anomalies/mlops/sportbet-optim.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.headmind.com/ai-blockchain/headmind-ai/anomalies/mlops/sportbet-optim/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
+# Optim-sportbet
 
 ## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+This project aims to deliver day to day prediction on what to bet on sport games.
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+There is 3 ways to install the project:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+1. Local installation
+2. Docker installation
+3. Kubernetes installation
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### Local installation
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+To install the project locally, you need to have the following dependencies installed on your machine:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+- Python 3.10
+- make
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+First replace the `secrets_template.env` file with your own secrets and rename it to `secrets.env`.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+```bash	
+echo secrets_template.env > secrets.env
+```
 
-## License
-For open source projects, say how it is licensed.
+Then you can install the project by running the following command:
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+```bash
+python -m venv venv
+source venv/Scripts/activate
+pip install -r requirements.txt
+```
+
+```bash
+make start
+```
+
+To stop the project, you can run the following command:
+
+```bash
+make stop
+```
+
+### Docker installation
+
+To install the project with Docker, you need to have the following dependencies installed on your machine:
+
+- Docker
+- Docker Compose
+
+First replace the `secrets_template.env` file with your own secrets and rename it to `secrets.env`.
+
+```bash
+echo secrets_template.env > secrets.env
+```
+
+Then you can install the project by running the following command:
+
+```bash
+docker compose --env-file .env --env-file compose.env -f compose.yml up
+```
+
+If you want airflow to be installed, you can run the following command:
+
+```bash
+docker compose --env-file .env --env-file compose.env -f compose.yml -f airflow.yml up
+```
+
+To stop the project, you can run the following command:
+
+```bash
+docker compose down
+```
+
+### Kubernetes installation
+
+To install the project with Kubernetes, you need to have access to a Kubernetes cluster.
+You need to have the following dependencies installed on your machine:
+
+- kubectl
+- helm
+- Docker
+- Docker Compose
+- make
+
+#### Creation of all needed services using Azure
+
+You need to have the following dependencies installed on your machine:
+
+- Azure CLI
+
+```bash
+az login
+```
+
+A resource group, named `Optim-sportBets`, has been created on Azure, with all the services needed for the project. You can either use the existing resource group and the ressources if still available, or create your own.
+
+Within the ressource group, you will find the following services:
+- Azure Kubernetes Service (AKS) [existing name: `optimsportbets`]
+- Azure Container Registry (ACR) [existing name: `optimsportbets`]
+- Azure Database for PostgreSQL server [existing name: `soccerodds-psql-db`]
+
+As well as remote repositories on Azure DevOps for the project's code [existing name: `optim-sportbet`].
+
+Create a resource group on Azure if you need by running the following command:
+
+```bash
+az group create --name <resource-group> --location <location>
+```
+
+##### Create an AKS cluster
+
+To create an AKS cluster on Azure, you can run the following command:
+
+
+```bash
+az aks create --resource-group <resource-group> --name <cluster-name> --node-count 2 --generate-ssh-keys
+```
+
+Then you can get the credentials of the cluster by running the following command:
+
+```bash
+az aks get-credentials --resource-group <resource-group> --name <cluster-name>
+```
+
+##### Create a ACR registry on Azure
+
+To create an ACR registry on Azure, you can run the following command:
+
+```bash
+az acr create --resource-group <resource-group> --name <registry-name> --sku Basic
+```
+
+Then you can get the credentials of the registry by running the following command:
+
+```bash
+az acr login --name <registry-name>
+```
+
+##### Create a PostgreSQL server on Azure
+
+To create a PostgreSQL server on Azure, you can run the following command:
+
+```bash
+az postgres server create --resource-group <resource-group> --name <server-name> --location <location> --admin-user <admin-user> --admin-password <admin-password> --sku-name B_Gen5_1 --version 12 --ssl-enforcement Enabled
+```
+
+Then you can create a database by running the following command:
+
+```bash
+az postgres db create --resource-group <resource-group> --server-name <server-name> --name <database-name>
+```
+
+Then you need to apply the migrations (set the structure of the db) by running the following command:
+
+```bash
+python -m venv venv
+source venv/Scripts/activate
+pip install -r requirements.txt
+cd db
+python apply_migrations.py
+```
+
+### Configure the secrets
+
+Modify the secrets files in k8s/secrets/ with your own secrets.
+
+#### k8s/secrets_template/acr_secret.yaml
+
+Modify the `.dockerconfigjson` fields with the credentials of a user that has access to the ACR registry.
+For example the admin of the ACR registry. You can get the credentials by running the following command:
+
+```bash
+az acr credential show --name <registry-name>
+```
+
+Then you can encode the credentials by running the following command:
+
+```bash
+cat .dockerconfigjson | base64  
+```
+Put the results in the acr_secret.yaml file.
+
+#### k8s/secrets_template/airflow-azure-devops-secrets.yaml
+
+Modify the `GIT_SYNC_USERNAME` and `GIT_SYNC_PASSWORD` fields with the credentials of a user that has access to the repository.
+For example the service principal named `gitalcicd` from the Azure subscription has full access to the repository. Don't forget to encode the credentials.
+
+```bash
+echo -n <username> | base64
+```
+
+```bash
+echo -n <password> | base64
+```
+
+Put the results in the airflow-azure-devops-secrets file. The `GITSYNC_USERNAME` and `GITSYNC_PASSWORD` should be the same as the `GIT_SYNC_USERNAME` and `GIT_SYNC_PASSWORD`.
+
+#### k8s/secrets_template/secrets.yaml
+
+Modify the `DB_PASSWORD` field with the password of the database. Don't forget to encode the password.
+
+```bash
+echo -n <password> | base64
+```
+
+Modify the `THE_ODDS_API_KEY` field with the API key accessof the Odds API website (you can create an account here https://the-odds-api.com/ the free tier is sufficiant). Don't forget to encode the API key.
+
+```bash
+echo -n <api> | base64
+```
+
+Put the results in the secrets.yaml file.
+
+### Configure the environment variables
+
+If you chose to create your own ressources, you need to modify things in the following files:
+- k8s/config-map/config-map.yaml
+- k8s/deployments/*
+
+#### You created your own database
+
+Modify the `DB_HOST`, `DB_NAME`, `DB_USER` fields with the information of your database in the config-map.yaml file.
+
+#### You created your own ACR registry
+
+Modify the name of the image in the deployments files.
+
+### Build, tag and push the Docker images
+
+To build, tag and push the Docker images to the ACR registry, you can run the following command:
+
+```bash
+make build
+```
+
+```bash
+make tag
+```
+
+```bash
+make push
+```
+
+If you created your own container registry, you need to modify the `CONTAINER_REGISTRY` field in Makefile with the name of your ACR registry before running the commands.
+
+### Deploy the project
+
+To deploy the project on Kubernetes, you can run the following command:
+
+```bash
+kubectl apply -f k8s/
+```
+
+To deploy the project Airflow with helm, you can run the following command:
+
+```bash
+helm repo add apache-airflow https://airflow.apache.org
+helm upgrade --install airflow apache-airflow/airflow -f airflow-values.yaml
+```
+
+### Access the services
+
+#### App-frontend
+
+To access the frontend, you can run the following command:
+
+```bash
+kubectl port-forward svc/frontend 8204:80
+```
+
+Then you can access the frontend by going to http://localhost:8204.
+
+#### Airflow
+
+To access the Airflow UI, you can run the following command:
+
+```bash
+kubectl port-forward svc/airflow-webserver 8205:8080
+```
+
+Then you can access the Airflow UI by going to http://localhost:8205.
+
+#### Mlflow
+
+To access the Mlflow UI, you can run the following command:
+
+```bash
+kubectl port-forward svc/mlflow-service 8202:80
+```
+
+Then you can access the Mlflow UI by going to http://localhost:8202.
+
+
+#### Backends
+
+To access the fast api doc of the backends, you can run the following command:
+
+```bash
+kubectl port-forward svc/app-backend-service 8203:80
+```
+    
+```bash
+kubectl port-forward svc/data-ingestion-service 8200:80
+```
+
+```bash
+kubectl port-forward svc/pipelines-service 8201:80
+```
+
+Then you can access the fast api doc by going to http://localhost:8203/docs, http://localhost:8200/docs and http://localhost:8201/docs.
+
+#### Postgres
+
+To access the PostgreSQL database, you can run the following command:
+
+```bash
+psql --host=<server-name>.postgres.database.azure.com --port=5432 --username=<admin-user>@<server-name> --dbname=<database-name> --sslmode=require
+```
+
+Then you can access the database by running SQL queries.
+
+
+
+
+
+
+
+
+
