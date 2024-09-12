@@ -6,7 +6,7 @@ def player_utility_kelly_criteria(f, o, r, B=1):
     """
     Calculates the utility of a player according to the Kelly criteria.
     
-    Hypothesis: The Gain is near 1 so we can apporximate U = E(log(Gain)) = 2*E - (V+E^2)/2 - 3/2 (limited development)
+    Hypothesis: The Gain is near 1 so we can apporximate U = E(log(Gain)) = E - (V+E**2)/2 (limited development)
     
     :param f: A list of lists, where each sublist f[k] contains the fractions of the bankroll allocated to different outcomes of match k
     :param o: A list of lists, where each sublist o[k] contains the odds for the different outcomes of match k

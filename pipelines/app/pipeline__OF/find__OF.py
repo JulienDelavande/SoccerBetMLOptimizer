@@ -52,14 +52,16 @@ mapping_dict = {
 }
 
 
-def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_PR_LR', n_match : int = None, bookmakers : list[str] =  None) -> datetime.datetime:
+def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_PR_LR', n_matches : int = None, bookmakers : list[str] =  None, bankroll : float = 1, method='SLSQP') -> datetime.datetime:
 
     # Retrieve data from the database
     start_data_retrieval = time.time()
     try:
         datetime_first_match = datetime_first_match if datetime_first_match else datetime.datetime.now()
+        date_first_match = datetime_first_match.date()
+        time_first_match = datetime_first_match.time()
         with engine.connect() as connection:
-            df_models_results = pd.read_sql(text(query_models_results), connection, params={"date_match": datetime_first_match, "model": model})
+            df_models_results = pd.read_sql(text(query_models_results), connection, params={"date_match": date_first_match, "model": model})
             df_odds = pd.read_sql(text(query_odds), connection, params={"commence_time": datetime_first_match})
             logger.info(f"Data retrieved in {time.time() - start_data_retrieval:.2f} seconds")
     except Exception as e:
@@ -115,11 +117,11 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         df_models_results_joined = df_models_results_last_infered.merge(max_odds_df_all_mapped, left_on=['home_team', 'away_team', 'date_match'], right_on=['home_team', 'away_team', 'date_match'], how='inner')
 
         # Sort by date start
-        df_models_results_joined = df_models_results_joined.sort_values(by=['date_match', 'time_match'], ascending=False)
+        df_models_results_joined = df_models_results_joined.sort_values(by=['date_match', 'time_match'], ascending=True)
 
-        # Keep only the n_match first matches
-        if n_match:
-            df_models_results_joined = df_models_results_joined.head(n_match)
+        # Keep only the n_matches first matches
+        if n_matches:
+            df_models_results_joined = df_models_results_joined.head(n_matches)
 
         # Compute the numpy arrays of odds (o) and probabilities (r)
         o = df_models_results_joined[['odds_home', 'odds_draw', 'odds_away']].to_numpy()
@@ -136,7 +138,8 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
     start_invest = time.time()
     try:
         # Kelly
-        result_kelly = resolve_fik(o, r, player_utility_kelly_criteria)
+        obectif_kelly_fn = lambda f, o, r: player_utility_kelly_criteria(f, o, r, bankroll)
+        result_kelly = resolve_fik(o, r, obectif_kelly_fn, logger=logger, method=method)
         result_kelly[result_kelly < 1e-10] = 0
         df_models_results_joined[['f_home_kelly', 'f_draw_kelly', 'f_away_kelly']] = result_kelly
         datetime_optim = datetime.datetime.now()
@@ -195,10 +198,10 @@ if __name__ == '__main__':
     "betclic"
         ]
     
-    n_match = 10
+    n_matches = 10
     logging.info("-- Starting the OF pipeline --")
     datetime_first_match = '2024-08-26 00:00:00'
     model =  'RSF_PR_LR'
-    find__of(datetime_first_match=datetime_first_match, model=model, n_match=n_match, bookmakers=bookmaker_keys)
+    find__of(datetime_first_match=datetime_first_match, model=model, n_matches=n_matches, bookmakers=bookmaker_keys)
     logging.info("-- Pipeline completed --")
     print("Pipeline completed")

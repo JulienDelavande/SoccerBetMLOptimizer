@@ -1,62 +1,141 @@
 import datetime
-from fastapi import HTTPException
 from sqlalchemy import text
 import pandas as pd
 import requests
+import time
 
-from app._config import engine, DB_TN_OPTIM_RESULTS, PIPELINES_PROTOCOL, PIPELINES_HOST, PIPELINES_PORT, PIPELINES_ENDPOINT_OPTIMIZATION
+from optim.functions.player_gain_expected_value import player_gain_expected_value
+from optim.functions.player_gain_variance import player_gain_variance
 
+
+from app._config import DB_TN_OPTIM_RESULTS, PIPELINES_PROTOCOL, PIPELINES_HOST, PIPELINES_PORT, PIPELINES_ENDPOINT_OPTIMIZATION
+from app._config import engine
+
+import logging
+
+bookmaker_keys = [
+    "onexbet",
+    "sport888",
+    "betclic",
+    "betanysports",
+    "betfair_ex_eu",
+    "betonlineag",
+    "betsson",
+    "betvictor",
+    "coolbet",
+    "everygame",
+    "gtbets",
+    "livescorebet_eu",
+    "marathonbet",
+    "matchbook",
+    "mybookieag",
+    "nordicbet",
+    "pinnacle",
+    "suprabets",
+    "tipico_de",
+    "unibet_eu",
+    "williamhill"
+]
+
+
+logger = logging.getLogger('get_optim_results')
 query = f"SELECT * FROM {DB_TN_OPTIM_RESULTS} WHERE datetime_optim = :datetime_optim"
 URL_OPTIM = f"{PIPELINES_PROTOCOL}://{PIPELINES_HOST}:{PIPELINES_PORT}/{PIPELINES_ENDPOINT_OPTIMIZATION}"
 
-def get_optim_results(datetime_first_match: str = None, n_matchs: int = None, bookmakers: str = None):
-    # validation
-    datetime_first_match = verify_valid_datetime(datetime_first_match)
-    n_matchs = verify_valid_n_matchs(n_matchs)
-    bookmakers = verify_valid_bookmakers(bookmakers)
+def get_optim_results(datetime_first_match: str = None, n_matches: int = None, bookmakers: str = None, bankroll: float = 1, method: str = 'SLSQP'):
+    logger.info(f"Getting optim results for datetime_first_match: {datetime_first_match}, n_matches: {n_matches}, bookmakers: {bookmakers}")
 
-    # get results
-    params = {"datetime_first_match": datetime_first_match, "n_match": n_matchs, "bookmakers": bookmakers}
+    # validation
+    logger.info("Validating input parameters")
+    time_validation_start = time.time()
+    datetime_first_match = verify_valid_datetime(datetime_first_match)
+    n_matches = verify_valid_n_matches(n_matches)
+    bookmakers = verify_valid_bookmakers(bookmakers)
+    time_validation_end = time.time()
+
+    # perform optim request
+    time_optim_start = time.time()
+    params = {"datetime_first_match": datetime_first_match, "n_matches": n_matches, "bookmakers": bookmakers, "bankroll": bankroll, "method": method}
+    logger.info(f"Requesting optim results from {URL_OPTIM} with params: {params}")
     results = requests.get(URL_OPTIM, params=params)
     datetime_optim = results.json().get("datetime_optim")
+    time_request_end = time.time()
+    
+    # get results from db
+    time_db_results_start = time.time()
+    logger.info(f"Getting optim results from db for datetime_optim: {datetime_optim}")
     df_optim_results = get_optim_results_df_from_db(datetime_optim)
+    time_db_results_end = time.time()
 
-    return df_optim_results
+    # compute expected values and variance
+    time_compute_metrics_start = time.time()
+    o = df_optim_results[['odds_home', 'odds_draw', 'odds_away']].to_numpy()
+    r = df_optim_results[['prob_home_win', 'prob_draw', 'prob_away_win']].to_numpy()
+    f_kelly = df_optim_results[['f_home_kelly', 'f_draw_kelly', 'f_away_kelly']].to_numpy()
+
+    metrics = {}
+    metrics['expected_value_kelly'] = player_gain_expected_value(f_kelly, o, r, bankroll)
+    metrics['variance_kelly'] = player_gain_variance(f_kelly, o, r, bankroll)
+    metrics['total_invested'] = f_kelly.sum()*bankroll
+    time_compute_metrics_end = time.time()
+
+    # durations
+    durations = {}
+    durations['duration_validation'] = time_validation_end - time_validation_start
+    durations['duration_request'] = time_request_end - time_optim_start
+    durations['duration_db_results'] = time_db_results_end - time_db_results_start
+    durations['duration_compute_metrics'] = time_compute_metrics_end - time_compute_metrics_start
+
+    logger.info(f"Validation time: {durations['duration_validation']} seconds")
+    logging.info(f"Optim request time: {durations['duration_request']} seconds")
+    logging.info(f"DB results time: {durations['duration_db_results']} seconds")
+    logging.info(f"Compute metrics time: {durations['duration_compute_metrics']} seconds")
+
+    return df_optim_results, metrics, durations
 
 
 def get_optim_results_df_from_db(datetime_optim: str = None):
     try:
         with engine.connect() as connection:
-            df_optim_results = pd.read_sql(text(query), connection, params={"date_optim": datetime_optim})
+            df_optim_results = pd.read_sql(text(query), connection, params={"datetime_optim": datetime_optim})
         if df_optim_results.empty:
-            raise HTTPException(status_code=404, detail="No results found for the given date")
+            logger.info(f"No results found for datetime_optim: {datetime_optim}")
+            logger.error(f"No results found for datetime_optim: {datetime_optim}")
+            raise ValueError
+        max_datetime_optim = df_optim_results["datetime_optim"].max()
+        df_optim_results = df_optim_results[df_optim_results["datetime_optim"] == max_datetime_optim]
+        logger.info(f"Results found for datetime_optim: {datetime_optim}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving optim results: {str(e)}")
-    max_datetime_optim = df_optim_results["datetime_optim"].max()
-    df_optim_results = df_optim_results[df_optim_results["datetime_optim"] == max_datetime_optim]
+        logging.info(f"Failed to get results from db: {str(e)}")
+        logger.error(f"Failed to get results from db: {str(e)}")
+        raise e
     return df_optim_results
     
      
-def verify_valid_datetime(date_optim: str = None):
+def verify_valid_datetime(datetime_optim: str = None):
     """verify date_optim is a string and convert to datetime"""
-    if not date_optim:
-        date_optim = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if not datetime_optim:
+        datetime_optim = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
-        date_optim = datetime.datetime.strptime(date_optim, "%Y-%m-%d %H:%M:%S")
+        logger.info(f"Converting datetime_optim: {datetime_optim}")
+        datetime_optim = datetime.datetime.strptime(datetime_optim, "%Y-%m-%d %H:%M:%S")
     except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD HH:MM:SS")
-    return date_optim
+        logger.error(f"Invalid date format: {datetime_optim}")
+        raise ValueError
+    return datetime_optim
 
-def verify_valid_n_matchs(n_matchs: int = None):
-    """verify n_matchs is an integer and positive, if string convert to int"""
-    if n_matchs:
+def verify_valid_n_matches(n_matches: int = None):
+    """verify n_matches is an integer and positive, if string convert to int"""
+    if n_matches:
         try:
-            n_matchs = int(n_matchs)
-            if n_matchs < 0:
+            n_matches = int(n_matches)
+            if n_matches < 0:
+                logger.error(f"Invalid n_matches: {n_matches}")
                 raise ValueError
         except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid n_matchs. Must be a positive integer")
-    return n_matchs
+            logger.error(f"Invalid n_matches: {n_matches}")
+            raise ValueError
+    return n_matches
 
 def verify_valid_bookmakers(bookmakers: str = None):
     """verify bookmakers is a string, if not return None"""
@@ -64,11 +143,20 @@ def verify_valid_bookmakers(bookmakers: str = None):
         try:
             bookmakers = str(bookmakers)
             bookmakers = bookmakers.split(",")
+            for bookmaker in bookmakers:
+                if bookmaker not in bookmaker_keys:
+                    logger.error(f"Invalid bookmaker: {bookmaker}")
+                    raise ValueError
+            bookmakers = ",".join(bookmakers)
         except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid bookmakers. Must be a string")
+            logger.error(f"Invalid bookmakers: {bookmakers}")
+            raise ValueError
     return bookmakers
 
 
 if __name__ == "__main__":
-    df = get_optim_results("2024-09-04")
+    datetime_first_match = "2024-09-04 00:00:00"
+    n_match = 10
+    bookmakers = "onexbet,sport888,betclic"
+    df = get_optim_results(datetime_first_match, n_match, bookmakers)
     print(df)

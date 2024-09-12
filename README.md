@@ -254,11 +254,11 @@ To deploy the project on Kubernetes, you can run the following command:
 kubectl apply -f k8s/
 ```
 
-To deploy the project Airflow with helm, you can run the following command:
+Then to deploy Airflow pods using helm, you can run the following command:
 
 ```bash
 helm repo add apache-airflow https://airflow.apache.org
-helm upgrade --install airflow apache-airflow/airflow -f airflow-values.yaml
+helm upgrade --install airflow apache-airflow/airflow -f k8s/airflow-values.yaml
 ```
 
 ### Access the services

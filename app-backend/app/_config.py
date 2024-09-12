@@ -9,6 +9,8 @@ from pathlib import Path
 from rich.logging import RichHandler
 from logger.postgressqlhandler import PostgreSQLHandler
 
+
+
 # environment variables
 ENV_VARS_REQUIRED = ["DB_TYPE", "DB_PILOT", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME",
                         "DB_TN_FBREF_RESULTS", "DB_TN_MODELS_RESULTS", "DB_TN_OPTIM_RESULTS",
@@ -46,6 +48,7 @@ for var in ENV_VARS_REQUIRED:
 
 # database connection
 DB_URL = f'{DB_TYPE}+{DB_PILOT}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+print(f'DB_URL = {DB_URL}')
 engine = create_engine(DB_URL)
 
 # logger

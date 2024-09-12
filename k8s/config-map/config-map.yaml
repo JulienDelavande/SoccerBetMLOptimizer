@@ -9,7 +9,7 @@ data:
   ## API
   DATA_INGESTION_PROTOCOL : http
   DATA_INGESTION_HOST : data-ingestion-service
-  DATA_INGESTION_PORT : "8200"
+  DATA_INGESTION_PORT : "8100"
   DATA_INGESTION_ENDPOINT_FBREF : fbref
   DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS : the_odds_api/odds
   ## Other
@@ -19,7 +19,7 @@ data:
   ## API
   PIPELINES_PROTOCOL : http
   PIPELINES_HOST : pipelines-service
-  PIPELINES_PORT : "8201"
+  PIPELINES_PORT : "8101"
   PIPELINES_ENDPOINT_INFERENCE : infer/RSF_PR_LR
   PIPELINES_ENDPOINT_OPTIMIZATION : optim
 
@@ -27,19 +27,19 @@ data:
   ## API
   MLFLOW_PROTOCOL : http
   MLFLOW_HOST : mlflow-service
-  MLFLOW_WEBSERVER_PORT : "8202"
+  MLFLOW_WEBSERVER_PORT : "8102"
 
   # App-backend
   ## API
   APP_BACKEND_PROTOCOL : http
   APP_BACKEND_HOST : app-backend-service
-  APP_BACKEND_PORT : "8203"
+  APP_BACKEND_PORT : "8103"
 
   # App-frontend
   ## API
   APP_FRONTEND_PROTOCOL : http
   APP_FRONTEND_URL : app-frontend-service
-  APP_FRONTEND_PORT : "8204"
+  APP_FRONTEND_PORT : "8104"
 
   # DATABASE
   ## API
