@@ -1,5 +1,8 @@
 VENV = venv
 
+# export $(grep -v '^#' .env)
+# export $(grep -v '^#' secrets.env)
+
 ifneq (,$(wildcard ./.env))
     include .env
     export
@@ -11,19 +14,19 @@ ifneq (,$(wildcard ./secrets.env))
 endif
 
 test:
-	@echo $$ | awk '{print Hello $$1 pid}' >> .pid
+	@echo $(DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS)
 
 start-data-ingestion:
 	@source $(VENV)/Scripts/activate && \
-	cd data-service && \
-	uvicorn main:app --port $(DATA_INGESTION_SERVICE_NPORT) --reload & \
+	cd data-ingestion && \
+	uvicorn main:app --port $(DATA_INGESTION_PORT) --reload >> logs/stdout.log 2>> logs/stderr.log & \
 	PID=$$! && \
 	echo $$((PID + 1)) >> .pid
 
 start-pipelines:
 	@source $(VENV)/Scripts/activate && \
 	cd pipelines && \
-	uvicorn main:app --port $(PIPELINES_SERVICE_NPORT) --reload & \
+	uvicorn main:app --port $(PIPELINES_PORT) --reload >> logs/stdout.log 2>> logs/stderr.log & \
 	PID=$$! && \
 	echo $$((PID + 1)) >> .pid
 
@@ -31,21 +34,22 @@ start-mlflow:
 	@source $(VENV)/Scripts/activate && \
 	cd mlflow && \
 	mlflow server --host 0.0.0.0 \
-              --port $(MLFLOW_WEBSERVER_CONTAINER_PORT) & \
+              --port $(MLFLOW_PORT) >> logs/stdout.log 2>> logs/stderr.log & \
 	PID=$$! && \
 	echo $$((PID + 1)) >> .pid
 
 start-frontend:
 	@source $(VENV)/Scripts/activate && \
+	printenv DB_PASSWORD | cat -v && \
 	cd app-frontend && \
-	streamlit run main.py --server.port $(PIPELINES_SERVICE_NPORT) & \
+	streamlit run main.py --server.port $(APP_FRONTEND_PORT) & \
 	PID=$$! && \
 	echo $$((PID + 1)) >> .pid
 
 start-backend:
 	@source $(VENV)/Scripts/activate && \
 	cd app-backend && \
-	uvicorn main:app --port $(APP_BACKEND_PORT) --reload & \
+	uvicorn main:app --port $(APP_BACKEND_PORT) --reload >> logs/stdout.log 2>> logs/stderr.log & \
 	PID=$$! && \
 	echo $$((PID + 1)) >> .pid
 
@@ -62,8 +66,8 @@ APP_BACKEND_TAG = 1.1
 APP_FRONTEND_TAG = 1.1
 
 stop:
-	@cat .pid | xargs kill -9
-	@rm .pid
+	@cat .pid | xargs kill -9 || true
+	@rm -f .pid
 
 build:
 	@docker compose --env-file .env --env-file compose.env -f compose.yml build

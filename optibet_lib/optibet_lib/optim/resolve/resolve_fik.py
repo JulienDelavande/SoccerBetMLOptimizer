@@ -2,7 +2,7 @@
 import numpy as np
 from scipy.optimize import minimize
 
-def resolve_fik(o, r, objectif):
+def resolve_fik(o, r, objectif, logger = None, method='SLSQP'):
 
     M = len(o)
     N = len(o[0])
@@ -20,7 +20,8 @@ def resolve_fik(o, r, objectif):
     f0 = np.ones(M * N) / (M * N)
 
     # Résolution de l'optimisation
-    result = minimize(objectif, f0, constraints=constraints, bounds=bounds, args=(o, r))
+    logger.info(f"Optimisation started with method: {method}")
+    result = minimize(objectif, f0, constraints=constraints, bounds=bounds, args=(o, r), method=method)
 
     # Résultats
     if result.success:
@@ -30,6 +31,8 @@ def resolve_fik(o, r, objectif):
         return f_optimal
     else:
         print("L'optimisation a échoué:", result.message)
+        if logger:
+            logger.error(f"Optimisation failed: {result.message}")
         return np.zeros((M, N))
 
     
