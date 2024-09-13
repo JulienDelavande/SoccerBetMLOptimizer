@@ -4,18 +4,23 @@ from airflow.utils.dates import days_ago
 from datetime import timedelta
 import os
 
-DATA_INGESTION_SERVICE_NAME = os.getenv("DATA_INGESTION_SERVICE_NAME", "data_ingestion")
-DATA_INGESTION_SERVICE_NPORT = os.getenv("DATA_INGESTION_SERVICE_NPORT", "8000")
-DATA_INGESTION_SERVICE_PROTOCOL = os.getenv("DATA_INGESTION_SERVICE_PROTOCOL", "http")
-DATA_INGESTION_FBREF_ENDPOINT = os.getenv("DATA_INGESTION_FBREF_ENDPOINT", "fbref")
-DATA_INGESTION_SOFIFA_TEAM_STATS_ENDPOINT = os.getenv("DATA_INGESTION_SOFIFA_TEAM_STATS_ENDPOINT", "sofifa/team_stats")
-DATA_INGESTION_THE_ODDS_API_ODDS_ENDPOINT = os.getenv("DATA_INGESTION_THE_ODDS_API_ODDS_ENDPOINT", "the_odds_api/odds")
+# Data Ingestion
+## API
+DATA_INGESTION_PROTOCOL = os.getenv("DATA_INGESTION_SERVICE_PROTOCOL")
+DATA_INGESTION_HOST = os.getenv("DATA_INGESTION_SERVICE_NAME")
+DATA_INGESTION_PORT = os.getenv("DATA_INGESTION_SERVICE_NPORT")
+DATA_INGESTION_ENDPOINT_FBREF = os.getenv("DATA_INGESTION_FBREF_ENDPOINT")
+DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS = os.getenv("DATA_INGESTION_THE_ODDS_API_ODDS_ENDPOINT")
+DATA_INGESTION_ENDPOINT_SOFIFA_TEAMS_STATS = os.getenv("DATA_INGESTION_SOFIFA_TEAM_STATS_ENDPOINT")
+SOCCERDATA_DIR = os.getenv("SOCCERDATA_DIR")
+# Pipelines
+## API
+PIPELINES_PROTOCOL = os.getenv("PIPELINES_SERVICE_PROTOCOL")
+PIPELINES_HOST = os.getenv("PIPELINES_SERVICE_NAME")
+PIPELINES_PORT = os.getenv("PIPELINES_SERVICE_NPORT")
+PIPELINES_ENDPOINT_INFERENCE = os.getenv("PIPELINES_ENDPOINT_INFERENCE")
+PIPELINES_ENDPOINT_OPTIMIZATION = os.getenv("PIPELINES_ENDPOINT_OPTIMIZATION")
 
-PIPELINES_SERVICE_NAME = os.getenv("PIPELINES_SERVICE_NAME", "pipelines")
-PIPELINES_SERVICE_NPORT = os.getenv("PIPELINES_SERVICE_NPORT", "8001")
-PIPELINES_SERVICE_PROTOCOL = os.getenv("PIPELINES_SERVICE_PROTOCOL", "http")
-PIPELINES_SERVICE_INFERENCE_ENDPOINT = os.getenv("PIPELINES_SERVICE_INFERENCE_ENDPOINT", "infer")
-PIPELINES_SERVICE_OPTIMIZATION_ENDPOINT = os.getenv("PIPELINES_SERVICE_OPTIMIZATION_ENDPOINT", "optimize")
 
 # Configuration du DAG
 default_args = {
@@ -38,31 +43,31 @@ dag = DAG(
 
 ingest_fbref_data = BashOperator(
     task_id='ingest_fbref_data',
-    bash_command=f'curl -X GET "{DATA_INGESTION_SERVICE_PROTOCOL}://{DATA_INGESTION_SERVICE_NAME}:{DATA_INGESTION_SERVICE_NPORT}/{DATA_INGESTION_FBREF_ENDPOINT}" -H "accept: application/json"',
+    bash_command=f'curl -X GET "{DATA_INGESTION_PROTOCOL}://{DATA_INGESTION_HOST}:{DATA_INGESTION_PORT}/{DATA_INGESTION_ENDPOINT_FBREF}" -H "accept: application/json"',
     dag=dag,
 )
 
 ingest_sofifa_team_stats_data = BashOperator(
     task_id='ingest_sofifa_team_stats_data',
-    bash_command=f'curl -X GET "{DATA_INGESTION_SERVICE_PROTOCOL}://{DATA_INGESTION_SERVICE_NAME}:{DATA_INGESTION_SERVICE_NPORT}/{DATA_INGESTION_SOFIFA_TEAM_STATS_ENDPOINT}" -H "accept: application/json"',
+    bash_command=f'curl -X GET "{DATA_INGESTION_PROTOCOL}://{DATA_INGESTION_HOST}:{DATA_INGESTION_PORT}/{DATA_INGESTION_ENDPOINT_SOFIFA_TEAMS_STATS}" -H "accept: application/json"',
     dag=dag,
 )
 
 ingest_the_odds_api_odds_data = BashOperator(
     task_id='ingest_the_odds_api_odds_data',
-    bash_command=f'curl -X GET "{DATA_INGESTION_SERVICE_PROTOCOL}://{DATA_INGESTION_SERVICE_NAME}:{DATA_INGESTION_SERVICE_NPORT}/{DATA_INGESTION_THE_ODDS_API_ODDS_ENDPOINT}" -H "accept: application/json"',
+    bash_command=f'curl -X GET "{DATA_INGESTION_PROTOCOL}://{DATA_INGESTION_HOST}:{DATA_INGESTION_PORT}/{DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS}" -H "accept: application/json"',
     dag=dag,
 )
 
 infer_match_results = BashOperator(
     task_id='infer_match_results',
-    bash_command=f'curl -X GET "{DATA_INGESTION_SERVICE_PROTOCOL}://{PIPELINES_SERVICE_NAME}:{PIPELINES_SERVICE_NPORT}/{PIPELINES_SERVICE_INFERENCE_ENDPOINT}" -H "accept: application/json"',
+    bash_command=f'curl -X GET "{PIPELINES_PROTOCOL}://{PIPELINES_HOST}:{PIPELINES_PORT}/{PIPELINES_ENDPOINT_INFERENCE}" -H "accept: application/json"',
     dag=dag,
 )
 
 optimize_bankroll_to_invest = BashOperator(
     task_id='optimize_bankroll_to_invest',
-    bash_command=f'curl -X GET "{PIPELINES_SERVICE_PROTOCOL}://{PIPELINES_SERVICE_NAME}:{PIPELINES_SERVICE_NPORT}/{PIPELINES_SERVICE_OPTIMIZATION_ENDPOINT}" -H "accept: application/json"',
+    bash_command=f'curl -X GET "{PIPELINES_PROTOCOL}://{PIPELINES_HOST}:{PIPELINES_PORT}/{PIPELINES_ENDPOINT_INFERENCE}" -H "accept: application/json"',
     dag=dag,
 )
 

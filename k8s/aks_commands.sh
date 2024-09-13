@@ -50,6 +50,7 @@ az acr repository list --name optimsportbets --output table
 
 # Create aks deployment
 kubectl apply -f k8s/deployment.yaml
+kubectl apply -R -f k8s/manifests/
 kubectl get pods
 kubectl logs <pod-name>
 kubectl describe pod <pod-name>
@@ -60,7 +61,7 @@ helm repo add apache-airflow https://airflow.apache.org
 helm upgrade --install airflow apache-airflow/airflow -f airflow-values.yaml 
 
 # se connecter à airflow  webserver cluster ip
-kubectl port-forward svc/airflow-webserver 8002:8080 --namespace default
+kubectl port-forward svc/airflow-webserver 8102:8080 --namespace default
 
 ssh-keygen -t rsa -b 4096 -C "airflow-kube@headmind.com" -f airflow_kube_ssh_key
 

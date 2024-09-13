@@ -13,8 +13,13 @@ ifneq (,$(wildcard ./secrets.env))
     export
 endif
 
-test:
-	@echo $(DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS)
+# Comment this line if you don't want to use compose.env
+ifneq (,$(wildcard ./compose.env))
+    include compose.env
+    export
+endif
+##############################################
+
 
 start-data-ingestion:
 	@source $(VENV)/Scripts/activate && \
@@ -59,33 +64,42 @@ start: start-data-ingestion start-pipelines start-mlflow start-frontend start-ba
 
 CONTAINER_REGISTRY = optimsportbets.azurecr.io
 IMAGE_PREFIX = optim-sportbet
-DATA_INGESTION_TAG = 1.1
-PIPELINES_TAG = 1.1
-MLFLOW_TAG = 1.2
-APP_BACKEND_TAG = 1.1
-APP_FRONTEND_TAG = 1.1
+DATA_INGESTION_TAG = 1.2
+PIPELINES_TAG = 1.2
+MLFLOW_TAG = 1.3
+APP_BACKEND_TAG = 1.2
+APP_FRONTEND_TAG = 1.2
 
 stop:
 	@cat .pid | xargs kill -9 || true
 	@rm -f .pid
 
 build:
-	@docker compose --env-file .env --env-file compose.env -f compose.yml build
+	docker compose build
 
 up:
-	@docker compose --env-file .env --env-file compose.env -f compose.yml up
+	docker compose up
 
 tag:
-	@docker tag $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG) $(IMAGE_PREFIX)-data-ingestion:latest
-	@docker tag $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) $(IMAGE_PREFIX)-pipelines:latest
-	@docker tag $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG) $(IMAGE_PREFIX)-mlflow:latest
-	@docker tag $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG) $(IMAGE_PREFIX)-app-backend:latest
-	@docker tag $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG) $(IMAGE_PREFIX)-app-frontend:latest
+	docker tag $(IMAGE_PREFIX)-data-ingestion:latest $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG)
+	docker tag $(IMAGE_PREFIX)-pipelines:latest	     $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) 
+	docker tag $(IMAGE_PREFIX)-mlflow:latest		 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG) 
+	docker tag $(IMAGE_PREFIX)-app-backend:latest	 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_FRONTEND_TAG)
+	docker tag $(IMAGE_PREFIX)-app-frontend:latest   $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_BACKEND_TAG)
+
+tag-mlflow:
+	docker tag $(IMAGE_PREFIX)-mlflow:latest		 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG)
 
 push:
-	@docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG)
-	@docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG)
-	@docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG)
-	@docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG)
-	@docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG)
+	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG)
+	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG)
+	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG)
+	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG)
+	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG)
 
+push-mlflow:
+	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG)
+
+test:
+	export $(grep -v '^#' compose.env)
+	printenv DATA_INGESTION_HOST

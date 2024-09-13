@@ -12,6 +12,7 @@ data:
   DATA_INGESTION_PORT : "8100"
   DATA_INGESTION_ENDPOINT_FBREF : fbref
   DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS : the_odds_api/odds
+  DATA_INGESTION_ENDPOINT_SOFIFA_TEAMS_STATS : sofifa/team_stats
   ## Other
   SOCCERDATA_DIR : lib/soccerdata
 
@@ -27,13 +28,14 @@ data:
   ## API
   MLFLOW_PROTOCOL : http
   MLFLOW_HOST : mlflow-service
-  MLFLOW_WEBSERVER_PORT : "8102"
+  MLFLOW_PORT : "8102"
 
   # App-backend
   ## API
   APP_BACKEND_PROTOCOL : http
   APP_BACKEND_HOST : app-backend-service
   APP_BACKEND_PORT : "8103"
+  APP_BACKEND_ENDPOINT_COMPUTE_PREDICTIONS : compute/predictions
 
   # App-frontend
   ## API
@@ -49,7 +51,6 @@ data:
   DB_HOST : soccerodds-psql-db.postgres.database.azure.com
   DB_PORT : "5432"
   ## Structure
-  DB_PORT : "5432"
   DB_NAME : postgres
   DB_TN_MATCHES : matches
   DB_TN_ODDS_EURO : odds_euro

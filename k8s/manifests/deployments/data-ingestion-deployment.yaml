@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
       - name: data-ingestion
-        image: optimsportbets.azurecr.io/optim-sportbet-data-ingestion:1.0
+        image: optimsportbets.azurecr.io/optim-sportbet-data-ingestion:1.2
         ports:
-        - containerPort: 8200
+        - containerPort: 8100
         envFrom:
         - configMapRef:
             name: global-config
@@ -31,9 +31,9 @@ kind: Service
 metadata:
   name: data-ingestion-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-  - port: 8000
+  - port: 8100
     targetPort: 80
   selector:
     app: data-ingestion
