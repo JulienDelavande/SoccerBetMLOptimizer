@@ -3,7 +3,7 @@ import requests
 import os
 import pandas as pd
 
-from app._config import APP_BACKEND_API
+from app._config import APP_BACKEND_API, APP_BACKEND_ENDPOINT_COMPUTE_PREDICTIONS
 
 st.set_page_config(layout="wide")
 
@@ -63,7 +63,7 @@ if search_button:
     st.session_state.bankroll = bankroll
     bookmakers = ','.join(bookmaker_keys)
     params = {"datetime_first_match": datetime_first_match, "n_matches": n_matches, "bookmakers": bookmakers, "bankroll": bankroll, "method": method}
-    response = requests.get(f"{APP_BACKEND_API}/optim_results", params=params)
+    response = requests.get(f"{APP_BACKEND_API}/{APP_BACKEND_ENDPOINT_COMPUTE_PREDICTIONS}", params=params)
     if response.status_code == 200:
         response_json = response.json()
         df_optim_results, metrics, durations = response_json['df_optim_results'], response_json['metrics'], response_json['durations']

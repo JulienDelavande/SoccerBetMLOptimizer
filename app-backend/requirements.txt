@@ -4,3 +4,4 @@ sqlalchemy
 pandas
 rich
 psycopg2-binary
+requests

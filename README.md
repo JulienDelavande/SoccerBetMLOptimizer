@@ -186,6 +186,7 @@ Put the results in the acr_secret.yaml file.
 #### k8s/secrets_template/airflow-azure-devops-secrets.yaml
 
 Modify the `GIT_SYNC_USERNAME` and `GIT_SYNC_PASSWORD` fields with the credentials of a user that has access to the repository.
+You can a azure service principal to access the repository in the repo configuration.
 For example the service principal named `gitalcicd` from the Azure subscription has full access to the repository. Don't forget to encode the credentials.
 
 ```bash

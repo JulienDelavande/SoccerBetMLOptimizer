@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-frontend
+  name: app-backend
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app-frontend
+      app: app-backend
   template:
     metadata:
       labels:
-        app: app-frontend
+        app: app-backend
     spec:
       containers:
-      - name: app-frontend
-        image: optimsportbets.azurecr.io/optim-sportbet-app-frontend:1.0
+      - name: app-backend
+        image: optimsportbets.azurecr.io/optim-sportbet-app-backend:1.2
         ports:
-        - containerPort: 8204
+        - containerPort: 8103
         envFrom:
         - configMapRef:
             name: global-config
@@ -29,11 +29,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-frontend-service
+  name: app-backend-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-  - port: 8204
+  - port: 8103
     targetPort: 80
   selector:
-    app: app-frontend
+    app: app-backend

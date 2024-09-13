@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile
     image: optim-sportbet-data-ingestion:latest
     ports:
-      - "${DATA_INGESTION_PORT:-8000}:80"
+      - "${DATA_INGESTION_PORT_BRIDGE:-8000}:${DATA_INGESTION_PORT:-80}"
 
   pipelines:
     <<: *osportbet-common
@@ -26,7 +26,7 @@ services:
       dockerfile: Dockerfile
     image: optim-sportbet-pipelines:latest
     ports:
-      - "${PIPELINES_PORT:-8001}:80"
+      - "${PIPELINES_PORT_BRIDGE:-8001}:${PIPELINES_PORT:-80}"
 
   mlflow:
     <<: *osportbet-common
@@ -35,7 +35,7 @@ services:
       dockerfile: Dockerfile
     image: optim-sportbet-mlflow:latest
     ports:
-      - "${MLFLOW_PORT:-8002}:80"
+      - "${MLFLOW_PORT_BRIDGE:-8002}:${MLFLOW_PORT:-80}"
 
   app-backend:
     <<: *osportbet-common
@@ -44,7 +44,7 @@ services:
        dockerfile: Dockerfile
     image: optim-sportbet-app-backend:latest
     ports:
-      - "${APP_BACKEND_PORT:-8003}:80"
+      - "${APP_BACKEND_PORT_BRIDGE:-8003}:${APP_BACKEND_PORT:-80}"
     
   app-frontend:
     <<: *osportbet-common
@@ -53,7 +53,7 @@ services:
        dockerfile: Dockerfile
     image: optim-sportbet-app-frontend:latest
     ports:
-      - "${APP_FRONTEND_PORT:-8004}:80"
+      - "${APP_FRONTEND_PORT_BRIDGE:-8004}:${APP_FRONTEND_PORT:-80}"
 
 networks:
   optim-sportbet-network:

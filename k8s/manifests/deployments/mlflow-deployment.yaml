@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-backend
+  name: mlflow
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app-backend
+      app: mlflow
   template:
     metadata:
       labels:
-        app: app-backend
+        app: mlflow
     spec:
       containers:
-      - name: app-backend
-        image: optimsportbets.azurecr.io/optim-sportbet-app-backend:1.0
+      - name: mlflow
+        image: optimsportbets.azurecr.io/optim-sportbet-mlflow:1.3
         ports:
-        - containerPort: 8203
+        - containerPort: 8102
         envFrom:
         - configMapRef:
             name: global-config
@@ -29,11 +29,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-backend-service
+  name: mlflow-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-  - port: 8203
+  - port: 8102
     targetPort: 80
   selector:
-    app: app-backend
+    app: mlflow

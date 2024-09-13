@@ -13,7 +13,7 @@ __pycache__/
 **/soccerdata/logs/*
 **/logs/*
 
-k8s/secrets/
+k8s/manifests/secrets/
 
 .pid
 .vscode/

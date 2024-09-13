@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
       - name: pipelines
-        image: optimsportbets.azurecr.io/optim-sportbet-pipelines:1.0
+        image: optimsportbets.azurecr.io/optim-sportbet-pipelines:1.2
         ports:
-        - containerPort: 8201
+        - containerPort: 8101
         envFrom:
         - configMapRef:
             name: global-config
@@ -31,9 +31,9 @@ kind: Service
 metadata:
   name: pipelines-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-  - port: 8201
+  - port: 8101
     targetPort: 80
   selector:
     app: pipelines
