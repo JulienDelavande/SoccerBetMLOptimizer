@@ -1,6 +1,6 @@
 dags:
   persistence:
-    enabled: false
+    enabled: true
   gitSync:
     enabled: true
     repo: https://dev.azure.com/jdelavande/_git/optim-sportbet

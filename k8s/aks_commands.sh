@@ -68,3 +68,5 @@ ssh-keygen -t rsa -b 4096 -C "airflow-kube@headmind.com" -f airflow_kube_ssh_key
 az ad sp create-for-rbac --name OptimSB-ContributorApp --role Contributor --scopes /subscriptions/dc0686fc-bdbf-4f78-9f07-ec7bd5755e35/resourceGroups/Optim-SportBets --query "{clientId:appId, clientSecret:password, tenantId:tenant}"
 az ad sp create-for-rbac --name ACR-OptimSB-ContributorApp --scopes $(az acr show --name optimsportbets --query id --output tsv) --role acrpull --query "{clientId:appId, clientSecret:password, tenantId:tenant}"
 az ad sp create-for-rbac --name OptimSB-service-principal --role Contributor --scopes /subscriptions/dc0686fc-bdbf-4f78-9f07-ec7bd5755e35/resourceGroups/Optim-SportBets
+
+kubectl logs airflow-worker-0 -c git-sync-init
