@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-ingestion
+  namespace: {{ .Release.namespace }}
+spec:
+  replicas: {{ .Values.services.dataIngestion.replicas }}
+  selector:
+    matchLabels:
+      app: data-ingestion
+  template:
+    metadata:
+      labels:
+        app: data-ingestion
+    spec:
+      containers:
+      - name: data-ingestion
+        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.dataIngestion.image }}:{{ .Values.services.dataIngestion.tag }}"
+        ports:
+        - containerPort: {{ .Values.services.dataIngestion.port }}
+        env:
+        {{ include "inject_db_password" . | nindent 10 }}
+        {{ include "inject_api_key" . | nindent 10 }} 
+        envFrom:
+        - configMapRef:
+            name: global-config
+        - secretRef:
+            name: {{ .Values.services.dataIngestion.apiKeys.envFrom | default "api-keys-secrets" }}  # API keys secret
+
+      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      imagePullSecrets:
+        - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+      {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.services.dataIngestion.host }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.services.dataIngestion.port }}
+    targetPort: 80
+  selector:
+    app: data-ingestion

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-backend
+  namespace: {{ .Release.namespace }}
+spec:
+  replicas: {{ .Values.services.appBackend.replicas }}
+  selector:
+    matchLabels:
+      app: app-backend
+  template:
+    metadata:
+      labels:
+        app: app-backend
+    spec:
+      containers:
+      - name: app-backend
+        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.appBackend.image }}:{{ .Values.services.appBackend.tag }}"
+        ports:
+        - containerPort: {{ .Values.services.appBackend.port }}
+        env:
+          {{ include "inject_db_password" . | nindent 10 }}  # Utilisation de indent pour corriger l'indentation dans l'environnement
+        envFrom:
+        - configMapRef:
+            name: global-config
+
+      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      imagePullSecrets:
+        - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+      {{- end }}
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.services.appBackend.host }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.services.appBackend.port }}
+    targetPort: 80
+  selector:
+    app: app-backend

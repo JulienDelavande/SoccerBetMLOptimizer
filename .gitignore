@@ -14,6 +14,7 @@ __pycache__/
 **/logs/*
 
 k8s/manifests/secrets/
+k8s/helm-deploy/secrets/
 
 .pid
 .vscode/
