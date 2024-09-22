@@ -1,0 +1,86 @@
+containerRegistry:
+  registry: delavandejulien
+  imagePullSecrets:
+    name: cr-secret
+    enabled: false
+
+global:
+  envRef: global-config
+
+postgresql:
+  auth:
+    username: kube-user
+    database: optimsportbets-db
+    existingSecret: db-credentials-secrets # Utilisation du secret existant
+    secretKeys:
+      adminPasswordKey: admin-password  # Clé pour le mot de passe admin dans le secret
+      userPasswordKey: db-password         # Clé pour le mot de passe utilisateur dans le secret
+  service:
+    type: ClusterIP                       # Type de service (ClusterIP pour une exposition interne)
+    ports:
+      postgresql: "5432"                    # Port PostgreSQL
+  fullnameOverride: postgresql-svc  # Nom du service exposé
+
+airflow:
+  dags:
+    gitSync:
+      enabled: true
+      repo: git@github.com:JulienDelavande/SoccerBetMLOptimizer.git
+      branch: dev
+      rev: HEAD
+      depth: 1
+      maxFailures: 1
+      subPath: "airflow/dags"
+      wait: 60
+      containerName: git-sync
+      uid: 65533
+      sshSecret: airflow-ssh-secret
+      sshSecretKey: id_rsa
+  extraEnvFrom: |-
+    - configMapRef:
+        name: global-config
+
+mlFlow:
+  service:
+    port: "5000"
+    name: mlflow-svc
+
+services:
+  dataIngestion:
+    host: data-ingestion-svc
+    image: optim-sportbet-data-ingestion
+    tag: 1.2
+    port: "8100"
+    replica: 1
+    apiKeys:
+      # Option 1 : L'utilisateur peut fournir un chemin de fichier contenant la clé API
+      existingSecret: api-keys-secrets  # Insérer le nom du secret contenant la clé API
+      SecretKeys:
+        theOddsApiKey: theOddsApiKey
+      # Option 2 : L'utilisateur peut directement fournir la clé API dans `values.yaml`
+      theOddsApiKey: ""  # Insérer directement la clé API ici si `existingApiKeySecret` est vide
+
+  pipelines:
+    host: pipelines-svc
+    image: optim-sportbet-pipelines
+    tag: 1.2
+    port: "8101"
+    replica: 1
+
+  appBackend:
+    host: app-backend-svc
+    image: optim-sportbet-app-backend
+    tag: 1.2
+    port: "8103"
+    replica: 1
+
+  appFrontend:
+    host: app-frontend-svc
+    image: optim-sportbet-app-frontend
+    tag: 1.2
+    port: "8104"
+    replica: 1
+
+  
+
+

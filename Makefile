@@ -62,7 +62,8 @@ start: start-data-ingestion start-pipelines start-mlflow start-frontend start-ba
 
 # Docker
 
-CONTAINER_REGISTRY = optimsportbets.azurecr.io
+# CONTAINER_REGISTRY = optimsportbets.azurecr.io
+CONTAINER_REGISTRY = delavandejulien
 IMAGE_PREFIX = optim-sportbet
 DATA_INGESTION_TAG = 1.2
 PIPELINES_TAG = 1.2
@@ -83,7 +84,6 @@ up:
 tag:
 	docker tag $(IMAGE_PREFIX)-data-ingestion:latest $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG)
 	docker tag $(IMAGE_PREFIX)-pipelines:latest	     $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) 
-	docker tag $(IMAGE_PREFIX)-mlflow:latest		 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG) 
 	docker tag $(IMAGE_PREFIX)-app-backend:latest	 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_FRONTEND_TAG)
 	docker tag $(IMAGE_PREFIX)-app-frontend:latest   $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_BACKEND_TAG)
 
@@ -93,7 +93,6 @@ tag-mlflow:
 push:
 	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG)
 	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG)
-	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG)
 	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG)
 	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG)
 
