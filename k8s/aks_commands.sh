@@ -58,7 +58,7 @@ kubectl exec -it <pod-name> -- /bin/bash
 
 # Install Airflow
 helm repo add apache-airflow https://airflow.apache.org
-helm upgrade --install airflow apache-airflow/airflow -f airflow-values.yaml 
+helm upgrade --install airflow apache-airflow/airflow -f k8s/helm-charts/airflow-values.yaml 
 
 # se connecter à airflow  webserver cluster ip
 kubectl port-forward svc/airflow-webserver 8102:8080 --namespace default
@@ -70,3 +70,9 @@ az ad sp create-for-rbac --name ACR-OptimSB-ContributorApp --scopes $(az acr sho
 az ad sp create-for-rbac --name OptimSB-service-principal --role Contributor --scopes /subscriptions/dc0686fc-bdbf-4f78-9f07-ec7bd5755e35/resourceGroups/Optim-SportBets
 
 kubectl logs airflow-worker-0 -c git-sync-init
+
+pg_dump -U $DB_USER -h $DB_HOST -d $DB_NAME -F c -b -v -f database_backup.sql
+
+KUBECONFIG=config:k3s.yaml kubectl config view --merge --flatten > merged-config
+$ kubectl config use-context default
+kubectl config get-contexts
