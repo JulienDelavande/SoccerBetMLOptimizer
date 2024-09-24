@@ -56,3 +56,7 @@ class OptimRequest(BaseModel):
         "SLSQP", 
         description=f"Optimisation method to use (choose from {optim_methods})"
     )
+    utility_fn: Optional[Literal["Kelly"]] = Query(
+        "Kelly", 
+        description="Utility function to use for the optimisation"
+    )

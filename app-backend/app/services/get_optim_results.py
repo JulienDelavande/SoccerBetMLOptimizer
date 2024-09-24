@@ -42,7 +42,7 @@ logger = logging.getLogger('get_optim_results')
 query = f"SELECT * FROM {DB_TN_OPTIM_RESULTS} WHERE datetime_optim = :datetime_optim"
 URL_OPTIM = f"{PIPELINES_PROTOCOL}://{PIPELINES_HOST}:{PIPELINES_PORT}/{PIPELINES_ENDPOINT_OPTIMIZATION}"
 
-def get_optim_results(datetime_first_match: str = None, n_matches: int = None, bookmakers: str = None, bankroll: float = 1, method: str = 'SLSQP'):
+def get_optim_results(datetime_first_match: str = None, n_matches: int = None, bookmakers: str = None, bankroll: float = 1, method: str = 'SLSQP', utility_fn: str = 'Kelly'):
     logger.info(f"Getting optim results for datetime_first_match: {datetime_first_match}, n_matches: {n_matches}, bookmakers: {bookmakers}")
 
     # validation
@@ -55,7 +55,7 @@ def get_optim_results(datetime_first_match: str = None, n_matches: int = None, b
 
     # perform optim request
     time_optim_start = time.time()
-    params = {"datetime_first_match": datetime_first_match, "n_matches": n_matches, "bookmakers": bookmakers, "bankroll": bankroll, "method": method}
+    params = {"datetime_first_match": datetime_first_match, "n_matches": n_matches, "bookmakers": bookmakers, "bankroll": bankroll, "method": method, "utility_fn": utility_fn}
     logger.info(f"Requesting optim results from {URL_OPTIM} with params: {params}")
     results = requests.get(URL_OPTIM, params=params)
     datetime_optim = results.json().get("datetime_optim")
@@ -71,12 +71,12 @@ def get_optim_results(datetime_first_match: str = None, n_matches: int = None, b
     time_compute_metrics_start = time.time()
     o = df_optim_results[['odds_home', 'odds_draw', 'odds_away']].to_numpy()
     r = df_optim_results[['prob_home_win', 'prob_draw', 'prob_away_win']].to_numpy()
-    f_kelly = df_optim_results[['f_home_kelly', 'f_draw_kelly', 'f_away_kelly']].to_numpy()
+    f = df_optim_results[['f_home', 'f_draw', 'f_away']].to_numpy()
 
     metrics = {}
-    metrics['expected_value_kelly'] = player_gain_expected_value(f_kelly, o, r, bankroll)
-    metrics['variance_kelly'] = player_gain_variance(f_kelly, o, r, bankroll)
-    metrics['total_invested'] = f_kelly.sum()*bankroll
+    metrics['expected_value'] = player_gain_expected_value(f, o, r, bankroll)
+    metrics['variance'] = player_gain_variance(f, o, r, bankroll)
+    metrics['total_invested'] = f.sum()*bankroll
     time_compute_metrics_end = time.time()
 
     # durations

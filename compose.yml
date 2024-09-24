@@ -28,14 +28,14 @@ services:
     ports:
       - "${PIPELINES_PORT_BRIDGE:-8001}:${PIPELINES_PORT:-80}"
 
-  mlflow:
-    <<: *osportbet-common
-    build:
-      context: ./mlflow
-      dockerfile: Dockerfile
-    image: optim-sportbet-mlflow:latest
-    ports:
-      - "${MLFLOW_PORT_BRIDGE:-8002}:${MLFLOW_PORT:-80}"
+  # mlflow:
+  #   <<: *osportbet-common
+  #   build:
+  #     context: ./mlflow
+  #     dockerfile: Dockerfile
+  #   image: optim-sportbet-mlflow:latest
+  #   ports:
+  #     - "${MLFLOW_PORT_BRIDGE:-8002}:${MLFLOW_PORT:-80}"
 
   app-backend:
     <<: *osportbet-common

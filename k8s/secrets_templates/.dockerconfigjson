@@ -1,8 +1,0 @@
-{
-  "auths": {
-    "optimsportbets.azurecr.io": {
-      "username": "optimsportbets",
-      "password": "<acr-admin-password>"
-    }
-  }
-}

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from app.services.get_optim_results import get_optim_results
 from app.services.strategy_regular import strategy_regular
+from app.services.fetch_last_predictions import fetch_last_predictions_fn
 from app.models.optim_request import OptimRequest
 import logging
 from typing import Optional
@@ -19,7 +20,8 @@ def get_optim_results_route(
     n_matches: Optional[int] = Query(None, ge=1, description="Number of matches"),
     bookmakers: Optional[str] = Query(None, description="Bookmaker"),
     bankroll: Optional[float] = Query(1, ge=0, description="Bankroll"),
-    method: Optional[str] = Query('SLSQP', description="Optimization method")
+    method: Optional[str] = Query('SLSQP', description="Optimization method"),
+    utility_fn: Optional[str] = Query('Kelly', description="Utility function")
 ):
     try:
         params = OptimRequest(
@@ -27,7 +29,8 @@ def get_optim_results_route(
             n_matches=n_matches,
             bookmakers=bookmakers,
             bankroll=bankroll,
-            method=method
+            method=method,
+            utility_fn=utility_fn
         )
         df_optim_results, metrics, durations = get_optim_results(**params.model_dump())
         logger.info(f"/optim_results route completed")
@@ -40,7 +43,7 @@ def get_optim_results_route(
         logger.error(f"/optim_results route failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.get("/startegy/regular")
+@app.get("/strategy/regular")
 def compute_regular_strategy_route(
     datetime_first_match: Optional[str] = Query(None, description="Datetime of the first match"),
     steps: Optional[int] = Query(None, ge=1, description="Number of steps"),
@@ -59,4 +62,14 @@ def compute_regular_strategy_route(
         return {"status": "success", "results": results.to_dict(orient='records')}
     except Exception as e:
         logger.error(f"/compute_regular_strategy route failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/fetch/last_predictions")
+def fetch_last_predictions(optim_label = 'manual', datetime_optim_last = None): 
+    try:
+        results = fetch_last_predictions_fn(optim_label=optim_label, datetime_optim_last=datetime_optim_last)
+        logger.info(f"/fetch_last_predictions route completed")
+        return {"status": "success", "results": results.to_dict(orient='records')}
+    except Exception as e:
+        logger.error(f"/fetch_last_predictions route failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
