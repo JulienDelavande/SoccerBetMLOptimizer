@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Values.global.envRef | default "global-config" }}"
+  namespace: "{{ .Release.Namespace }}"
+data:
+# Description: Environment variables for k8s deployments
+
+# Data Ingestion
+  ## API
+  DATA_INGESTION_PROTOCOL : http
+  DATA_INGESTION_HOST : "{{ .Values.services.dataIngestion.host }}"
+  DATA_INGESTION_PORT : "{{ .Values.services.dataIngestion.port }}"
+  DATA_INGESTION_ENDPOINT_FBREF : fbref
+  DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS : the_odds_api/odds
+  DATA_INGESTION_ENDPOINT_SOFIFA_TEAMS_STATS : sofifa/team_stats
+  ## Other
+  SOCCERDATA_DIR : lib/soccerdata
+
+  # Pipelines
+  ## API
+  PIPELINES_PROTOCOL : http
+  PIPELINES_HOST : "{{ .Values.services.pipelines.host }}"
+  PIPELINES_PORT : "{{ .Values.services.pipelines.port }}"
+  PIPELINES_ENDPOINT_INFERENCE : infer/RSF_PR_LR
+  PIPELINES_ENDPOINT_OPTIMIZATION : optim
+
+  # MLFLOW
+  ## API
+  MLFLOW_PROTOCOL : http
+  MLFLOW_HOST : "{{ .Values.mlFlow.service.name }}"
+  MLFLOW_PORT : "{{ .Values.mlFlow.service.port }}"
+
+  # App-backend
+  ## API
+  APP_BACKEND_PROTOCOL : http
+  APP_BACKEND_HOST : "{{ .Values.services.appBackend.host }}"
+  APP_BACKEND_PORT : "{{ .Values.services.appBackend.port }}"
+  APP_BACKEND_ENDPOINT_COMPUTE_PREDICTIONS : compute/predictions
+
+  # App-frontend
+  ## API
+  APP_FRONTEND_PROTOCOL : http
+  APP_FRONTEND_URL : "{{ .Values.services.appFrontend.host }}"
+  APP_FRONTEND_PORT : "{{ .Values.services.appFrontend.port }}"
+
+  # DATABASE
+  ## API
+  DB_TYPE : postgresql
+  DB_PILOT : psycopg2
+  DB_USER : "{{ .Values.postgresql.auth.username }}"
+  DB_HOST : "{{ .Values.postgresql.fullnameOverride }}"
+  DB_PORT : "{{ .Values.postgresql.service.ports.postgresql }}"
+  ## Structure
+  DB_NAME : "{{ .Values.postgresql.auth.database }}"
+  DB_TN_MATCHES : matches
+  DB_TN_ODDS_EURO : odds_euro
+  DB_TN_MATCHES_EURO : matches_euro
+  DB_TN_MIGRATION_HISTORY : migration_history
+  DB_TN_MATCHES_BIG5 : matches_big5
+  DB_TN_MATCHES_WC : matches_wc
+  DB_TN_FBREF_RESULTS : fbref_results
+  DB_TN_SOFIFA_TEAMS_STATS : sofifa_teams_stats
+  DB_TN_MODELS_RESULTS : models_results
+  DB_TN_LOGS : logs
+  DB_TN_ODDS : soccer_odds
+  DB_TN_OPTIM_RESULTS : optim_results

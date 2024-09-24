@@ -1,0 +1,12 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 15.5.32
+- name: airflow
+  repository: https://airflow-helm.github.io/charts
+  version: 8.9.0
+- name: mlflow
+  repository: https://community-charts.github.io/helm-charts
+  version: 0.7.19
+digest: sha256:fe46292a3c1f73c2848f9e66811668cfe6aab6f11a75d5a9fbb2d5ffff159a96
+generated: "2024-09-22T17:44:54.764384+02:00"

@@ -63,6 +63,7 @@ helm upgrade --install airflow apache-airflow/airflow -f k8s/helm-charts/airflow
 # se connecter à airflow  webserver cluster ip
 kubectl port-forward svc/airflow-webserver 8102:8080 --namespace default
 
+
 ssh-keygen -t rsa -b 4096 -C "airflow-kube@headmind.com" -f airflow_kube_ssh_key
 
 az ad sp create-for-rbac --name OptimSB-ContributorApp --role Contributor --scopes /subscriptions/dc0686fc-bdbf-4f78-9f07-ec7bd5755e35/resourceGroups/Optim-SportBets --query "{clientId:appId, clientSecret:password, tenantId:tenant}"
@@ -71,8 +72,19 @@ az ad sp create-for-rbac --name OptimSB-service-principal --role Contributor --s
 
 kubectl logs airflow-worker-0 -c git-sync-init
 
+<<<<<<< HEAD
 pg_dump -U $DB_USER -h $DB_HOST -d $DB_NAME -F c -b -v -f database_backup.sql
 
 KUBECONFIG=config:k3s.yaml kubectl config view --merge --flatten > merged-config
 $ kubectl config use-context default
 kubectl config get-contexts
+=======
+helm dependency update ./k8s/helm-deploy/optimsportbets/
+helm lint ./k8s/helm-deploy/optimsportbets/
+helm install optimsportbets ./k8s/helm-deploy/optimsportbets/ --namespace optimsportbets --create-namespace
+
+kubectl logs  -n optimsportbets --all-containers=true
+kubectl port-forward svc/app-frontend-svc 8104:8104 --namespace optimsportbets
+
+psql -h localhost -p 8110 -U kube-user -d optimsportbets-db -f database_backup.sql
+>>>>>>> e343b7549dec88f8168405bd0772ef4abeadcf59

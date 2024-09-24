@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-frontend
+  namespace: {{ .Release.namespace }}
+spec:
+  replicas: {{ .Values.services.appFrontend.replicas }}
+  selector:
+    matchLabels:
+      app: app-frontend
+  template:
+    metadata:
+      labels:
+        app: app-frontend
+    spec:
+      containers:
+      - name: app-frontend
+        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.appFrontend.image }}:{{ .Values.services.appFrontend.tag }}"
+        ports:
+        - containerPort: {{ .Values.services.appFrontend.port }}
+        envFrom:
+        - configMapRef:
+            name: global-config
+
+      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      imagePullSecrets:
+      - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+      {{- end }}
+      
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.services.appFrontend.host }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.services.appFrontend.port }}
+    targetPort: 80
+  selector:
+    app: app-frontend
