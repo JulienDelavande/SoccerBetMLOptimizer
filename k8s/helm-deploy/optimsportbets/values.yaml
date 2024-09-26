@@ -1,8 +1,8 @@
 containerRegistry:
-  registry: juliendelavande
+  registry: optimsportbets.azurecr.io
   imagePullSecrets:
     name: cr-secret
-    enabled: false
+    enabled: true
 
 global:
   envRef: global-config
