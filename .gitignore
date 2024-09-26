@@ -22,4 +22,4 @@ k8s/helm-deploy-contabo/secrets/
 
 mlruns/
 
-git filter-repo --path k8s/helm-deploy-contabo/secrets/ --invert-paths
+db/database_backup.sql
