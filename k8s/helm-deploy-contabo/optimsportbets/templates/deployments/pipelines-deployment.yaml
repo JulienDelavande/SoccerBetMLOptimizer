@@ -1,26 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: data-ingestion
+  name: pipelines
   namespace: {{ .Release.namespace }}
 spec:
-  replicas: {{ .Values.services.dataIngestion.replicas }}
+  replicas: {{ .Values.services.pipelines.replicas }}
   selector:
     matchLabels:
-      app: data-ingestion
+      app: pipelines
   template:
     metadata:
       labels:
-        app: data-ingestion
+        app: pipelines
     spec:
       containers:
-      - name: data-ingestion
-        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.dataIngestion.image }}:{{ .Values.services.dataIngestion.tag }}"
+      - name: pipelines
+        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.pipelines.image }}:{{ .Values.services.pipelines.tag }}"
         ports:
-        - containerPort: {{ .Values.services.dataIngestion.port }}
+        - containerPort: {{ .Values.services.pipelines.port }}
         env:
         {{ include "inject_db_password" . | nindent 10 }}
-        {{ include "inject_api_key" . | nindent 10 }} 
         envFrom:
         - configMapRef:
             name: global-config
@@ -34,11 +33,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.services.dataIngestion.host }}
+  name: {{ .Values.services.pipelines.host }}
 spec:
   type: ClusterIP
   ports:
-  - port: {{ .Values.services.dataIngestion.port }}
+  - port: {{ .Values.services.pipelines.port }}
     targetPort: 80
   selector:
-    app: data-ingestion
+    app: pipelines

@@ -11,6 +11,7 @@ KEY_1 = 'team'
 KEY_2 = 'update'
 DN_TN_TEMP_TABLE = 'temp_table'
 logger = logging.getLogger("fbref_results")
+pd.set_option('display.max_columns', None)
 
 
 def scrap_data_SOFIFA(teams='big 5', use_cache=False, scrap_all=False, KEY_1='team', KEY_2='update'):
@@ -26,10 +27,11 @@ def scrap_data_SOFIFA(teams='big 5', use_cache=False, scrap_all=False, KEY_1='te
             team_ratings = pd.concat([team_ratings_all, team_ratings], ignore_index=True)
             team_ratings = team_ratings.drop_duplicates(subset=[KEY_1, KEY_2], keep='last')
         team_ratings.reset_index(inplace=True)
+        logger.info(f'Head of sofifa scrapped data: \n{team_ratings.head()}')
         return team_ratings
     except Exception as e:
         logger.error(f"Erreur lors du chargement des donnees des equipes {teams} : {e}")
-        return
+        raise
 
 
 def convert_data_types(team_ratings, team_ratings_nat):
@@ -53,12 +55,16 @@ def convert_data_types(team_ratings, team_ratings_nat):
         team_ratings["players"] = team_ratings["players"].astype(int)
         team_ratings["starting_xi_average_age"] = team_ratings["starting_xi_average_age"].astype(float)
         team_ratings["whole_team_average_age"] = team_ratings["whole_team_average_age"].astype(float)
+        team_ratings['datetime_insert'] = pd.to_datetime('now')
         team_ratings.sort_values('update', ascending=False)
+
+        logger.info(f'Head of converted sofifa scrapped data: \n{team_ratings.head()}')
+        logger.info(f'Number of rows of converted sofifa scrapped data: {team_ratings.shape[0]}')
         return team_ratings
     
     except Exception as e:
         logger.error(f"Erreur lors de la conversion des types de donnees: {e}")
-        return
+        raise
 
 
 def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
@@ -81,42 +87,42 @@ def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
 
     #### INSERTION DES DONNEES DANS LA BASE DE DONNEES ####
     logger.info("Insertion des donnees dans la base de donnees")
+    logger.info(f"BD_HOST: {engine.url.host}")
+    logger.info(f"BD_PORT: {engine.url.port}")
+    logger.info(f"BD_NAME: {engine.url.database}")
     try:
-        with engine.connect() as conn:
+        with engine.begin() as conn:
             team_ratings.to_sql(DN_TN_TEMP_TABLE, conn, if_exists='replace', index=False)
+            logger.info(f"Table {DN_TN_TEMP_TABLE} creee avec succes")
 
+        with engine.begin() as conn:
             # Liste des colonnes
             columns = ', '.join(team_ratings.columns)
             
             # Inserer les donnees en evitant les doublons
             insert_query = f"""
-            INSERT INTO {DB_TN_SOFIFA_TEAMS_STATS} ({columns})
-            SELECT {columns}
-            FROM {DN_TN_TEMP_TABLE}
-            ON CONFLICT ({KEY_1}, {KEY_2}) DO NOTHING
+                WITH inserted_rows AS (
+                    INSERT INTO {DB_TN_SOFIFA_TEAMS_STATS} ({columns})
+                    SELECT {columns}
+                    FROM {DN_TN_TEMP_TABLE}
+                    WHERE {KEY_1} IS NOT NULL AND {KEY_2} IS NOT NULL
+                    ON CONFLICT ({KEY_1}, {KEY_2}) DO NOTHING
+                    RETURNING {KEY_1}, {KEY_2}
+                )
+                SELECT COUNT(*) AS inserted_rows_count FROM inserted_rows;
             """
-            logger.info("Insertion des nouvelles donnees en cours...")
-            conn.execute(text(insert_query))
+            result = conn.execute(text(insert_query))
+            logger.info(f"Insertion des nouvelles donnees en cours dans la table {DB_TN_SOFIFA_TEAMS_STATS} avec succes")
 
-            # Compter le nombre de nouvelles lignes inserees
-            count_query = f"""
-            SELECT COUNT(*) FROM {DN_TN_TEMP_TABLE}
-            WHERE NOT EXISTS (
-                SELECT 1 FROM {DB_TN_SOFIFA_TEAMS_STATS}
-                WHERE {DB_TN_SOFIFA_TEAMS_STATS}.{KEY_1} = {DN_TN_TEMP_TABLE}.{KEY_1}
-                AND {DB_TN_SOFIFA_TEAMS_STATS}.{KEY_2} = {DN_TN_TEMP_TABLE}.{KEY_2}
-            )
-            """
-            result = conn.execute(text(count_query))
             inserted_rows = result.scalar()
-            logger.info(f"Insertion des nouvelles donnees terminee avec succes, {inserted_rows} nouvelles lignes inserees")
+            logger.info(f"{inserted_rows} nouvelles lignes inserees")
 
             conn.execute(text(f"DROP TABLE {DN_TN_TEMP_TABLE}"))
-            conn.commit()
+            logger.info(f"Table {DN_TN_TEMP_TABLE} supprimee avec succes")
 
     except Exception as e:
         logger.error(f"Erreur lors de l'insertion des donnees: {e}")
-        return
+        raise
     
     logger.info("Fin de l'insertion des donnees dans la table SOFIFA teams stats\n\n")
 

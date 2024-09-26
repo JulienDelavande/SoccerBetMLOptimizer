@@ -58,7 +58,7 @@ kubectl exec -it <pod-name> -- /bin/bash
 
 # Install Airflow
 helm repo add apache-airflow https://airflow.apache.org
-helm upgrade --install airflow apache-airflow/airflow -f k8s/helm-charts/airflow-values.yaml 
+helm upgrade --install airflow apache-airflow/airflow -f airflow-values.yaml 
 
 # se connecter à airflow  webserver cluster ip
 kubectl port-forward svc/airflow-webserver 8102:8080 --namespace default
@@ -72,13 +72,6 @@ az ad sp create-for-rbac --name OptimSB-service-principal --role Contributor --s
 
 kubectl logs airflow-worker-0 -c git-sync-init
 
-<<<<<<< HEAD
-pg_dump -U $DB_USER -h $DB_HOST -d $DB_NAME -F c -b -v -f database_backup.sql
-
-KUBECONFIG=config:k3s.yaml kubectl config view --merge --flatten > merged-config
-$ kubectl config use-context default
-kubectl config get-contexts
-=======
 helm dependency update ./k8s/helm-deploy/optimsportbets/
 helm lint ./k8s/helm-deploy/optimsportbets/
 helm install optimsportbets ./k8s/helm-deploy/optimsportbets/ --namespace optimsportbets --create-namespace
@@ -87,4 +80,31 @@ kubectl logs  -n optimsportbets --all-containers=true
 kubectl port-forward svc/app-frontend-svc 8104:8104 --namespace optimsportbets
 
 psql -h localhost -p 8110 -U kube-user -d optimsportbets-db -f database_backup.sql
->>>>>>> e343b7549dec88f8168405bd0772ef4abeadcf59
+
+helm upgrade --install optimsportbets ./k8s/helm-deploy/optimsportbets/ -f ./k8s/helm-deploy/optimsportbets/values.yaml --namespace optimsportbets --recreate-pods
+kubectl apply -R -f ./k8s/helm-deploy/cron-jobs
+kubectl create job --from=cronjob/ingest-data-cronjob ingest-data-job -n optimsportbets
+kubectl delete job ingest-data-job -n optimsportbets
+
+### Deploy the application
+kubectl create namespace optimsportbets
+kubectl config set-context --current --namespace=optimsportbets
+kubectl apply -f ./k8s/helm-deploy/secrets/
+helm install optimsportbets ./k8s/helm-deploy/optimsportbets/ -f ./k8s/helm-deploy/optimsportbets/values.yaml --namespace optimsportbets
+kubectl apply -R -f ./k8s/helm-deploy/cron-jobs
+kubectl port-forward svc/postgresql-global 8110:5432 --namespace optimsportbets
+psql -h localhost -p 8110 -U kube -d optimsportbets-db -f database_backup.sql
+kubectl port-forward svc/app-frontend-svc 8104:8104 --namespace optimsportbets
+
+# Switch between contexts
+kubectl config get-contexts
+kubectl config use-context default # Contabo
+kubectl config use-context optimsportbets # Azure
+kubectl config set-context --current --namespace=optimsportbets
+
+# Backup and restore database
+kubectl port-forward svc/postgresql-global 8110:5432 --namespace optimsportbets
+pg_dump -h localhost -p 8110 -U kube -d optimsportbets-db -v -f database_backup.sql
+# User: kube
+# password:
+psql -h localhost -p 8110 -U kube -d optimsportbets-db -f database_backup.sql

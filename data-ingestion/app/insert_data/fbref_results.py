@@ -15,6 +15,7 @@ DN_TN_TEMP_TABLE = 'temp_table'
 KEY = 'game'
 KEY_BIS = 'score'
 logger = logging.getLogger("sofifa_teams_stats")
+pd.set_option('display.max_columns', None)
 
 
 def scrap_data_fbref(get_current_season_only=True, use_cache=True):
@@ -61,11 +62,12 @@ def scrap_data_fbref(get_current_season_only=True, use_cache=True):
 
 
         fbref_df = pd.concat([matches_wc, euro_schedule, big5], ignore_index=True)
+        logger.info(f"Head of fbref scrapped data: \n{fbref_df.head()}")
 
         return fbref_df
     except Exception as e:
         logger.error(f"Erreur lors du chargement des donnees des matchs fbref: {e}")
-        return
+        raise
 
 
 def convert_data_types_fbref(fbref_df):
@@ -86,11 +88,14 @@ def convert_data_types_fbref(fbref_df):
         fbref_df['home_sat'] = pd.to_numeric(fbref_df['home_sat'], errors='coerce')
         fbref_df['away_sat'] = pd.to_numeric(fbref_df['away_sat'], errors='coerce')
 
+        logger.info(f"Head of fbref data after conversion: \n{fbref_df.head()}")
+        logger.info(f"Number of rows: {fbref_df.shape[0]}")
+
         return fbref_df
     
     except Exception as e:
         logger.error(f"Erreur lors de la conversion des types de donnees: {e}")
-        return
+        raise
 
 
 def insert_data_fbref_results_table(get_current_season_only=True, use_cache=True):
@@ -112,43 +117,75 @@ def insert_data_fbref_results_table(get_current_season_only=True, use_cache=True
 
     #### INSERTION DES DONNEES DANS LA BASE DE DONNEES ####
     logger.info("Insertion des donnees dans la base de donnees")
+    logger.info(f"BD_HOST: {engine.url.host}")
+    logger.info(f"BD_PORT: {engine.url.port}")
+    logger.info(f"BD_NAME: {engine.url.database}")
     try:
-        with engine.connect() as conn:
+        with engine.begin() as conn:
             fbref_df.to_sql(DN_TN_TEMP_TABLE, conn, if_exists='replace', index=False)
+            logger.info(f"Table {DN_TN_TEMP_TABLE} creee avec succes")
 
-            # Liste des colonnes
-            columns = ', '.join(fbref_df.columns)
-            update_columns = ', '.join([f"{col} = EXCLUDED.{col}" for col in fbref_df.columns])
-            
-            # Inserer les donnees en evitant les doublons
-            insert_query = f"""
-            INSERT INTO {DB_TN_FBREF_RESULTS} ({columns})
-            SELECT {columns}
-            FROM {DN_TN_TEMP_TABLE}
-            ON CONFLICT ("{KEY}") DO UPDATE SET {update_columns}
-            """
-            logger.info("Insertion des nouvelles donnees en cours...")
-            conn.execute(text(insert_query))
+    # Première requête : Mise à jour des lignes existantes
+        with engine.begin() as conn:
+            # Liste des colonnes pour la mise à jour
+            update_columns = ', '.join([f"{col} = temp.{col}" for col in fbref_df.columns])
 
-            # Compter le nombre de nouvelles lignes inserees
-            count_query = f"""
-            SELECT COUNT(*) FROM {DN_TN_TEMP_TABLE}
-            WHERE NOT EXISTS (
-                SELECT 1 FROM {DB_TN_FBREF_RESULTS}
-                WHERE {DB_TN_FBREF_RESULTS}."{KEY}" = {DN_TN_TEMP_TABLE}."{KEY}"
-                AND {DB_TN_FBREF_RESULTS}.{KEY_BIS} = {DN_TN_TEMP_TABLE}.{KEY_BIS}
+            # Requête pour mettre à jour les lignes
+            update_query = f"""
+            WITH updated_rows AS (
+                UPDATE {DB_TN_FBREF_RESULTS} t
+                SET {update_columns}
+                FROM {DN_TN_TEMP_TABLE} temp
+                WHERE t.{KEY} = temp.{KEY}
+                AND t.{KEY_BIS} <> temp.{KEY_BIS}
+                RETURNING t.{KEY}
             )
+            SELECT COUNT(*) AS updated_rows FROM updated_rows;
             """
-            result = conn.execute(text(count_query))
-            inserted_rows = result.scalar()
-            logger.info(f"Insertion des nouvelles donnees terminee avec succes, {inserted_rows} nouvelles lignes inserees")
 
+            # Exécution de la requête de mise à jour
+            result = conn.execute(text(update_query))
+            updated_rows = result.scalar()  # Compte des lignes mises à jour
+
+            logger.info(f"Update des lignes existantes dans la table {DB_TN_FBREF_RESULTS} avec succes")
+            logger.info(f"{updated_rows} lignes mises à jour")
+
+        # Deuxième requête : Insertion des nouvelles lignes
+        with engine.begin() as conn:
+            # Liste des colonnes pour l'insertion
+            columns = ', '.join(fbref_df.columns)
+
+            # Requête pour insérer les nouvelles lignes
+            insert_query = f"""
+            WITH inserted_rows AS (
+                INSERT INTO {DB_TN_FBREF_RESULTS} ({columns})
+                SELECT {columns}
+                FROM {DN_TN_TEMP_TABLE} temp
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM {DB_TN_FBREF_RESULTS} t
+                    WHERE t.{KEY} = temp.{KEY}
+                )
+                RETURNING {KEY}
+            )
+            SELECT COUNT(*) AS inserted_rows FROM inserted_rows;
+            """
+
+            # Exécution de la requête d'insertion
+            result = conn.execute(text(insert_query))
+            inserted_rows = result.scalar()  # Compte des lignes insérées
+
+            logger.info(f"Insertion des nouvelles donnees en cours dans la table {DB_TN_FBREF_RESULTS} avec succes")
+            logger.info(f"{inserted_rows} nouvelles lignes insérées")
+
+        # Suppression de la table temporaire après les opérations
+        with engine.begin() as conn:
             conn.execute(text(f"DROP TABLE {DN_TN_TEMP_TABLE}"))
-            conn.commit()
+            logger.info(f"Table {DN_TN_TEMP_TABLE} supprimée avec succès")
 
     except Exception as e:
         logger.error(f"Erreur lors de l'insertion des donnees: {e}")
-        return
+        raise
     
     logger.info(f"Fin de l'insertion des donnees dans la table {DB_TN_FBREF_RESULTS}\n\n")
 

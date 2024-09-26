@@ -1,6 +1,6 @@
 import pandas as pd
 
-def elo_scores(df, BASE_RATING=1500., K=15, HOME_ADVANTAGE=100, C=0.25, date_stop=None,
+def elo_scores(df, BASE_RATING=1500., K=25, HOME_ADVANTAGE=100, C=0, date_stop=None,
                 home_team_id_col='home_team_api_id', away_team_id_col='away_team_api_id',
                 home_team_goal_col='home_team_goal', away_team_goal_col='away_team_goal',
                 elo_home_before_col='elo_home_before', elo_away_before_col='elo_away_before',
@@ -21,11 +21,11 @@ def elo_scores(df, BASE_RATING=1500., K=15, HOME_ADVANTAGE=100, C=0.25, date_sto
         The DataFrame containing the data
     BASE_RATING : float (Optional, default=1500.)
         The base rating of the teams
-    K : float (Optional, default=15)
+    K : float (Optional, default=25)
         The K factor
     HOME_ADVANTAGE : float (Optional, default=100)
         The home advantage
-    C : float (Optional, default=0.25)
+    C : float (Optional, default=0)
         The constant
 
     Returns

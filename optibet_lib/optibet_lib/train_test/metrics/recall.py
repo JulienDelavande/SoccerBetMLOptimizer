@@ -45,25 +45,25 @@ def recall_fn(df, result_col_name, class_predicted_col_name):
     result_col = df[result_col_name]
     class_predicted_col = df[class_predicted_col_name]
     
-    correct_predictions_home_win = df[(result_col == 1) & (class_predicted_col == 1)].shape[0]
-    number_of_home_win = df[result_col == 1].shape[0]
-    recall_home = correct_predictions_home_win / number_of_home_win if number_of_home_win != 0 else 0 
+    tp_home = df[(result_col == 1) & (class_predicted_col == 1)].shape[0]
+    fn_home = df[(result_col == 1) & (class_predicted_col != 1)].shape[0]
+    recall_home = tp_home / (tp_home + fn_home) if tp_home + fn_home != 0 else 0
 
-    correct_predictions_draw = df[(result_col == 0) & (class_predicted_col == 0)].shape[0]
-    number_of_draw = df[result_col == 0].shape[0]
-    recall_draw = correct_predictions_draw / number_of_draw if number_of_draw != 0 else 0
+    tp_draw = df[(result_col == 0) & (class_predicted_col == 0)].shape[0]
+    fn_draw = df[(result_col == 0) & (class_predicted_col != 0)].shape[0]
+    recall_draw = tp_draw / (tp_draw + fn_draw) if tp_draw + fn_draw != 0 else 0
 
-    correct_predictions_away_win = df[(result_col == -1) & (class_predicted_col == -1)].shape[0] 
-    number_of_away_win = df[result_col == -1].shape[0]
-    recall_away = correct_predictions_away_win / number_of_away_win if number_of_away_win != 0 else 0
+    tp_away = df[(result_col == -1) & (class_predicted_col == -1)].shape[0] 
+    fn_away = df[(result_col == -1) & (class_predicted_col != -1)].shape[0]
+    recall_away = tp_away / (tp_away + fn_away) if tp_away + fn_away != 0 else 0
 
-    freq_home_win = df[result_col == 1].shape[0] / df.shape[0]
+    freq_home = df[result_col == 1].shape[0] / df.shape[0]
     freq_draw = df[result_col == 0].shape[0] / df.shape[0]
-    freq_away_win = df[result_col == -1].shape[0] / df.shape[0]
+    freq_away = df[result_col == -1].shape[0] / df.shape[0]
 
-    recall_all = recall_home + recall_draw + recall_away
-    weighted_recall = freq_home_win * recall_home + freq_draw * recall_draw + freq_away_win * recall_away
-    balanced_accuracy = (recall_home + recall_draw + recall_away) / 3
+    micro_avg_recall = (tp_home + tp_draw + tp_away) / (tp_home + tp_draw + tp_away + fn_home + fn_draw + fn_away)
+    macro_avg_recall = (recall_home + recall_draw + recall_away) / 3 # Also known as balanced accuracy
+    weighted_recall = freq_home * recall_home + freq_draw * recall_draw + freq_away * recall_away
 
-    return recall_all, weighted_recall, balanced_accuracy, (recall_home, recall_draw, recall_away)
+    return macro_avg_recall, micro_avg_recall, weighted_recall, (recall_home, recall_draw, recall_away)
 
