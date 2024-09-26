@@ -15,8 +15,11 @@ __pycache__/
 
 k8s/manifests/secrets/
 k8s/helm-deploy/secrets/
+k8s/helm-deploy-contabo/secrets/
 
 .pid
 .vscode/
 
 mlruns/
+
+git filter-repo --path k8s/helm-deploy-contabo/secrets/ --invert-paths
