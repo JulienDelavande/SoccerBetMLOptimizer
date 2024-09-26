@@ -15,7 +15,7 @@ def accuracy_fn(df, result_col_name, class_predicted_col_name):
 
     $\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}$
 
-    $\text{Accuracy}_i = \frac{TP_i + TN_i}{TP + TN + FP + FN}$
+    $\text{Accuracy}_i = \frac{TP_i + TN_i}{TP_i + TN_i + FP_i + FN_i}$
 
     $\text{Weighted accuracy}_i = \sum_{i=1}^{n_{\text{classes}}} \omega_i \times \text{Accuracy}_i$ with $\omega_i$, the ratio of class $i$
 
@@ -47,17 +47,23 @@ def accuracy_fn(df, result_col_name, class_predicted_col_name):
 
     tp_home = df[(result_col == 1) & (class_predicted_col == 1)].shape[0]
     tn_home = df[(result_col != 1) & (class_predicted_col != 1)].shape[0]
-    accuracy_home = (tp_home + tn_home) / number_of_predictions
+    fp_home = df[(result_col != 1) & (class_predicted_col == 1)].shape[0]
+    fn_home = df[(result_col == 1) & (class_predicted_col != 1)].shape[0]
+    accuracy_home = (tp_home + tn_home) / (tp_home + tn_home + fp_home + fn_home)
     freq_home = df[result_col == 1].shape[0] / number_of_predictions
 
     tp_draw = df[(result_col == 0) & (class_predicted_col == 0)].shape[0]
     tn_draw = df[(result_col != 0) & (class_predicted_col != 0)].shape[0]
-    accuracy_draw = (tp_draw + tn_draw) / number_of_predictions
+    fp_draw = df[(result_col != 0) & (class_predicted_col == 0)].shape[0]
+    fn_draw = df[(result_col == 0) & (class_predicted_col != 0)].shape[0]
+    accuracy_draw = (tp_draw + tn_draw) / (tp_draw + tn_draw + fp_draw + fn_draw)
     freq_draw = df[result_col == 0].shape[0] / number_of_predictions
 
     tp_away = df[(result_col == -1) & (class_predicted_col == -1)].shape[0]
     tn_away = df[(result_col != -1) & (class_predicted_col != -1)].shape[0]
-    accuracy_away = (tp_away + tn_away) / number_of_predictions
+    fp_away = df[(result_col != -1) & (class_predicted_col == -1)].shape[0]
+    fn_away = df[(result_col == -1) & (class_predicted_col != -1)].shape[0]
+    accuracy_away = (tp_away + tn_away) / (tp_away + tn_away + fp_away + fn_away)
     freq_away = df[result_col == -1].shape[0] / number_of_predictions
 
     weighted_accuracy = freq_home * accuracy_home + freq_draw * accuracy_draw + freq_away * accuracy_away

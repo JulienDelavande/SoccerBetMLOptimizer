@@ -36,9 +36,9 @@ def f_mesure_fn(df, result_col_name, class_predicted_col_name, beta=1):
 
     Returns
     -------
-    f_mesure_all : float
+    macro_avg_f_mesure : float
         The F-Mesure of the model
-    f_mesure_weighted : float
+    weighted_f_mesure : float
         The weighted F-Mesure of the model
     class_f_mesure : tuple(float, float, float)
         The F-Mesure of the model for each class (f_mesure_home, f_mesure_draw, f_mesure_away)
@@ -46,8 +46,20 @@ def f_mesure_fn(df, result_col_name, class_predicted_col_name, beta=1):
     result_col = df[result_col_name]
     class_predicted_col = df[class_predicted_col_name]
 
-    precision_all, weighted_precision, (precision_home, precision_draw, precision_away) = precision_fn(df, result_col_name, class_predicted_col_name)
-    recall_all, weighted_recall, balanced_accuracy, (recall_home, recall_draw, recall_away) = recall_fn(df, result_col_name, class_predicted_col_name)
+    macro_avg_precision, micro_avg_precison, weighted_precision, (precision_home, precision_draw, precision_away) = precision_fn(df, result_col_name, class_predicted_col_name)
+    macro_avg_recall, micro_avg_recall, weighted_recall, (recall_home, recall_draw, recall_away) = recall_fn(df, result_col_name, class_predicted_col_name)
+
+    tp_home = df[(result_col == 1) & (class_predicted_col == 1)].shape[0]
+    fn_home = df[(result_col == 1) & (class_predicted_col != 1)].shape[0]
+    fp_home = df[(result_col != 1) & (class_predicted_col == 1)].shape[0]
+
+    tp_draw = df[(result_col == 0) & (class_predicted_col == 0)].shape[0]
+    fn_draw = df[(result_col == 0) & (class_predicted_col != 0)].shape[0]
+    fp_draw = df[(result_col != 0) & (class_predicted_col == 0)].shape[0]
+
+    tp_away = df[(result_col == -1) & (class_predicted_col == -1)].shape[0]
+    fn_away = df[(result_col == -1) & (class_predicted_col != -1)].shape[0]
+    fp_away = df[(result_col != -1) & (class_predicted_col == -1)].shape[0]
 
     f_mesure_home = (1 + beta**2) * (precision_home * recall_home) / (beta**2 * precision_home + recall_home) if precision_home + recall_home != 0 else 0
     f_mesure_draw = (1 + beta**2) * (precision_draw * recall_draw) / (beta**2 * precision_draw + recall_draw) if precision_draw + recall_draw != 0 else 0
@@ -57,7 +69,8 @@ def f_mesure_fn(df, result_col_name, class_predicted_col_name, beta=1):
     freq_draw = df[result_col == 0].shape[0] / df.shape[0]
     freq_away_win = df[result_col == -1].shape[0] / df.shape[0]
 
-    f_mesure_all = (f_mesure_home + f_mesure_draw + f_mesure_away) / 3
-    f_mesure_weighted = freq_home_win * f_mesure_home + freq_draw * f_mesure_draw + freq_away_win * f_mesure_away
+    macro_avg_f_mesure = (f_mesure_home + f_mesure_draw + f_mesure_away) / 3
+    weighted_f_mesure = freq_home_win * f_mesure_home + freq_draw * f_mesure_draw + freq_away_win * f_mesure_away
+    micro_avg_f_mesure = (1+beta**2)*(tp_home + tp_draw + tp_away) / (beta**2 * (tp_home + tp_draw + tp_away) + fn_home + fn_draw + fn_away + fp_home + fp_draw + fp_away)
 
-    return f_mesure_all, f_mesure_weighted, (f_mesure_home, f_mesure_draw, f_mesure_away)
+    return macro_avg_f_mesure, micro_avg_f_mesure, weighted_f_mesure, (f_mesure_home, f_mesure_draw, f_mesure_away)

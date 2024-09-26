@@ -132,7 +132,7 @@ $f_i^k = 0$ signifant qu'il ne pari pas sur l'issue $\omega_i^k$ du match $m_k$ 
 
 ## Fonction d'utilité
 
-Le joueur et le bookmaker peuvent définir une fonction d'utilité $U$ qu'ils cherchent à optimiser pour optimiser leur gains à un temps t en limitant le risque.
+Le joueur et le bookmaker peuvent définir une fonction d'utilité $U$ qu'ils cherchent à optimiser pour optimiser leur gains sur un horizon T en limitant le risque.
 La fonction d'utilité choisie est un choix personnel du joueur et du bookmake, elle en général un trade-off entre l'espérance de gain et le risque (souvent représenté par la variance).
 
 

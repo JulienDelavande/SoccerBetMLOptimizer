@@ -71,3 +71,78 @@
 
 9. Annexes
 
+Introduction
+
+General context of sports betting
+Addressed problem: Optimization of gains in sports betting
+Internship objectives
+
+Theoretical presentation and preliminary research
+2.1 Mathematical formalization of sports betting
+
+Description of the sports betting system (Player - Bookmaker)
+Division of different betting systems (odds, pot, etc.)
+Types of bets (1X2, over/under, etc.)
+2.2 Definition of the problem
+
+Framing of the studied system
+Definition of gains (Player – Bookmaker)
+Clarification of the objective (Player – Bookmaker)
+Utility function: Role of utility functions in risk management
+Formalization of the objective (Player – Bookmaker)
+Knowledge problem (real probability, amount of money invested)
+Player's advantages vs bookmaker's advantages
+Design and implementation of the solution
+3.1 General system architecture
+
+Presentation of the different components
+Interactions between components
+Data flow
+3.2 Data collection
+
+Data sources used
+Description of the collected data
+Collection methods (scraping, API, etc.)
+3.3 Data storage
+
+Database choice
+Data model
+Integration of collected data
+3.4 Prediction module
+3.5 Optimization module
+3.6 User interface and monitoring
+3.7 API for communication between components
+
+Predictive modeling of match outcomes
+4.1 Performance metrics (accuracy, precision, recall, F1-score) and selection criteria
+4.2 Exploration and choice of features
+4.3 Exploration and choice of the prediction model
+4.4 Training and retraining of the model
+4.5 Model evaluation
+
+Optimization of bankroll allocation
+5.1 Formulation of the optimization problem
+5.2 Formulation of different utility functions
+5.3 Optimization algorithms used
+5.4 Presentation of different strategies
+5.5 Monte Carlo simulation: Stochastic approach
+5.6 Results and discussion
+
+Development of the complete system and production deployment
+6.1 Microservices architecture, frameworks, and communication
+6.2 Dockerization and Docker Compose
+6.3 Deployment on Kubernetes
+6.4 Deployment on Azure (User group, Azure DevOps, Azure Container Registry, Azure Kubernetes Service)
+
+Critiques, perspectives, and future improvements
+
+Critiques and possible improvements to the prediction model (additional data, more complex models, etc.)
+Critiques and possible improvements to utility functions
+Critiques and possible improvements to strategies
+All-in-one model (with odds history)
+Exploration from the bookmaker's point of view
+Adaptation to other types of bets or sports
+Possibilities for system extension (scalability, public API, etc.)
+Conclusion
+
+Appendices

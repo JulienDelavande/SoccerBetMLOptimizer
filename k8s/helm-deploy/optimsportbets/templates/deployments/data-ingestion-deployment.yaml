@@ -24,8 +24,6 @@ spec:
         envFrom:
         - configMapRef:
             name: global-config
-        - secretRef:
-            name: {{ .Values.services.dataIngestion.apiKeys.envFrom | default "api-keys-secrets" }}  # API keys secret
 
       {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
       imagePullSecrets:

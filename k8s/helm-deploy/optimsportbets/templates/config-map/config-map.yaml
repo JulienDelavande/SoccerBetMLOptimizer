@@ -37,6 +37,7 @@ data:
   APP_BACKEND_HOST : "{{ .Values.services.appBackend.host }}"
   APP_BACKEND_PORT : "{{ .Values.services.appBackend.port }}"
   APP_BACKEND_ENDPOINT_COMPUTE_PREDICTIONS : compute/predictions
+  APP_BACKEND_ENDPOINT_FETCH_LAST_PREDICTIONS : fetch/last_predictions
 
   # App-frontend
   ## API
@@ -48,11 +49,11 @@ data:
   ## API
   DB_TYPE : postgresql
   DB_PILOT : psycopg2
-  DB_USER : "{{ .Values.postgresql.auth.username }}"
-  DB_HOST : "{{ .Values.postgresql.fullnameOverride }}"
-  DB_PORT : "{{ .Values.postgresql.service.ports.postgresql }}"
+  DB_USER : "{{ .Values.postgresqlGlobal.auth.username }}"
+  DB_HOST : "{{ .Values.postgresqlGlobal.fullnameOverride }}"
+  DB_PORT : "{{ .Values.postgresqlGlobal.service.ports.postgresql }}"
   ## Structure
-  DB_NAME : "{{ .Values.postgresql.auth.database }}"
+  DB_NAME : "{{ .Values.postgresqlGlobal.auth.database }}"
   DB_TN_MATCHES : matches
   DB_TN_ODDS_EURO : odds_euro
   DB_TN_MATCHES_EURO : matches_euro

@@ -1,0 +1,19 @@
+apiVersion: v2
+name: optimsportbets
+description: Helm chart for Optimsportbets
+version: 0.1.0
+
+dependencies:
+  - name: postgresql
+    version: 15.5.32
+    repository: https://charts.bitnami.com/bitnami
+    alias: postgresqlGlobal
+  # - name: airflow
+  #   version: 1.15.0
+  #   repository: https://airflow.apache.org
+  - name: mlflow
+    version: 0.7.19
+    repository: https://community-charts.github.io/helm-charts
+  # - name: argo-workflows
+  #   version: 0.42.3
+  #   repository: https://argoproj.github.io/argo-helm

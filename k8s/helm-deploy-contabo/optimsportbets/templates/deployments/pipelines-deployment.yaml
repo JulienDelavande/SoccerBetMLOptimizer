@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pipelines
+  namespace: {{ .Release.namespace }}
+spec:
+  replicas: {{ .Values.services.pipelines.replicas }}
+  selector:
+    matchLabels:
+      app: pipelines
+  template:
+    metadata:
+      labels:
+        app: pipelines
+    spec:
+      containers:
+      - name: pipelines
+        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.pipelines.image }}:{{ .Values.services.pipelines.tag }}"
+        ports:
+        - containerPort: {{ .Values.services.pipelines.port }}
+        env:
+        {{ include "inject_db_password" . | nindent 10 }}
+        envFrom:
+        - configMapRef:
+            name: global-config
+
+      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      imagePullSecrets:
+        - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+      {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.services.pipelines.host }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.services.pipelines.port }}
+    targetPort: 80
+  selector:
+    app: pipelines

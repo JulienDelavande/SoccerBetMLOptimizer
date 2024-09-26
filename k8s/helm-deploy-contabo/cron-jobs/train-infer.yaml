@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: train-infer-cronjob
+  namespace: optimsportbets
+spec:
+  schedule: "0 11 * * *" # every day at 11:00
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+          - name: train-infer
+            image: curlimages/curl:7.85.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                echo  "Training and inferring match results \n\n"
+                # Inference des résultats des matchs
+                echo "curl -X GET ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_INFERENCE} -H accept: application/json"
+                curl -X GET "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_INFERENCE}" -H "accept: application/json"
+                echo "Inferred match results"
+            envFrom:
+              - configMapRef:
+                  name: global-config
+          restartPolicy: OnFailure

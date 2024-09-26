@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ingest-sofifa-cronjob
+  namespace: optimsportbets
+spec:
+  schedule: "30 10 * * *" # every day at 10:30
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+          - name: ingest-sofifa
+            image: curlimages/curl:7.85.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                echo  "Ingesting data from sofifa \n\n"
+                # Ingestion des données sofifa
+                echo "curl -X GET ${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_SOFIFA_TEAMS_STATS} -H accept: application/json"
+                curl -X GET "${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_SOFIFA_TEAMS_STATS}" -H "accept: application/json"
+                echo "Ingested sofifa team stats data"
+            envFrom:
+              - configMapRef:
+                  name: global-config
+          restartPolicy: OnFailure

@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: optimize-auto-regular-10next-matchs-cronjob
+  namespace: optimsportbets
+spec:
+  schedule: "55 11 * * *"  # Exécution tous les à 11h55
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+          - name: optimize-auto-regular-10next-matchs
+            image: curlimages/curl:7.85.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                # Optimisation du capital à investir
+                echo "Optimizing -- Strategy: auto_regular-10next-matchs \n\n"
+                echo "curl -X GET ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Kelly&optim_label=auto_regular -H accept: application/json"
+                curl -X GET "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Kelly&optim_label=auto_regular" -H "accept: application/json"
+                echo "Optimized bankroll to invest"
+            envFrom:
+              - configMapRef:
+                  name: global-config
+          restartPolicy: OnFailure

@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ingest-fbref-cronjob
+  namespace: optimsportbets
+spec:
+  schedule: "0 10 * * *" # every day at 10:00
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+          - name: ingest-fbref
+            image: curlimages/curl:7.85.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                echo  "Ingesting data from fbref \n\n"
+                # Ingestion des données fbref
+                echo "curl -X GET ${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_FBREF} -H accept: application/json"
+                curl -X GET "${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_FBREF}" -H "accept: application/json"
+                echo "Ingested fbref data"
+            envFrom:
+              - configMapRef:
+                  name: global-config
+          restartPolicy: OnFailure

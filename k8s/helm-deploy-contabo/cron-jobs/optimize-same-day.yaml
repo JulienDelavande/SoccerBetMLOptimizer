@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: optimize-auto-regular-same-day-cronjob
+  namespace: optimsportbets
+spec:
+  schedule: "55 11 * * *"  # Exécution tous les jours à midi
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+          - name: optimize-auto-regular-same-day
+            image: curlimages/curl:7.85.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                # Optimisation du capital à investir
+                echo "Optimizing -- Strategy: auto_regular-same-day \n\n"
+                echo "curl -X GET ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&same_day=True&utility_fn=Kelly&optim_label=auto_same_day -H accept: application/json"
+                curl -X GET "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&same_day=True&utility_fn=Kelly&optim_label=auto_same_day" -H "accept: application/json"
+                echo "Optimized bankroll to invest"
+            envFrom:
+              - configMapRef:
+                  name: global-config
+          restartPolicy: OnFailure

@@ -3,6 +3,9 @@ VENV = venv
 # export $(grep -v '^#' .env)
 # export $(grep -v '^#' secrets.env)
 
+# export $(grep -v '^#' proddb.env)
+# export $(grep -v '^#' secrets_proddb.env)
+
 ifneq (,$(wildcard ./.env))
     include .env
     export
@@ -62,14 +65,14 @@ start: start-data-ingestion start-pipelines start-mlflow start-frontend start-ba
 
 # Docker
 
-# CONTAINER_REGISTRY = optimsportbets.azurecr.io
-CONTAINER_REGISTRY = delavandejulien
+CONTAINER_REGISTRY = optimsportbets.azurecr.io
+#CONTAINER_REGISTRY = juliendelavande
 IMAGE_PREFIX = optim-sportbet
-DATA_INGESTION_TAG = 1.2
-PIPELINES_TAG = 1.2
-MLFLOW_TAG = 1.3
-APP_BACKEND_TAG = 1.2
-APP_FRONTEND_TAG = 1.2
+DATA_INGESTION_TAG = 1.4
+PIPELINES_TAG = 1.4
+#MLFLOW_TAG = 1.3
+APP_BACKEND_TAG = 1.3
+APP_FRONTEND_TAG = 1.4
 
 stop:
 	@cat .pid | xargs kill -9 || true
@@ -84,8 +87,8 @@ up:
 tag:
 	docker tag $(IMAGE_PREFIX)-data-ingestion:latest $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG)
 	docker tag $(IMAGE_PREFIX)-pipelines:latest	     $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) 
-	docker tag $(IMAGE_PREFIX)-app-backend:latest	 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_FRONTEND_TAG)
-	docker tag $(IMAGE_PREFIX)-app-frontend:latest   $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_BACKEND_TAG)
+	docker tag $(IMAGE_PREFIX)-app-backend:latest	 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG)
+	docker tag $(IMAGE_PREFIX)-app-frontend:latest   $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG)
 
 tag-mlflow:
 	docker tag $(IMAGE_PREFIX)-mlflow:latest		 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG)

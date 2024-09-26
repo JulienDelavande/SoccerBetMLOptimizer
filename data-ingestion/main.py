@@ -21,9 +21,9 @@ def insert_data_fbref_results_table_root(get_current_season_only: bool = True, u
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/sofifa/team_stats")
-def insert_data_SOFIFA_teams_stats_table_root():
+def insert_data_SOFIFA_teams_stats_table_root(use_cache: bool = False, scrap_all: bool = False):
     try:
-        insert_data_SOFIFA_teams_stats_table()
+        insert_data_SOFIFA_teams_stats_table(use_cache=use_cache, scrap_all=scrap_all)
         return {"status": "success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

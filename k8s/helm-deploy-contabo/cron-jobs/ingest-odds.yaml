@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ingest-odds-cronjob
+  namespace: optimsportbets
+spec:
+  schedule: "50 11 * * *" # every day at 11:50
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+          - name: ingest-odds
+            image: curlimages/curl:7.85.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                echo  "Ingesting data from the odds api \n\n"
+                # Ingestion des données the odds api
+                echo "-X GET ${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS} -H accept: application/json"
+                curl -X GET "${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS}" -H "accept: application/json"
+                echo "Ingested the odds api odds data"
+            envFrom:
+              - configMapRef:
+                  name: global-config
+          restartPolicy: OnFailure

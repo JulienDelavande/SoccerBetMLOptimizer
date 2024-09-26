@@ -52,26 +52,45 @@ mapping_dict = {
 }
 
 
-def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_PR_LR', n_matches : int = None, bookmakers : list[str] =  None, bankroll : float = 1, method='SLSQP') -> datetime.datetime:
+def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_PR_LR', n_matches : int = None, same_day: bool = False,  
+             bookmakers : list[str] =  None, bankroll : float = 1, method='SLSQP', 
+             utility_fn='Kelly', optim_label='manual') -> datetime.datetime:
 
+    logging.info(f"--- Starting the OF pipeline")
     # Retrieve data from the database
     start_data_retrieval = time.time()
     try:
+        logging.info(f"datetime_first_match: {datetime_first_match}")
+        logging.info(f"model: {model}")
+        logging.info(f"n_matches: {n_matches}")
+        logging.info(f"bookmakers: {bookmakers}")
+        logging.info(f"bankroll: {bankroll}")
+        logging.info(f"method: {method}")
         datetime_first_match = datetime_first_match if datetime_first_match else datetime.datetime.now()
         date_first_match = datetime_first_match.date()
         time_first_match = datetime_first_match.time()
+
+        logging.info(f"Retrieving data from the database, table {DB_TN_MODELS_RESULTS}")
         with engine.connect() as connection:
+            logging.info("Database connection established")
+            logging.info(f"DB_HOST: {engine.url.host}")
+            logging.info(f"DB_PORT: {engine.url.port}")
+            logging.info(f"DB_NAME: {engine.url.database}")
+
             df_models_results = pd.read_sql(text(query_models_results), connection, params={"date_match": date_first_match, "model": model})
             df_odds = pd.read_sql(text(query_odds), connection, params={"commence_time": datetime_first_match})
             logger.info(f"Data retrieved in {time.time() - start_data_retrieval:.2f} seconds")
     except Exception as e:
         logger.error(f"Error while retrieving data from the database: {e}")
-        return None
+        raise
     
     # Process the data
     start_processing = time.time()
+    logging.info(f"Processing the data")
     try:
-        # Filter the odds data to keep only the last odds for each outcome
+        # Filter the odds data to keep only the last odds before last_odds_datetime for each outcome
+        last_odds_datetime = datetime_first_match
+        df_odds__last_odds = df_odds[df_odds['bookmaker_last_update'] <= last_odds_datetime]
         df_odds__last_odds = df_odds.sort_values(by=['commence_time', 'match_id', 'bookmaker_key', 'bookmaker_last_update'], ascending=False)
         df_odds__last_odds = df_odds__last_odds.drop_duplicates(subset=['match_id', 'bookmaker_key', 'outcome_name'], keep='first')
 
@@ -82,8 +101,11 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         df_odds__last_odds__home = df_odds__last_odds__home.rename(columns={'outcome_price': 'odds_home'})
         df_odds__last_odds__away = df_odds__last_odds__away.rename(columns={'outcome_price': 'odds_away'})
         df_odds__last_odds__draw = df_odds__last_odds__draw.rename(columns={'outcome_price': 'odds_draw'})
-        df_odds__last_odds__draw = df_odds__last_odds__draw[['match_id', 'bookmaker_key', 'odds_draw']]
-        df_odds__last_odds__away = df_odds__last_odds__away[['match_id', 'bookmaker_key', 'odds_away']]
+        df_odds__last_odds__home['odds_home_datetime'] = df_odds__last_odds__home['bookmaker_last_update']
+        df_odds__last_odds__draw['odds_draw_datetime'] = df_odds__last_odds__draw['bookmaker_last_update']
+        df_odds__last_odds__away['odds_away_datetime'] = df_odds__last_odds__away['bookmaker_last_update']
+        df_odds__last_odds__draw = df_odds__last_odds__draw[['match_id', 'bookmaker_key', 'odds_draw', 'odds_draw_datetime']]
+        df_odds__last_odds__away = df_odds__last_odds__away[['match_id', 'bookmaker_key', 'odds_away', 'odds_away_datetime']]
         df_odds__last_odds__home_draw = pd.merge(df_odds__last_odds__home, df_odds__last_odds__draw, on=['match_id', 'bookmaker_key'], how='inner')
         df_odds__last_odds__home_draw_away = pd.merge(df_odds__last_odds__home_draw, df_odds__last_odds__away, on=['match_id', 'bookmaker_key'], how='inner')
 
@@ -119,6 +141,10 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         # Sort by date start
         df_models_results_joined = df_models_results_joined.sort_values(by=['date_match', 'time_match'], ascending=True)
 
+        # Keep only the matches of the same day
+        if same_day:
+            df_models_results_joined = df_models_results_joined[df_models_results_joined['date_match'] == df_models_results_joined['date_match'].min()]
+        
         # Keep only the n_matches first matches
         if n_matches:
             df_models_results_joined = df_models_results_joined.head(n_matches)
@@ -131,41 +157,47 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
 
     except Exception as e:
         logger.error(f"Error while processing the data: {e}")
-        return None
+        raise
     
 
     # Compute bankroll fraction to invest
     start_invest = time.time()
+    logging.info(f"Computing the bankroll fraction to invest")
     try:
         # Kelly
-        obectif_kelly_fn = lambda f, o, r: player_utility_kelly_criteria(f, o, r, bankroll)
-        result_kelly = resolve_fik(o, r, obectif_kelly_fn, logger=logger, method=method)
-        result_kelly[result_kelly < 1e-10] = 0
-        df_models_results_joined[['f_home_kelly', 'f_draw_kelly', 'f_away_kelly']] = result_kelly
-        datetime_optim = datetime.datetime.now()
-        df_models_results_joined['datetime_optim'] = datetime_optim
-        logger.info(f"Kelly computed in {time.time() - start_invest:.2f} seconds")
+        if utility_fn == 'Kelly':
+            obectif_kelly_fn = lambda f, o, r: player_utility_kelly_criteria(f, o, r, bankroll)
+            result_kelly = resolve_fik(o, r, obectif_kelly_fn, logger=logger, method=method)
+            result_kelly[result_kelly < 1e-10] = 0
+            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_kelly
+            df_models_results_joined['utility_fn'] = utility_fn
+            datetime_optim = datetime.datetime.now()
+            df_models_results_joined['datetime_optim'] = datetime_optim
+            logger.info(f"Kelly computed in {time.time() - start_invest:.2f} seconds")
     except Exception as e:
         logger.error(f"Error while computing the bankroll fraction to invest: {e}")
-        return None
+        raise
     
 
     # Export to db
     start_export = time.time()
+    logging.info(f"Exporting the data to db, table {DB_TN_OPTIM_RESULTS}")
     try:
+        df_models_results_joined['optim_label'] = optim_label
         with engine.begin() as conn:
             df_models_results_joined_cols = df_models_results_joined[[
                 'match_id', 'sport_key', 'game', 'date_match', 'time_match', 'home_team', 'away_team', 
                 'model','datetime_inference', 'prob_home_win', 'prob_draw', 'prob_away_win',
                 'odds_home', 'odds_draw', 'odds_away', 
-                'bookmaker_home', 'bookmaker_draw', 'bookmaker_away', 'f_home_kelly', 'f_draw_kelly', 'f_away_kelly', 'datetime_optim']]
+                'bookmaker_home', 'bookmaker_draw', 'bookmaker_away', 'f_home', 'f_draw', 'f_away', 'datetime_optim', 'utility_fn',
+                 'odds_home_datetime', 'odds_draw_datetime', 'odds_away_datetime', 'optim_label']]
             df_models_results_joined_cols.to_sql(DB_TN_OPTIM_RESULTS, conn, if_exists='append', index=False)
         logger.info(f"Data exported in {time.time() - start_export:.2f} seconds")
     except Exception as e:
         logger.error(f"Error while exporting the data: {e}")
-        return None
+        raise
     
-    return datetime_optim
+    return datetime_optim, df_models_results_joined_cols
     
 
 if __name__ == '__main__':

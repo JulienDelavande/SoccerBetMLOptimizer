@@ -44,9 +44,9 @@ def train_test_bookies_comparison(matchs, pipeline, X_cols, Y_col,
     """
 
     keys = ["accuracy", "weighted_accuracy", "accuracy_home", "accuracy_draw", "accuracy_away",
-            "recall_all", "weighted_recall", "balanced_accuracy", "recall_home", "recall_draw", "recall_away",
-            "precision_all", "weighted_precision", "precision_home", "precision_draw", "precision_away",
-            "f_mesure_all", "f_mesure_weighted", "f_mesure_home", "f_mesure_draw", "f_mesure_away",
+            "macro_avg_recall", "micro_avg_recall", "weighted_recall", "recall_home", "recall_draw", "recall_away",
+            "macro_avg_precision", "micro_avg_precision", "weighted_precision", "precision_home", "precision_draw", "precision_away",
+            "macro_avg_f_mesure", "micro_avg_f_mesure", "weighted_f_mesure", "f_mesure_home", "f_mesure_draw", "f_mesure_away",
             "log_loss", "loss_home", "loss_draw", "loss_away",
             "mse", "mse_home", "mse_draw", "mse_away",
             "classwise_ECE", "ECE_home", "ECE_draw", "ECE_away", "home_ECE_y", "draw_ECE_y", "away_ECE_y", "home_ECE_p", "draw_ECE_p", "away_ECE_p", "home_ECE_size", "draw_ECE_size", "away_ECE_size"]
@@ -74,10 +74,18 @@ def train_test_bookies_comparison(matchs, pipeline, X_cols, Y_col,
         
         for i, (_, test) in enumerate(train_test_split):
 
+            # accuracy, weighted_accuracy, (accuracy_home, accuracy_draw, accuracy_away)
+            # macro_avg_recall, micro_avg_recall, weighted_recall, (recall_home, recall_draw, recall_away)
+            # macro_avg_precision, micro_avg_precision, weighted_precision, (precision_home, precision_draw, precision_away)
+            # macro_avg_f_mesure, micro_avg_f_mesure, weighted_f_mesure, (f_mesure_home, f_mesure_draw, f_mesure_away)
+            # log_loss, (loss_home, loss_draw, loss_away)
+            # mse, (mse_home, mse_draw, mse_away)
+            # classwise_ECE, (ECE_home, ECE_draw, ECE_away), (home_ECE_y, draw_ECE_y, away_ECE_y), (home_ECE_p, draw_ECE_p, away_ECE_p), (home_ECE_size, draw_ECE_size, away_ECE_size)
+
             metrics_bookie["accuracy"][i], metrics_bookie["weighted_accuracy"][i], (metrics_bookie["accuracy_home"][i], metrics_bookie["accuracy_draw"][i], metrics_bookie["accuracy_away"][i]) = accuracy_fn(test, result_col_name, bookie_pred_col_name(bookie))
-            metrics_bookie["recall_all"][i], metrics_bookie["weighted_recall"][i], metrics_bookie["balanced_accuracy"][i], (metrics_bookie["recall_home"][i], metrics_bookie["recall_draw"][i], metrics_bookie["recall_away"][i]) = recall_fn(test, result_col_name, bookie_pred_col_name(bookie))
-            metrics_bookie["precision_all"][i], metrics_bookie["weighted_precision"][i], (metrics_bookie["precision_home"][i], metrics_bookie["precision_draw"][i], metrics_bookie["precision_away"][i]) = precision_fn(test, result_col_name, bookie_pred_col_name(bookie))
-            metrics_bookie["f_mesure_all"][i], metrics_bookie["f_mesure_weighted"][i], (metrics_bookie["f_mesure_home"][i], metrics_bookie["f_mesure_draw"][i], metrics_bookie["f_mesure_away"][i]) = f_mesure_fn(test, result_col_name, bookie_pred_col_name(bookie))
+            metrics_bookie["macro_avg_recall"][i], metrics_bookie["micro_avg_recall"][i], metrics_bookie["weighted_recall"][i], (metrics_bookie["recall_home"][i], metrics_bookie["recall_draw"][i], metrics_bookie["recall_away"][i]) = recall_fn(test, result_col_name, bookie_pred_col_name(bookie))
+            metrics_bookie["macro_avg_precision"][i], metrics_bookie["micro_avg_precision"][i], metrics_bookie["weighted_precision"][i], (metrics_bookie["precision_home"][i], metrics_bookie["precision_draw"][i], metrics_bookie["precision_away"][i]) = precision_fn(test, result_col_name, bookie_pred_col_name(bookie))
+            metrics_bookie["macro_avg_f_mesure"][i], metrics_bookie["micro_avg_f_mesure"][i], metrics_bookie["weighted_f_mesure"][i], (metrics_bookie["f_mesure_home"][i], metrics_bookie["f_mesure_draw"][i], metrics_bookie["f_mesure_away"][i]) = f_mesure_fn(test, result_col_name, bookie_pred_col_name(bookie))
             metrics_bookie["log_loss"][i], (metrics_bookie["loss_home"][i], metrics_bookie["loss_draw"][i], metrics_bookie["loss_away"][i]) = log_loss_fn(test[result_col_name], test[bookie_prob_home_col_name(bookie)], test[bookie_prob_draw_col_name(bookie)], test[bookie_prob_away_col_name(bookie)], all_results=True)
             metrics_bookie["mse"][i], (metrics_bookie["mse_home"][i], metrics_bookie["mse_draw"][i], metrics_bookie["mse_away"][i]) = mse_loss_fn(test[result_col_name], test[bookie_prob_home_col_name(bookie)], test[bookie_prob_draw_col_name(bookie)], test[bookie_prob_away_col_name(bookie)], all_results=True)
             metrics_bookie["classwise_ECE"][i], (metrics_bookie["ECE_home"][i], metrics_bookie["ECE_draw"][i], metrics_bookie["ECE_away"][i]), (metrics_bookie["home_ECE_y"][i], metrics_bookie["draw_ECE_y"][i], metrics_bookie["away_ECE_y"][i]), (metrics_bookie["home_ECE_p"][i], metrics_bookie["draw_ECE_p"][i], metrics_bookie["away_ECE_p"][i]), (metrics_bookie["home_ECE_size"][i], metrics_bookie["draw_ECE_size"][i], metrics_bookie["away_ECE_size"][i]) = classwise_ECE_fn(test[result_col_name], test[bookie_prob_home_col_name(bookie)], test[bookie_prob_draw_col_name(bookie)], test[bookie_prob_away_col_name(bookie)], all_results=True)
