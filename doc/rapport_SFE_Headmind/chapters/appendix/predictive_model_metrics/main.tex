@@ -1,0 +1,189 @@
+\chapter{Predictive model Metrics}
+\label{appendix:predictive_model_metrics}
+
+Classic classification metrics offer foundational insights into model performance. However, their effectiveness can be limited in the presence of class imbalance. The following metrics are defined mathematically to facilitate precise evaluation:
+
+\begin{itemize}
+\item \section{Accuracy}
+\label{subsubsec:accuracy}
+
+\paragraph{Accuracy} measures the proportion of correctly predicted instances out of the total instances. It is defined as:
+
+\[
+    \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+    \label{eq:accuracy}
+\]
+
+where:
+\begin{itemize}
+    \item $TP$: True Positives (correctly predicted positive instances),
+    \item $TN$: True Negatives (correctly predicted negative instances),
+    \item $FP$: False Positives (incorrectly predicted positive instances),
+    \item $FN$: False Negatives (incorrectly predicted negative instances).
+\end{itemize}
+
+This overall accuracy is simple and intuitive, making it widely used. However, it may not provide a full picture in cases of class imbalance, as the performance on majority classes can dominate the overall score.
+
+\paragraph{Accuracy by Class} can be defined to better understand how the model performs on each class individually. For class $i$, the accuracy is:
+
+\[
+    \text{Accuracy}_i = \frac{TP_i + TN_i}{TP_i + TN_i + FP_i + FN_i}
+\]
+
+This metric is particularly useful when dealing with imbalanced datasets or when certain classes are more important than others. It allows for an in-depth evaluation of how well the model performs across different categories, helping to identify underperforming classes.
+
+\item \section{Precision}
+\label{subsubsec:precision}
+
+\paragraph{Precision} for a given class is the ratio of correctly predicted positive observations to the total predicted positives. For class $i$, it is defined as:
+
+\[
+    \text{Precision}_i = \frac{TP_i}{TP_i + FP_i}
+    \label{eq:precision}
+\]
+
+In multi-class classification problems, precision can be computed in different ways depending on how the classes are aggregated:
+
+\begin{itemize}
+    \item \textbf{Micro-averaged Precision}: This metric calculates the precision by aggregating the true positives and false positives across all classes, treating them as a single combined class. It is particularly useful when the dataset is balanced or in multi-label problems. The micro-averaged precision is defined as:
+    \[
+        \text{Precision}_{micro} = \frac{\sum_{i=1}^{N} TP_i}{\sum_{i=1}^{N} (TP_i + FP_i)}
+    \]
+
+    \item \textbf{Macro-averaged Precision}: In this approach, the precision is calculated for each class individually, and the unweighted average of these precisions is taken. It is useful when you want to treat each class equally, regardless of class size, and is often applied in imbalanced datasets to ensure fair evaluation. The macro-averaged precision is given by:
+    \[
+        \text{Precision}_{macro} = \frac{1}{N} \sum_{i=1}^{N} \text{Precision}_i
+    \]
+
+    \item \textbf{Weighted Precision}: This is the weighted average of the precision scores for each class, with the weight being proportional to the number of instances in each class. It provides a more balanced view when the class distribution is highly imbalanced, as it gives more importance to the performance on the majority classes. The weighted precision is defined as:
+    \[
+        \text{Precision}_{weighted} = \sum_{i=1}^{N} w_i \cdot \text{Precision}_i
+    \]
+    where $w_i = \frac{\text{Number of examples in class } i}{\text{Total number of examples}}$.
+\end{itemize}
+
+\item \section{Recall}
+\label{subsubsec:recall}
+
+\textbf{Recall} (also known as Sensitivity) for a given class is the ratio of correctly predicted positive observations to all actual positives. For class $i$, it is defined as:
+
+\[
+    \text{Recall}_i = \frac{TP_i}{TP_i + FN_i}
+    \label{eq:recall}
+\]
+
+Similar to precision, recall can be aggregated in multiple ways for multi-class classification:
+
+\begin{itemize}
+    \item \textbf{Micro-averaged Recall}: Aggregates the true positives and false negatives across all classes and calculates the recall as if the problem were binary. This approach is useful for optimizing the overall recall across all classes. The micro-averaged recall is defined as:
+    \[
+        \text{Recall}_{micro} = \frac{\sum_{i=1}^{N} TP_i}{\sum_{i=1}^{N} (TP_i + FN_i)}
+    \]
+
+    \item \textbf{Macro-averaged Recall}: Computes the recall for each class and then takes the unweighted average across all classes. It is helpful when you want to treat each class equally, regardless of the class distribution. This is particularly useful in imbalanced datasets where recall for minority classes is critical. The macro-averaged recall is given by:
+    \[
+        \text{Recall}_{macro} = \frac{1}{N} \sum_{i=1}^{N} \text{Recall}_i
+    \]
+
+    \item \textbf{Weighted Recall}: This metric calculates the recall for each class and then computes the weighted average, with the weights proportional to the size of each class. It is effective in imbalanced datasets where the goal is to ensure better recall for major classes. The weighted recall is defined as:
+    \[
+        \text{Recall}_{weighted} = \sum_{i=1}^{N} w_i \cdot \text{Recall}_i
+    \]
+    where $w_i = \frac{\text{Number of examples in class } i}{\text{Total number of examples}}$.
+\end{itemize}
+
+\item \section{F1-Score}
+\label{subsubsec:f1_score}
+
+The \textbf{F1-score} is a metric that combines both \textbf{precision} and \textbf{recall} into a single measure. It is particularly useful in scenarios where a balance between precision and recall is needed, especially when there is an uneven class distribution. The F1-score is defined as the harmonic mean of precision and recall:
+
+\[
+    F1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+    \label{eq:f1score}
+\]
+
+In multi-class or multi-label classification, different versions of the F1-score can be computed depending on how the performance across classes is aggregated:
+
+\begin{itemize}
+    \item \textbf{Per-class F1-score}:
+    The F1-score can be computed for each class individually without averaging. This gives insight into how the model performs on specific classes.
+    \[
+        F1_i = 2 \cdot \frac{\text{Precision}_i \cdot \text{Recall}_i}{\text{Precision}_i + \text{Recall}_i}
+    \]
+    \item \textbf{Micro-averaged F1-score}: 
+    The micro F1-score is calculated by aggregating the true positives, false positives, and false negatives across all classes and then computing the F1-score from these totals. This treats all classes as a single combined class, ignoring class distributions.
+    \[
+        F1_{\text{micro}} = 2 \cdot \frac{\sum_{i=1}^{N} TP_i}{\sum_{i=1}^{N} (2 \cdot TP_i + FP_i + FN_i)}
+    \]
+
+    \item \textbf{Macro-averaged F1-score}:
+    The macro F1-score computes the F1-score for each class individually and then takes the unweighted average of these scores. Each class is treated equally, regardless of its size.
+    \[
+        F1_{\text{macro}} = \frac{1}{N} \sum_{i=1}^{N} F1_i
+    \]
+
+    \item \textbf{Weighted F1-score}:
+    The weighted F1-score calculates the F1-score for each class and then takes the weighted average, where the weight is the proportion of instances of each class. This metric gives more importance to majority classes.
+    \[
+        F1_{\text{weighted}} = \sum_{i=1}^{N} w_i \cdot F1_i
+    \]
+    where $w_i$ is the proportion of examples in class $i$:
+    \[
+        w_i = \frac{\text{Number of examples in class } i}{\text{Total number of examples}}
+    \]
+\end{itemize}
+
+\item \section{Classwise Expected Calibration Error (ECE)}
+\label{subsubsec:ece_classwise}
+
+\textbf{Classwise Expected Calibration Error (ECE)} is a metric that evaluates the calibration of predicted probabilities for each class individually in a multi-class classification setting. Calibration refers to the alignment between the predicted probabilities and the actual outcome frequencies. A well-calibrated model ensures that, for each class, the predicted probability reflects the true likelihood of that class being the correct outcome.
+
+For each class \( i \), the Classwise ECE is defined as:
+
+\[
+    \text{ECE}_{\text{classwise}} = \frac{1}{k} \sum_{i=1}^{k} \sum_{j=1}^{m} \frac{|B_{ij}|}{n_i} \left| y_{ij} - \bar{p}_{ij} \right|
+    \label{eq:ece_classwise}
+\]
+
+where:
+
+\begin{itemize}
+    \item \( k \): \textbf{Number of classes}. Represents the total distinct categories the model can predict.
+    \item \( m \): \textbf{Number of bins}. The range of predicted probabilities is divided into \( m \) equal-width intervals (bins) to aggregate predictions.
+    \item \( B_{ij} \): \textbf{Set of instances for class \( i \) in bin \( j \)}. This is the subset of samples belonging to class \( i \) whose predicted probability for that class falls into bin \( j \).
+    \item \( n_i \): \textbf{Total number of instances for class \( i \)}. It is the total count of samples belonging to class \( i \) across all bins.
+    \item \( y_{ij} \): \textbf{True frequency} of class \( i \) in bin \( j \). Calculated as the ratio of correctly predicted instances of class \( i \) in bin \( j \) to the total number of instances of class \( i \) in that bin.
+    \item \( \bar{p}_{ij} \): \textbf{Average predicted probability} for class \( i \) in bin \( j \). It is the mean of the predicted probabilities for class \( i \) for all instances in bin \( j \).
+\end{itemize}
+
+The Classwise ECE provides a granular view of the model's calibration performance for each class. By computing the ECE separately for each class and then averaging, it accounts for potential class imbalances and ensures that the calibration assessment is not dominated by the majority classes. A lower Classwise ECE indicates better calibration, meaning the predicted probabilities closely match the observed frequencies. Conversely, a higher ECE suggests discrepancies between predictions and actual outcomes, signaling potential overconfidence or underconfidence in the model's predictions for specific classes.
+
+\item \section{Log Loss}
+\label{subsubsec:log_loss}
+
+\textbf{Log Loss} evaluates the accuracy of probability estimates by penalizing false classifications. It is defined as:
+
+\[
+    \text{Log Loss} = -\frac{1}{N} \sum_{i=1}^{N} \sum_{c=1}^{C} y_{i,c} \log(p_{i,c})
+    \label{eq:log_loss}
+\]
+
+where:
+\begin{itemize}
+    \item $N$: Number of samples
+    \item $C$: Number of classes
+    \item $y_{i,c}$: Binary indicator (0 or 1) if class label $c$ is the correct classification for sample $i$
+    \item $p_{i,c}$: Predicted probability for class $c$ of sample $i$
+\end{itemize}
+
+\item \section{Mean Squared Error (MSE)}
+\label{subsubsec:mse}
+
+\textbf{Mean Squared Error (MSE)} measures the average squared difference between predicted probabilities and actual outcomes. For class $i$, it is defined as:
+
+\[
+    \text{MSE}_i = \frac{1}{N} \sum_{j=1}^{N} (p_{j,i} - y_{j,i})^2
+    \label{eq:mse}
+\]
+
+\end{itemize}

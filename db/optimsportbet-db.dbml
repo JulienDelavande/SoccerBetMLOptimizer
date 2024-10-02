@@ -1,0 +1,140 @@
+
+
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+
+Table fbref_results {
+  game_id text [primary key]
+  datetime_insert timestamp 
+  week integer 
+  date date 
+  time time 
+  home_xg double 
+  away_xg double 
+  attendance integer 
+  index integer 
+  away_g integer [ref: > team_mapping_sofifa_fbref.fbref_team, ref: > team_mapping_soccer_odds_fbref.fbref_team]
+  home_g integer [ref: > team_mapping_sofifa_fbref.fbref_team, ref: > team_mapping_soccer_odds_fbref.fbref_team]
+  away_sat integer 
+  home_sat integer 
+  notes text 
+  away_team text 
+  league text 
+  season text 
+  game text 
+  round text 
+  day text 
+  venue text 
+  referee text 
+  home_team text 
+  match_report text 
+  score text
+}
+
+Table sofifa_team_stats {
+  team varchar [primary key, ref: > team_mapping_sofifa_fbref.sofifa_team]
+  update timestamp [primary key]
+  datetime_insert timestamp
+  league varchar
+  overall integer
+  attack integer
+  midfield integer
+  defence integer
+  transfer_budget integer
+  club_worth double
+  defence_domestic_prestige integer
+  international_prestige integer
+  players integer
+  starting_xi_average_age double
+  whole_team_average_age double
+  defence_defender_line varchar
+  fifa_edition varchar
+  chance_creation_shooting varchar
+  build_up_speed varchar
+  build_up_dribbling varchar
+  build_up_passing varchar
+  build_up_positioning varchar
+  chance_creation_crossing varchar
+  chance_creation_passing varchar
+  chance_creation_positioning varchar
+  defence_aggression varchar
+  defence_pressure varchar
+  defence_team_width varchar
+}
+
+Table soccer_odds {
+  sport_key varchar [primary key]
+  match_id varchar [primary key]
+  bookmaker_key varchar [primary key]
+  market_key varchar [primary key]
+  bookmaker_last_update timestamp [primary key]
+  outcome_name varchar [primary key]
+  sport_title varchar
+  home_team varchar [ref: > team_mapping_soccer_odds_fbref.soccer_odds_team]
+  away_team varchar
+  commence_time timestamp
+  market_last_update timestamp 
+  bookmaker_title varchar
+  outcome_price numeric
+  datetime_insert timestamp
+}
+
+
+Table models_results {
+  datetime_inference timestamp [primary key]
+  game_id varchar [primary key]
+  model varchar [primary key]
+  game varchar
+  date_match date
+  time_match time
+  home_team varchar [ref: > team_mapping_sofifa_fbref.fbref_team, ref: > team_mapping_soccer_odds_fbref.fbref_team]
+  away_team varchar [ref: > team_mapping_sofifa_fbref.fbref_team, ref: > team_mapping_soccer_odds_fbref.fbref_team]
+  prob_home_win double
+  prob_draw double
+  prob_away_win double
+}
+
+
+Table optim_results {
+  match_id varchar [primary key]
+  model varchar [primary key]
+  utility_fn varchar [primary key]
+  datetime_inference timestamp [primary key]
+  datetime_optim timestamp [primary key]
+  sport_key varchar
+  optim_label varchar
+  date_match date
+  time_match time
+  game varchar
+  home_team varchar [ref: > team_mapping_sofifa_fbref.fbref_team, ref: > team_mapping_soccer_odds_fbref.fbref_team]
+  away_team varchar [ref: > team_mapping_sofifa_fbref.fbref_team, ref: > team_mapping_soccer_odds_fbref.fbref_team]
+  odds_home_datetime timestamp
+  odds_draw_datetime timestamp
+  odds_away_datetime timestamp
+  prob_home_win double
+  prob_draw double
+  prob_away_win double
+  odds_home double
+  odds_draw double
+  odds_away double
+  bookmaker_home varchar
+  bookmaker_draw varchar
+  bookmaker_away varchar
+  f_home double
+  f_draw double
+  f_away double
+}
+
+Table team_mapping_sofifa_fbref {
+  id integer [pk, increment] // Identifiant unique pour chaque ligne
+  sofifa_team varchar // Nom de l'équipe dans FIFA
+  fbref_team varchar // Nom de l'équipe dans FBref
+}
+
+Table team_mapping_soccer_odds_fbref {
+  id integer [pk, increment] // Identifiant unique pour chaque ligne
+  soccer_odds_team varchar // Nom de l'équipe dans Soccer Odds
+  fbref_team varchar // Nom de l'équipe dans FBref
+}
+

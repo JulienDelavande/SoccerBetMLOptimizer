@@ -1,0 +1,164 @@
+
+
+\chapter{Ranking Features}
+\label{appendix:ranking_features}
+
+
+\begin{itemize}
+
+\item \textbf{Elo Score}
+\label{par:elo_score}
+
+
+\[
+    R'_A = R_A + K \times (S_A - E_A)
+\]
+\[
+    E_A = \frac{1}{1 + 10^{(R_B - R_A - H_{advantage})/400 - C}}
+\]
+
+Where:
+\begin{itemize}
+    \item $R_A$: Current Elo rating of Team A. The initial value for $R$ used is 1500.
+    \item $R'_A$: Updated Elo rating of Team A after a match.
+    \item $K$: Development coefficient. It determines the sensitivity of Elo rating adjustments based on match outcomes, with a value of 25 chosen to balance responsiveness and stability, ensuring ratings accurately reflect team performance without excessive volatility.
+    \item $S_A$: Actual score for Team A in the match (1 for win, 0.5 for draw, 0 for loss).
+    \item $E_A$: Expected score for Team A.
+
+    \item $R_B$: Current Elo rating of Team B.
+    \item $H_{advantage}$: Home Advantage constant. It accounts for the inherent benefits of playing at home, such as supporter support and familiarity with the venue, with a value of 100 selected to represent a significant yet realistic home-field advantage based on historical performance data.
+    \item $C$: Corrective constant. It fine-tunes the expected score calculation by slightly adjusting the probability distribution, using a value of 0 to keep things simple.
+\end{itemize}
+
+
+
+\item \textbf{Glicko-2 Score}
+\label{par:glicko2_score}
+
+
+\[
+\mu = \frac{R - 1500}{173.7178}, \quad \phi = \frac{RD}{173.7178}
+\]
+\[
+g(\phi_j) = \frac{1}{\sqrt{1 + \frac{3\phi_j^2}{\pi^2}}}
+\]
+\[
+E(\mu, \mu_j, \phi_j) = \frac{1}{1 + e^{-g(\phi_j)(\mu - \mu_j)}}
+\]
+\[
+v = \left( \sum_{j=1}^{k} g(\phi_j)^2 E(\mu, \mu_j, \phi_j) (1 - E(\mu, \mu_j, \phi_j)) \right)^{-1}
+\]
+\[
+\delta = v \cdot \sum_{j=1}^{k} g(\phi_j) (s_j - E(\mu, \mu_j, \phi_j)) 
+\]
+\[
+\text{Solve} \quad f(x) = \frac{e^x (\delta^2 - \phi^2 - v - e^x)}{2 (\phi^2 + v + e^x)^2} - \frac{x - \ln(\sigma^2)}{\tau^2} = 0 \quad \text{pour} \quad \sigma'
+\]
+\[
+\phi^* = \sqrt{\phi^2 + \sigma'^2}
+\]
+\[
+\phi' = \left( \frac{1}{\phi^{*2}} + \frac{1}{v} \right)^{-1/2}
+\]
+\[
+\mu' = \mu + \phi'^2 \cdot \sum_{j=1}^{k} g(\phi_j) (s_j - E(\mu, \mu_j, \phi_j))
+\]
+\[
+R' = 173.7178 \cdot \mu' + 1500
+\]
+\[
+RD' = 173.7178 \cdot \phi'
+\]
+
+
+Where:
+    \begin{itemize}
+        \item \( R \): Current rating.
+        \item \( RD \): Current rating deviation.
+        \item \( \mu \): Transformed rating.
+        \item \( \phi \): Transformed rating deviation.
+        \item \( k \): Number of opponents.
+        \item \( \phi_j \): Rating deviation of opponent \( j \).
+        \item \( E(\mu, \mu_j, \phi_j) \): Expected score against opponent \( j \).
+        \item \( s_j \): Actual score against opponent \( j \) (1 for win, 0.5 for draw, 0 for loss).
+        \item \( \sigma \): Current volatility before update.
+        \item \( \tau \): System constant that constrains the change in volatility. It affects how quickly the volatility can change. The default is 0.5.
+        \item \( \sigma' \): Updated volatility after solving the volatility update equation.
+        \item \( \phi^* \): Intermediate rating deviation.
+        \item \( \mu' \): Updated rating.
+        \item \( R' \): Updated rating.
+        \item \( RD' \): Updated rating deviation.
+    \end{itemize}
+    
+\textbf{Implementation Notes}
+    \begin{itemize}
+        \item \textbf{Numerical Solution for Volatility:} The equation for updating volatility \( \sigma' \) does not have a closed-form solution and is typically solved using iterative numerical methods such as the Newton-Raphson method.
+        \item \textbf{Initialization:} All players or teams start with an initial rating (e.g., 1500), an initial rating deviation (e.g., 350), and an initial volatility (e.g., 0.06).
+        \item \textbf{Handling Multiple Opponents:} The summations in the formulas account for multiple opponents in a rating period.
+    \end{itemize}
+
+
+\item \textbf{TrueSkill}
+\label{par:trueskill}
+
+\[
+c^2 = 2\beta^2 + \sigma_{\text{winner}}^2 + \sigma_{\text{loser}}^2
+\]
+\[
+x = \frac{\mu_{\text{winner}} - \mu_{\text{loser}}}{c}
+\]
+\[
+v(x, \epsilon) = \frac{\phi(x - \epsilon)}{\Phi(x - \epsilon)}
+\]
+\[
+w(x, \epsilon) = v(x, \epsilon) \left( v(x, \epsilon) + x - \epsilon \right)
+\]
+\[
+\mu_{\text{winner}} \leftarrow \mu_{\text{winner}} + \frac{\sigma_{\text{winner}}^2}{c} \cdot v\left(\frac{\mu_{\text{winner}} - \mu_{\text{loser}}}{c}, \epsilon \right)
+\]
+\[
+\mu_{\text{loser}} \leftarrow \mu_{\text{loser}} - \frac{\sigma_{\text{loser}}^2}{c} \cdot v\left(\frac{\mu_{\text{winner}} - \mu_{\text{loser}}}{c}, \epsilon \right)
+\]
+\[
+\sigma_{\text{winner}}^2 \leftarrow \sigma_{\text{winner}}^2 \cdot \left[ 1 - \frac{\sigma_{\text{winner}}^2}{c^2} \cdot w\left(\frac{\mu_{\text{winner}} - \mu_{\text{loser}}}{c}, \epsilon \right) \right]
+\]
+\[
+\sigma_{\text{loser}}^2 \leftarrow \sigma_{\text{loser}}^2 \cdot \left[ 1 - \frac{\sigma_{\text{loser}}^2}{c^2} \cdot w\left(\frac{\mu_{\text{winner}} - \mu_{\text{loser}}}{c}, \epsilon \right) \right]
+\]
+
+
+
+Where:
+
+\begin{itemize}
+    \item \( \mu_{\text{winner}}, \mu_{\text{loser}} \): Mean (skill) values of the winner and loser, respectively.
+    \item \( \sigma_{\text{winner}}, \sigma_{\text{loser}} \): Standard deviations (uncertainty) of the winner and loser, respectively.
+    \item \( \beta \): Dynamic factor, (default: \( 25.0 / 6 \)).
+    \item\( \phi(x) \): The probability density function (PDF) of the standard normal distribution.
+    \item\( \Phi(x) \): The cumulative distribution function (CDF) of the standard normal distribution.
+    \item \( \epsilon \): Draw margin, often calculated based on the draw probability (default: \( \epsilon = 0.1 \)).
+\end{itemize}
+
+TrueSkill updates both the mean and uncertainty of a team's skill after each match. This dual update mechanism allows TrueSkill to not only track the estimated skill level but also the confidence in that estimate, providing a more dynamic and responsive ranking system. The initial value for \(\mu = 25.0\) and \(\sigma = \frac{25.0}{3}\) are used.
+
+\end{itemize}
+
+
+\begin{itemize}
+    \item  \textbf{Average Goals Scored per Season}
+    
+    
+    \[
+        \text{AvgGoals}_i = \frac{1}{N_i} \sum_{j=1}^{N_i} G_{ij}
+        \label{eq:avg_goals}
+    \]
+    
+    Where:
+    \begin{itemize}
+        \item $N_i$: Number of matches played by Team $i$ in the season.
+        \item $G_{ij}$: Number of goals scored by Team $i$ in match $j$.
+    \end{itemize}
+
+    
+\end{itemize}
+

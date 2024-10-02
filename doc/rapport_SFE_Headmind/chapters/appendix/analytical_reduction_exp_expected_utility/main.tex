@@ -1,0 +1,184 @@
+\chapter{Analytical Reduction Using the Exponential Utility Function}
+\label{appendix:analytical_reduction_using_exp_expected_utility}
+
+To further illustrate how estimated probabilities influence the optimization problem, consider the case where the bettor uses an exponential utility function:
+
+\[
+U(B) = -e^{-\alpha B}
+\]
+
+where \( \alpha > 0 \) is the coefficient of absolute risk aversion (CARA). This utility function represents a bettor whose absolute risk aversion remains constant regardless of wealth level.
+
+\section{Derivation of the Optimal Betting Fraction}
+
+The bettor seeks to maximize the expected utility:
+
+\[
+\max_{\{ f_i^{k,J}(t) \}} \mathbb{E}_{p^{J}}\left[ U\left( B_{\text{bettor}}^J(t+1) \right) \right]
+\]
+
+Substituting \( B_{\text{bettor}}^J(t+1) = B_{\text{bettor}}^J(t) + G_{\text{bettor}}^J(t) \), we have:
+
+\[
+\mathbb{E}_{p^{J}}\left[ U\left( B_{\text{bettor}}^J(t+1) \right) \right] = \mathbb{E}_{p^{J}}\left[ -e^{ -\alpha \left( B_{\text{bettor}}^J(t) + G_{\text{bettor}}^J(t) \right) } \right]
+\]
+
+Since \( B_{\text{bettor}}^J(t) \) is constant with respect to the expectation, we can factor out \( e^{ -\alpha B_{\text{bettor}}^J(t) } \):
+
+\[
+\mathbb{E}_{p^{J}}\left[ U\left( B_{\text{bettor}}^J(t+1) \right) \right] = -e^{ -\alpha B_{\text{bettor}}^J(t) } \mathbb{E}_{p^{J}}\left[ e^{ -\alpha G_{\text{bettor}}^J(t) } \right]
+\]
+
+The gain \( G_{\text{bettor}}^J(t) \) is given by:
+
+\[
+G_{\text{bettor}}^J(t) = B_{\text{bettor}}^J(t) \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) X_i^k - 1 \right)
+\]
+
+Substituting this expression into the expected utility:
+
+\[
+\mathbb{E}_{p^{J}}\left[ U\left( B_{\text{bettor}}^J(t+1) \right) \right] = -e^{ -\alpha B_{\text{bettor}}^J(t) } \mathbb{E}_{p^{J}}\left[ e^{ -\alpha B_{\text{bettor}}^J(t) \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) X_i^k - 1 \right) } \right]
+\]
+
+Simplify the exponent:
+
+\[
+-\alpha B_{\text{bettor}}^J(t) \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) X_i^k - 1 \right) = -\alpha B_{\text{bettor}}^J(t) \left( \sum_{k=1}^M \left( \sum_{i=1}^{N^k} f_i^{k,J}(t) o_i^{k,B}(t) X_i^k \right) - F(t) \right)
+\]
+
+where \( F(t) = \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \) is the total fraction of the bankroll wagered.
+
+We can rewrite the exponent as:
+
+\[
+-\alpha B_{\text{bettor}}^J(t) \left( \sum_{k=1}^M R_k - F(t) \right)
+\]
+
+where \( R_k = \sum_{i=1}^{N^k} f_i^{k,J}(t) o_i^{k,B}(t) X_i^k \) represents the return from match \( k \).
+
+Thus, the expected utility becomes:
+
+\[
+\mathbb{E}_{p^{J}}\left[ U\left( B_{\text{bettor}}^J(t+1) \right) \right] = -e^{ -\alpha B_{\text{bettor}}^J(t) } e^{ \alpha B_{\text{bettor}}^J(t) F(t) } \mathbb{E}_{p^{J}}\left[ e^{ -\alpha B_{\text{bettor}}^J(t) \sum_{k=1}^M R_k } \right]
+\]
+
+Since the matches are independent and the outcomes within each match are mutually exclusive, we can factor the expectation:
+
+\[
+\mathbb{E}_{p^{J}}\left[ e^{ -\alpha B_{\text{bettor}}^J(t) \sum_{k=1}^M R_k } \right] = \prod_{k=1}^M \mathbb{E}_{p^{J}}\left[ e^{ -\alpha B_{\text{bettor}}^J(t) R_k } \right]
+\]
+
+For each match \( k \), the expectation over the outcomes is:
+
+\[
+\mathbb{E}_{p^{J}}\left[ e^{ -\alpha B_{\text{bettor}}^J(t) R_k } \right] = \sum_{i=1}^{N^k} p_i^{k,J} e^{ -\alpha B_{\text{bettor}}^J(t) f_i^{k,J}(t) o_i^{k,B}(t) }
+\]
+
+Combining these results, the expected utility simplifies to:
+
+\[
+\mathbb{E}_{p^{J}}\left[ U\left( B_{\text{bettor}}^J(t+1) \right) \right] = -e^{ -\alpha B_{\text{bettor}}^J(t) (1 - F(t)) } \prod_{k=1}^M \left( \sum_{i=1}^{N^k} p_i^{k,J} e^{ -\alpha B_{\text{bettor}}^J(t) f_i^{k,J}(t) o_i^{k,B}(t) } \right)
+\]
+
+The bettor's objective is to choose the fractions \( f_i^{k,J}(t) \) that maximize this expected utility. However, since the utility function is negative, maximizing the expected utility is equivalent to minimizing:
+
+\[
+\mathcal{L} = e^{ -\alpha B_{\text{bettor}}^J(t) (1 - F(t)) } \prod_{k=1}^M \left( \sum_{i=1}^{N^k} p_i^{k,J} e^{ -\alpha B_{\text{bettor}}^J(t) f_i^{k,J}(t) o_i^{k,B}(t) } \right)
+\]
+
+To simplify the optimization, we can take the natural logarithm and consider the negative of the expected utility (since the exponential utility function is negative):
+
+\[
+\min_{\{ f_i^{k,J}(t) \}} -\ln\left( -\mathbb{E}_{p^{J}}\left[ U\left( B_{\text{bettor}}^J(t+1) \right) \right] \right)
+\]
+
+Computing the logarithm:
+
+\[
+-\ln\left( -\mathbb{E}_{p^{J}}\left[ U\left( B_{\text{bettor}}^J(t+1) \right) \right] \right) = \alpha B_{\text{bettor}}^J(t) (1 - F(t)) - \sum_{k=1}^M \ln\left( \sum_{i=1}^{N^k} p_i^{k,J} e^{ -\alpha B_{\text{bettor}}^J(t) f_i^{k,J}(t) o_i^{k,B}(t) } \right)
+\]
+
+The bettor's optimization problem reduces to minimizing this expression with respect to \( \{ f_i^{k,J}(t) \} \).
+
+\section{Certainty Equivalent Interpretation}
+
+Alternatively, we can interpret the optimization in terms of the \emph{certainty equivalent} \( CE \), which satisfies:
+
+\[
+U(CE) = \mathbb{E}_{p^{J}}\left[ U\left( B_{\text{bettor}}^J(t+1) \right) \right]
+\]
+
+Using the exponential utility function:
+
+\[
+-e^{ -\alpha CE } = -e^{ -\alpha B_{\text{bettor}}^J(t) } \mathbb{E}_{p^{J}}\left[ e^{ -\alpha G_{\text{bettor}}^J(t) } \right]
+\]
+
+Simplifying:
+
+\[
+e^{ -\alpha CE } = e^{ -\alpha B_{\text{bettor}}^J(t) } \mathbb{E}_{p^{J}}\left[ e^{ -\alpha G_{\text{bettor}}^J(t) } \right]
+\]
+
+Therefore:
+
+\[
+CE = B_{\text{bettor}}^J(t) - \frac{1}{\alpha} \ln\left( \mathbb{E}_{p^{J}}\left[ e^{ -\alpha G_{\text{bettor}}^J(t) } \right] \right)
+\]
+
+Using the previous results, the certainty equivalent becomes:
+
+\[
+CE = B_{\text{bettor}}^J(t) - \frac{1}{\alpha} \ln\left( e^{ \alpha B_{\text{bettor}}^J(t) F(t) } \prod_{k=1}^M \left( \sum_{i=1}^{N^k} p_i^{k,J} e^{ -\alpha B_{\text{bettor}}^J(t) f_i^{k,J}(t) o_i^{k,B}(t) } \right) \right)
+\]
+
+Simplifying the logarithm:
+
+\[
+CE = B_{\text{bettor}}^J(t) - B_{\text{bettor}}^J(t) F(t) - \frac{1}{\alpha} \sum_{k=1}^M \ln\left( \sum_{i=1}^{N^k} p_i^{k,J} e^{ -\alpha B_{\text{bettor}}^J(t) f_i^{k,J}(t) o_i^{k,B}(t) } \right)
+\]
+
+This expression shows that the certainty equivalent depends on:
+
+\begin{itemize}
+    \item The initial bankroll \( B_{\text{bettor}}^J(t) \).
+    \item The total fraction wagered \( F(t) \).
+    \item The estimated probabilities \( p_i^{k,J} \).
+    \item The odds \( o_i^{k,B}(t) \).
+    \item The betting fractions \( f_i^{k,J}(t) \).
+    \item The risk aversion parameter \( \alpha \).
+\end{itemize}
+
+\section{Optimization Problem}
+
+The bettor's optimization problem is to choose \( \{ f_i^{k,J}(t) \} \) to maximize the certainty equivalent \( CE \):
+
+\[
+\max_{\{ f_i^{k,J}(t) \}} \left\{ CE = B_{\text{bettor}}^J(t) (1 - F(t)) - \frac{1}{\alpha} \sum_{k=1}^M \ln\left( \sum_{i=1}^{N^k} p_i^{k,J} e^{ -\alpha B_{\text{bettor}}^J(t) f_i^{k,J}(t) o_i^{k,B}(t) } \right) \right\}
+\]
+
+Subject to the constraints:
+
+\begin{itemize}
+    \item Non-negativity: \( f_i^{k,J}(t) \geq 0 \) for all \( i, k \).
+    \item Budget constraint: \( F(t) = \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \leq 1 \).
+\end{itemize}
+
+\section{Role of Estimated Probabilities}
+
+The estimated probabilities \( p_i^{k,J} \) enter the optimization problem explicitly in the logarithmic terms of the certainty equivalent. They affect the expected utility by weighting the potential outcomes according to the bettor's beliefs.
+
+A higher estimated probability \( p_i^{k,J} \) for a particular outcome increases the weight of the term \( e^{ -\alpha B_{\text{bettor}}^J(t) f_i^{k,J}(t) o_i^{k,B}(t) } \) in the logarithm. This, in turn, influences the optimal betting fraction \( f_i^{k,J}(t) \) assigned to that outcome.
+
+\section{Interpretation}
+
+The exponential utility function leads to an optimization that balances the expected returns against the risk, adjusted for the bettor's absolute risk aversion \( \alpha \). The bettor allocates their bets to maximize the certainty equivalent, effectively trading off potential gains against the disutility of risk.
+
+The presence of \( \alpha \) in the exponentials and logarithms quantifies the bettor's sensitivity to risk. A higher \( \alpha \) implies greater risk aversion, leading the bettor to wager smaller fractions \( f_i^{k,J}(t) \).
+
+\section{Conclusion}
+
+Using the exponential utility function demonstrates how estimated probabilities \( p_i^{k,J} \) influence the bettor's optimal strategy. The optimization problem incorporates these probabilities directly, affecting the allocation of bets across different outcomes and matches. The bettor must consider both their beliefs about the likelihood of outcomes and their risk preferences to determine the optimal betting fractions.
+
+This analytical solution provides insight into the interplay between estimated probabilities, risk aversion, and optimal betting strategies under constant absolute risk aversion.

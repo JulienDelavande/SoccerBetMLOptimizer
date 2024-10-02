@@ -1,0 +1,247 @@
+In order to model the decision-making processes of bettors and bookmakers in sports betting, we adopt a general agent-based framework \cite{Ferguson1967}. This framework allows us to formalize the interactions between agents (bettors and bookmakers) and the environment (the sports betting market) in a comprehensive and systematic manner. By defining the state space, action space, and other essential components in the most general terms, we can capture the complexity of sports betting and lay the groundwork for more specific analyses.
+
+\subsection{Agents in the Betting Market}
+
+There are two primary types of agents in the sports betting market:
+
+\begin{itemize}
+    \item \textbf{Bettors (Players):} Individuals or entities who place bets on the outcomes of sporting events with the aim of maximizing their returns.
+    \item \textbf{Bookmakers:} Organizations or individuals who offer betting opportunities by setting odds on the possible outcomes of sporting events, aiming to maximize their profits.
+\end{itemize}
+
+Each agent operates based on their own objectives, information, and strategies, interacting with the environment and other agents through their actions.
+
+\subsection{State Space}
+
+At any given time \( t \in \mathbb{R}^+ \), the state of the sports betting environment, denoted by \( S(t) \), encompasses all the information relevant to the agents' decision-making processes. The state space \( \mathcal{S} \) is the set of all possible states \( S(t) \).
+
+The state \( S(t) \) can be defined as:
+
+\[
+S(t) = \left( \mathbb{M}(t), \Omega(t), \mathbb{O}(t), B_{\text{bettor}}(t), B_{\text{bookmaker}}(t), H(t), \mathcal{I}(t) \right)
+\]
+
+where:
+
+\begin{itemize}
+    \item \( \mathbb{M}(t) \): The set of all matches available at time \( t \).
+    \item \( \Omega(t) \): The set of possible outcomes for each match in \( \mathbb{M}(t) \).
+    \item \( \mathbb{O}(t) \): The set of odds offered by bookmakers for each possible outcome at time \( t \).
+    \item \( B_{\text{bettor}}(t) \): The set of bettors' bankrolls at time \( t \).
+    \item \( B_{\text{bookmaker}}(t) \): The set of bookmakers' bankrolls at time \( t \).
+    \item \( H(t) \): The history of past events up to time \( t \), including past bets, match results, and odds movements.
+    \item \( \mathcal{I}(t) \): Any additional information available to the agents at time \( t \), such as team news, player injuries, weather conditions, etc.
+\end{itemize}
+
+The state \( S(t) \) encapsulates all the variables that can influence the agents' decisions, making it comprehensive and general.
+
+\subsection{Action Space}
+
+At each time \( t \), agents choose actions from their respective action spaces:
+
+\subsubsection{Bettors' Action Space}
+
+The action space for a bettor \( J \) at time \( t \), denoted by \( \mathcal{A}_{\text{bettor}}^J(t) \), consists of all possible betting decisions they can make. An action \( A_{\text{bettor}}^J(t) \in \mathcal{A}_{\text{bettor}}^J(t) \) can be defined as:
+
+\[
+A_{\text{bettor}}^J(t) = \left\{ \left( f_i^k \right) \mid f_i^k \in [0,1] , \sum_{i,k}f_i^k <= 1\right\}
+\]
+
+where:
+
+\begin{itemize}
+    \item \( f_i^k \): The fraction of the bettor's bankroll \( B_{\text{bettor}}^J(t) \) to wager on outcome \( \omega_i^k \).
+\end{itemize}
+
+Hence, the bettor chose the outcomes to bet on by assigning 0 (no bet) or more to an outcome at a given time \(t\).
+
+
+\subsubsection{Bookmakers' Action Space}
+
+The action space for a bookmaker \( B \) at time \( t \), denoted by \( \mathcal{A}_{\text{bookmaker}}^B(t) \), can be simplified to the selection of odds for each outcome. An action \( A_{\text{bookmaker}}^B(t) \in \mathcal{A}_{\text{bookmaker}}^B(t) \) is defined as:
+
+\[
+A_{\text{bookmaker}}^B(t) = \left\{ \mathbb{O}^k(B, t) = \{ o_i^k \mid o_i^k \in [1, \infty) \right\}
+\]
+
+where:
+
+\begin{itemize}
+    \item \( o_i^k \): The odds set by the bookmaker \( B \) for outcome \( \omega_i^k \) of match \( m^k \) at time \( t \). 
+\end{itemize}
+
+If \( o_i^k = 1 \), the bookmaker does not offer bets on outcome \( \omega_i^k \). If all odds \( o_i^k = 1 \) for a match \( m^k \), the bookmaker does not offer that match for betting.
+
+\paragraph{Example:}
+At time \( t \), bettor \( J \) allocates fractions of their \( 100 \) unit bankroll across two matches, with three possible outcomes:
+
+\[
+f = \begin{pmatrix}
+0.3 & 0.2 & 0 \\
+0.5 & 0 & 0 \\
+\end{pmatrix}
+\]
+
+The bookmaker sets the following odds for each outcome:
+
+\[
+o = \begin{pmatrix}
+2.50 & 3.00 & 4.00 \\
+1.80 & 2.90 & 3.50 \\
+\end{pmatrix}
+\]
+
+This means bettor \( J \) wagers 30 units on \( \omega_1^1 \) (Team A wins \( m^1 \)), 20 units on \( \omega_2^1 \) (draw in \( m^1 \)), and 50 units on \( \omega_1^2 \) (Team A wins \( m^2 \)).
+
+
+\subsection{Transition Dynamics}
+
+The state transitions \( \frac{dS(t)}{dt} \) are governed by the interactions between the agents' actions and the environment. The transition dynamics can be described in general terms:
+
+\[
+\frac{dS(t)}{dt} = \Phi\left( S(t), A_{\text{bettor}}(t), A_{\text{bookmaker}}(t), \epsilon(t) \right)
+\]
+
+where:
+
+\begin{itemize}
+    \item \( \Phi \) is the state transition function.
+    \item \( A_{\text{bettor}}(t) \): The set of all bettors' actions at time \( t \).
+    \item \( A_{\text{bookmaker}}(t) \): The set of all bookmakers' actions at time \( t \).
+    \item \( \epsilon(t) \): Represents the stochastic elements inherent in sports outcomes and market dynamics, modeled as random variables.
+\end{itemize}
+
+The transition function \( \Phi \) captures how the state evolves due to:
+
+\begin{itemize}
+    \item The resolution of matches (outcomes becoming known), represented by changes in outcome variables over time..
+    \item The settlement of bets (adjustment of bettors' and bookmakers' bankrolls).
+    \item Changes in available matches and odds for the next time period.
+    \item Updates to the history \( H(t) \) and information set \( \mathcal{I}(t) \), represented by \(\frac{dH(t)}{dt}\) and \(\frac{d\mathcal{I}(t)}{dt}\).
+\end{itemize}
+
+
+\subsection{Policies}
+
+Each agent follows a policy that guides their decision-making process:
+
+\subsubsection{Bettors' Policy}
+
+A bettor's policy \( \pi_{\text{bettor}}^J \) is a mapping from states to actions:
+
+\[
+\pi_{\text{bettor}}^J: \mathcal{S} \rightarrow \mathcal{A}_{\text{bettor}}^J
+\]
+
+The policy determines how the bettor decides on which bets to place and how much to wager, based on the current state \( S(t) \).
+
+\subsubsection{Bookmakers' Policy}
+
+A bookmaker's policy \( \pi_{\text{bookmaker}}^B \) is a mapping from states to actions:
+
+\[
+\pi_{\text{bookmaker}}^B: \mathcal{S} \rightarrow \mathcal{A}_{\text{bookmaker}}^B
+\]
+
+The policy dictates how the bookmaker sets odds and offers betting opportunities, considering factors like market demand, risk management, and competitive positioning.
+
+\subsection{Objectives and Constraints}
+
+Each agent aims to optimize an objective function over time, such as maximizing expected utility or profit, subject to specific constraints that reflect their operational limitations and risk management considerations.
+
+\subsubsection{Bettors' Objective}
+
+The bettor seeks to maximize a chosen utility over a time horizon \( T \):
+
+\[
+\max_{\pi_{\text{bettor}}^J} \quad \mathbb{E} \left[ U^{J} \left( BF_{\text{bettor}}^J(T) \right) \right]
+\]
+
+\subsubsection{Constraints for the Bettor}
+
+The bettor's optimization problem is subject to the following mathematical constraints: 
+
+\begin{itemize}
+    \item 1. Budget Constraint at Each Time \( t \):
+
+   The total fraction of the bankroll wagered on all outcomes cannot exceed 1 at any time \( t \):
+
+   \[
+   \sum_{k=1}^{M(t)} \sum_{i=1}^{N^k} f_i^{k,J}(t) \leq 1 \quad \forall t
+   \]
+
+   where:
+   \begin{itemize}
+       \item \( f_i^{k,J}(t) \) is the fraction of the bettor \( J \)'s bankroll \( BF_{\text{bettor}}^J(t) \) wagered on outcome \( i \) of match \( k \) at time \( t \).
+       \item \( M(t) \) is the total number of matches available at time \( t \).
+       \item \( N^k \) is the number of possible outcomes for each match \(k\).
+   \end{itemize}
+
+
+\item 2. Non-Negativity of Wager Fractions:
+
+   The bettor cannot wager negative fractions of the bankroll:
+
+   \[
+   f_i^{k,J}(t) \geq 0 \quad \forall i, k, t
+   \]
+\end{itemize}
+
+
+
+\subsubsection{Bookmakers' Objective}
+
+The bookmaker aims to maximize a chosen utility over a time horizon \( T \):
+
+\[
+\max_{\pi_{\text{bookmaker}}^B} \quad \mathbb{E} \left[ U^{B} \left( BF_{\text{bookmaker}}^B(T) \right) \right]
+\]
+
+
+\subsubsection{Constraints for the Bookmaker}
+
+The bookmaker's optimization problem is subject to the following mathematical constraints:
+
+\begin{itemize}
+    \item 1. Liquidity Constraint:
+    
+       The bookmaker must ensure sufficient funds to cover potential payouts:
+    
+       \[
+       BF_{\text{bookmaker}}^B(t) \geq \text{Maximum Potential Liability at } t
+       \]
+    
+       This ensures that the bookmaker's bankroll at time \( t \) is greater than or equal to the maximum possible payout based on the accepted bets.
+    
+    \item 2. Odds Setting Constraints:
+    
+       The odds must be set to ensure profitability and competitiveness:
+    
+       \begin{itemize}
+          \item Overround Constraint (Bookmaker's Margin):
+    
+            For each match \( k \), the sum of the implied probabilities must exceed 1:
+    
+            \[
+            \sum_{i=1}^{N^k} \frac{1}{o_i^k(t)} = 1 + \epsilon^k(t) \quad \forall k, t
+            \]
+    
+            Here, \( \epsilon^k(t) > 0 \) represents the bookmaker's margin for match \( k \) at time \( t \).
+    
+          \item Margin Bound:
+    
+            To balance profitability and competitiveness, we impose the following bound on \( \epsilon^k(t) \):
+    
+            \[
+            \epsilon_{\text{min}} \leq \epsilon^k(t) \leq \epsilon_{\text{max}} \quad \forall k, t
+            \]
+    
+            This ensures that the margin \( \epsilon^k(t) \) stays within a specified range, keeping the odds competitive enough to attract bettors while securing a minimum margin for profitability.
+          
+          \item Competitive Odds Constraint:
+    
+            The odds \( o_i^k(t) \) must remain competitive, influenced by market averages or competitors' odds. Therefore, the bookmaker may aim to keep \( \epsilon^k(t) \) as low as possible while maintaining profitability and covering risk.
+       \end{itemize}
+\end{itemize}
+
+

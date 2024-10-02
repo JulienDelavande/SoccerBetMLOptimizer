@@ -1,11 +1,15 @@
 
 import numpy as np
 from scipy.optimize import minimize
+import logging
 
 def resolve_fik(o, r, objectif, logger = None, method='SLSQP'):
+    if logger is None:
+        logger = logging.getLogger(__name__)
 
     M = len(o)
     N = len(o[0])
+    
 
     # Contraintes
     constraints = []
@@ -20,19 +24,18 @@ def resolve_fik(o, r, objectif, logger = None, method='SLSQP'):
     f0 = np.ones(M * N) / (M * N)
 
     # Résolution de l'optimisation
-    logger.info(f"Optimisation started with method: {method}")
-    result = minimize(objectif, f0, constraints=constraints, bounds=bounds, args=(o, r), method=method)
-
-    # Résultats
-    if result.success:
-        f_optimal = result.x.reshape(M, N)
-        #print("Répartition optimale de la bankroll:")
-        #print(f_optimal)
-        return f_optimal
-    else:
-        print("L'optimisation a échoué:", result.message)
+    try:
+        logger.info(f"Optimisation started with method: {method}")
+        result = minimize(objectif, f0, constraints=constraints, bounds=bounds, args=(o, r), method=method)
+        if result.success:
+            f_optimal = result.x.reshape(M, N)
+            return f_optimal
+    except Exception as e:
+        print("L'optimisation a échoué:", e)
         if logger:
-            logger.error(f"Optimisation failed: {result.message}")
+            logger.error(f"Optimisation failed: {e}")
         return np.zeros((M, N))
-
+    
+    return np.zeros((M, N))
+    
     

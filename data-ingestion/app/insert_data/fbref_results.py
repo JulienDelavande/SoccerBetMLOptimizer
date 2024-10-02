@@ -137,7 +137,7 @@ def insert_data_fbref_results_table(get_current_season_only=True, use_cache=True
                 SET {update_columns}
                 FROM {DN_TN_TEMP_TABLE} temp
                 WHERE t.{KEY} = temp.{KEY}
-                AND t.{KEY_BIS} <> temp.{KEY_BIS}
+                AND COALESCE(t.{KEY_BIS}, 'valeur_par_defaut') <> COALESCE(temp.{KEY_BIS}, 'valeur_par_defaut')
                 RETURNING t.{KEY}
             )
             SELECT COUNT(*) AS updated_rows FROM updated_rows;

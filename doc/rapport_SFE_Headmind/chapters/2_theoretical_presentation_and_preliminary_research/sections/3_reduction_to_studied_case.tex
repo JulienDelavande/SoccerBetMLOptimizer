@@ -1,0 +1,298 @@
+Building upon the general agent-based betting framework, we aim to simplify the agent-based betting framework and reduce computational complexity. We transition from a dynamic to a static optimization model by introducing key assumptions. By assuming immediate resolution of bets and the absence of intertemporal dependencies—where current decisions do not influence future opportunities—we make the static and dynamic problems effectively equivalent for our purposes. This simplification allows us to optimize agents' decisions at each time step independently, facilitating the derivation of optimal solutions without the need for complex dynamic programming. However, this reduction comes at a cost, notably in terms of long-term interpretability, as the model no longer accounts for cumulative effects and evolving dynamics over time.
+
+\subsection{Hypotheses for the Constrained Problem}
+
+\begin{enumerate}
+    \item \textbf{No Intertemporal Dependencies (Additive Utility Function):} 
+    Utility is additive over time, meaning decisions at time \( t \) do not affect future periods. The agent maximizes utility independently at each step, simplifying the problem into sequential sub-problems.
+    
+    \textit{Reason:} This eliminates the need to account for future wealth in current decisions, reducing complexity.
+
+    \item \textbf{Discrete Time Steps:} 
+    Time is divided into discrete intervals where decisions are made periodically. Bets are resolved by the end of each period before moving to the next. \( t = 0, 1, 2, \dots, T \)
+    
+    \textit{Reason:} Discrete time steps reduce the dynamic problem to a series of static decisions, simplifying optimization.
+
+    \item \textbf{Non-Overlapping Bets:} 
+    Bets are settled within the same period, ensuring that wealth at the end of each period is fully available for the next, avoiding unresolved wagers impacting future decisions.
+    
+    \textit{Reason:} This ensures no carryover of unresolved bets, keeping each period's wealth independent.
+
+    \item \textbf{Independence of Match Outcomes:} 
+    Match outcomes are independent random events, meaning there is no correlation between the results of different matches.
+    
+    \textit{Reason:} This simplifies probability calculations by eliminating the need to model inter-match dependencies.
+
+    \item \textbf{Static Information Environment:} 
+    Information is fixed within each period. No new data arrives mid-period, and updates are considered only in the next time step.
+    
+    \textit{Reason:} A static environment avoids real-time strategy adjustments, making the problem more manageable.
+\end{enumerate}
+
+These assumptions significantly simplify the model by reducing the complexity inherent in a dynamic optimization problem, but they also modify or limit certain long-term interpretations, such as how future wealth or intertemporal risk is managed across multiple betting periods.
+
+\subsection{Simplification of the Utility Maximization Problem}
+
+With no overlapping bets and a static information environment, agents do not need to consider how current actions might affect future opportunities or states. This myopic decision-making approach allows agents to focus solely on the current time period, simplifying their optimization problem to a static one.
+
+Hence, the agents' objective functions depend only on the current wealth and the outcomes of bets placed in the current period. The expected utility maximization problem at each time \( t \) becomes:
+
+For bettors:
+\[
+\max_{\{ f_i^{k,J}(t) \}} \quad \mathbb{E} \left[ U\left( B_{\text{bettor}}^J(t+1) \right) \mid S(t) \right]
+\]
+
+For bookmakers:
+\[
+\max_{\{ o_i^k(t) \}} \quad \mathbb{E} \left[ U\left( B_{\text{bookmaker}}(t+1) \right) \mid S(t) \right]
+\]
+
+where \( S(t) \) is the state at time \( t \), which includes the available matches, odds, and the agents' current bankrolls.
+
+\subsection{Dynamic and Total Utility under Assumptions}
+
+In our framework, under the assumption of discrete time steps and no intertemporal dependencies, the total utility across all periods \( T \) is given by the sum of the static utilities at each time step:
+
+\[
+U_{\text{total}} = \sum_{t=1}^{T} U(B(t)).
+\]
+
+This assumes that decisions are made independently at each \( t \), with the utility depending solely on the wealth \( B(t) \) at that moment. Additive utility functions, such as \( U(B) = B \), respect this assumption directly, meaning maximizing the utility at each step also maximizes total utility.
+
+However, logarithmic and exponential utilities do not preserve a simple additive structure due to risk preferences that influence future decisions. While linear utility maintains additivity, \( U(B) = \ln(B) \) and \( U(B) = -e^{-\alpha B} \) do not.
+
+\subsubsection{Utility Functions Respecting Additivity}
+\begin{itemize}
+\item Linear utility: \( U(B) = B \)
+\end{itemize}
+
+\subsubsection{Utility Functions Not Respecting Additivity}
+\begin{itemize}
+\item Logarithmic utility: \( U(B) = \ln(B) \)
+\item Exponential utility: \( U(B) = -e^{-\alpha B} \)
+\item CRRA: \(U(B) = \frac{B^{1 - \gamma}}{1 - \gamma}, \quad \gamma \neq 1\)
+\item Quadratic utility: \(U(B) = B - \frac{\lambda}{2} B^2\)
+\end{itemize}
+
+\subsubsection{Approximation with Additive Properties}
+By using a first-order Taylor expansion for \( \ln(B) \) or \( -e^{-\alpha B} \), these utilities can become approximately additive. For small deviations around \( B \), we approximate:
+
+\[
+\ln(B) \approx \ln(B_0) + \frac{B - B_0}{B_0}, \quad -e^{-\alpha B} \approx -e^{-\alpha B_0} + \alpha e^{-\alpha B_0} (B - B_0)
+\]
+
+These approximations are linear in \( B \), making the utility functions additive for small changes in wealth. Under these assumptions, the complexity of the problem is reduced, allowing the use of simpler optimization techniques without fully abandoning the original utility structure.
+
+\subsubsection{Non-Additive Utility Maximization and Long-Term Interpretation}
+
+When maximizing non-additive utility functions (such as logarithmic or exponential) at each step \( t \), the interpretation of utility over the entire period \( T \) changes. Unlike additive functions, where the total utility is simply the sum of the utilities at each time step, non-additive functions induce a more complex relationship between short-term and long-term behavior.
+
+For non-additive utilities, maximizing utility at each step does not guarantee maximization of the utility across the entire period. The decisions made at each step can interact non-linearly across time, meaning that the long-term growth or risk profile may differ significantly from the one-step behavior. This highlights the difference between local (step-by-step) optimization and the global impact over the entire period.
+
+\subsubsection{Interpretation of Log Utility in Terms of Long-Term Geometric Growth}
+
+Maximizing the logarithmic utility at each time step involves maximizing the expected utility:
+
+\[
+\max_{f(t)} \mathbb{E}\left[ \ln B_{\text{agent}}(t+1) \, \big| \, \mathcal{F}_t \right],
+\]
+
+where \( B_{\text{agent}}(t+1) \) is the wealth at time \( t+1 \), \( f(t) \) represents the decision variables at time \( t \), and \( \mathcal{F}_t \) denotes the information available at time \( t \).
+
+The total utility over \( T \) periods is given by:
+
+\[
+U_{\text{total}} = \sum_{t=1}^{T} \ln B_{\text{agent}}(t) = \ln\left( \prod_{t=1}^{T} B_{\text{agent}}(t) \right).
+\]
+
+Taking the expectation of the total utility, we have:
+
+\[
+\mathbb{E}[ U_{\text{total}} ] = \mathbb{E}\left[ \ln\left( \prod_{t=1}^{T} B_{\text{agent}}(t) \right) \right].
+\]
+
+However, due to the concavity of the logarithm and the properties of expectations, we cannot simplify this expression to \( \ln \left( \prod_{t=1}^{T} \mathbb{E}[ B_{\text{agent}}(t) ] \right) \) unless the \( B_{\text{agent}}(t) \) are deterministic. The expected value of the logarithm of a product of random variables is not equal to the logarithm of the product of their expectations.
+
+To interpret \( \mathbb{E}[ U_{\text{total}} ] \) in terms of expected wealth and variance, we can use a second-order Taylor expansion of the logarithm around \( \mathbb{E}[ B_{\text{agent}}(t) ] \):
+
+\[
+\mathbb{E}[ \ln B_{\text{agent}}(t) ] \approx \ln \mathbb{E}[ B_{\text{agent}}(t) ] - \frac{1}{2} \frac{ \mathbb{V}\mathrm{ar}[ B_{\text{agent}}(t) ] }{ \left( \mathbb{E}[ B_{\text{agent}}(t) ] \right)^2 }.
+\]
+
+Summing over \( T \) periods, we obtain:
+
+\[
+\mathbb{E}[ U_{\text{total}} ] \approx \sum_{t=1}^{T} \left( \ln \mathbb{E}[ B_{\text{agent}}(t) ] - \frac{1}{2} \frac{ \mathbb{V}\mathrm{ar}[ B_{\text{agent}}(t) ] }{ \left( \mathbb{E}[ B_{\text{agent}}(t) ] \right)^2 } \right).
+\]
+
+This approximation shows that the expected total utility depends on both the expected wealth and the variance at each time step. The logarithmic utility function captures the trade-off between expected wealth growth and risk (variance), penalizing volatility and favoring steady growth.
+
+Over the long term, maximizing the expected logarithmic utility leads to maximizing the \textbf{expected logarithm of cumulative wealth}, which corresponds to maximizing the \textbf{geometric mean return}. This strategy ensures that wealth grows at the highest possible geometric rate, accounting for both returns and risks.
+
+\subsubsection{Long-Term Interpretation of Exponential Utility}
+
+For the exponential utility function \( U(B) = -e^{ -\alpha B } \), where \( \alpha > 0 \) is the coefficient of absolute risk aversion, the total utility over \( T \) periods is:
+
+\[
+U_{\text{total}} = \sum_{t=1}^{T} U( B(t) ) = -\sum_{t=1}^{T} e^{ -\alpha B(t) }.
+\]
+
+Taking the expectation, we have:
+
+\[
+\mathbb{E}[ U_{\text{total}} ] = -\sum_{t=1}^{T} \mathbb{E}\left[ e^{ -\alpha B(t) } \right ].
+\]
+
+We cannot simplify \( \mathbb{E}\left[ e^{ -\alpha B(t) } \right ] \) without specifying the distribution of \( B(t) \). However, using a second-order Taylor expansion around \( \mathbb{E}[ B(t) ] \):
+
+\[
+\mathbb{E}\left[ e^{ -\alpha B(t) } \right ] \approx e^{ -\alpha \mathbb{E}[ B(t) ] } \left( 1 + \frac{ \alpha^2 }{2} \mathbb{V}\mathrm{ar}[ B(t) ] \right).
+\]
+
+Therefore, the expected total utility becomes:
+
+\[
+\mathbb{E}[ U_{\text{total}} ] \approx -\sum_{t=1}^{T} e^{ -\alpha \mathbb{E}[ B(t) ] } \left( 1 + \frac{ \alpha^2 }{2} \mathbb{V}\mathrm{ar}[ B(t) ] \right).
+\]
+
+This expression highlights that the expected utility depends heavily on both the expected wealth and the variance. As \( \alpha \) increases, the variance term becomes more significant, reinforcing the agent's aversion to risk. The exponential utility function thus focuses on \textbf{risk minimization} and \textbf{capital preservation} over wealth maximization.
+
+\subsubsection{Long-Term Interpretation of Mean-Variance Utility}
+
+For the mean-variance utility, which can be associated with a quadratic utility function \( U(B) = B - \frac{ \lambda }{ 2 } B^2 \) for small variations in \( B \), the expected utility at each time step is:
+
+\[
+\mathbb{E}[ U(B(t)) ] = \mathbb{E}[ B(t) ] - \frac{ \lambda }{ 2 } \mathbb{E}[ B(t)^2 ].
+\]
+
+Assuming that \( \mathbb{E}[ B(t)^2 ] = \left( \mathbb{E}[ B(t) ] \right)^2 + \mathbb{V}\mathrm{ar}[ B(t) ] \), we have:
+
+\[
+\mathbb{E}[ U(B(t)) ] = \mathbb{E}[ B(t) ] - \frac{ \lambda }{ 2 } \left( \left( \mathbb{E}[ B(t) ] \right)^2 + \mathbb{V}\mathrm{ar}[ B(t) ] \right).
+\]
+
+Over \( T \) periods, the expected total utility is:
+
+\[
+\mathbb{E}[ U_{\text{total}} ] = \sum_{t=1}^{T} \mathbb{E}[ U(B(t)) ].
+\]
+
+Simplifying, we obtain:
+
+\[
+\mathbb{E}[ U_{\text{total}} ] = \sum_{t=1}^{T} \left( \mathbb{E}[ B(t) ] - \frac{ \lambda }{ 2 } \left( \left( \mathbb{E}[ B(t) ] \right)^2 + \mathbb{V}\mathrm{ar}[ B(t) ] \right) \right).
+\]
+
+This expression demonstrates that the agent considers both the expected wealth and the variance, with the parameter \( \lambda \) controlling the trade-off between maximizing returns and minimizing risk.
+
+\subsection{Simplification of State Transitions}
+
+The agents' state variables, particularly their bankrolls, evolve in a straightforward manner without considering future uncertainties or pending bets. The bankroll update equations become:
+
+\[
+B_{\text{bettor}}(t+1) = B_{\text{bettor}}(t) + G_{\text{bettor}}(t)
+\]
+
+\[
+B_{\text{bookmaker}}(t+1) = B_{\text{bookmaker}}(t) + G_{\text{bookmaker}}(t)
+\]
+
+where \( G_{\text{bettor}}(t) \) and \( G_{\text{bookmaker}}(t) \) represent the gains or losses realized from bets placed and settled within time \( t \).
+
+
+\subsection{Detailed Simplification of the Bookmaker's Problem}
+
+Similarly, the bookmaker's optimization problem simplifies under the assumptions:
+
+\paragraph{Objective Function:}
+
+\[
+\max_{\{ o_i^k(t) \}} \quad U_{\text{bookmaker}}(t) = \mathbb{E} \left[ U\left( B_{\text{bookmaker}}(t) + G_{\text{bookmaker}}(t) \right) \mid S(t) \right]
+\]
+
+\paragraph{Constraints:}
+
+   \[
+   BF_{\text{bookmaker}}^B(t) \geq \text{Maximum Potential Liability at } t
+   \]
+
+    \[
+     \sum_{i=1}^{I} \frac{1}{o_i^k(t)} = 1 + \epsilon^k(t) \quad \text{for all } k, t
+    \]
+
+
+\paragraph{Variables:}
+
+\begin{itemize}
+    \item \( o_i^k(t) \): Odds set for outcome \( i \) of match \( k \) at time \( t \).
+    \item \( G_{\text{bookmaker}}(t) \): Gain or loss from bets, calculated based on the total bets received and payouts made in the current period.
+    \item \(\epsilon^k(t)\): Margin for each match at every time step that the bookmaker set to maximise attractiveness, minimize risque and maximize pay off.
+\end{itemize}
+
+\subsection{Reasons for the Simplifications}
+
+We introduce these simplifications for several important reasons:
+
+\subsubsection{Reducing Computational Complexity}
+
+Dynamic optimization problems, especially those involving stochastic elements and intertemporal dependencies, can be highly complex and computationally intensive. By simplifying the problem to a static one, we make it more tractable and amenable to analytical or numerical solutions.
+
+\subsubsection{Simplifying the Use of Historical Odds}
+
+Solving the general dynamic optimization problem requires a sufficiently large history of odds at each time step \( t \) to ensure convergence towards an optimal solution. This includes tracking all relevant historical data for each time step and state \( S \). By reducing the problem to a static case, the need for such an extensive history is eliminated, as the model only relies on current odds. This simplification significantly reduces computational complexity while maintaining the core of the decision-making process.
+
+
+
+\subsubsection{Facilitating Analytical Derivations}
+
+With the assumptions of immediate bet resolution and independence, we can derive closed-form solutions or straightforward algorithms for optimal betting strategies, such as the Kelly Criterion for bettors using logarithmic utility functions.
+
+\subsubsection{Focusing on Core Decision-Making Principles}
+
+The simplifications allow us to isolate and analyze the fundamental principles of optimal betting and odds setting without the confounding effects of dynamic interactions. This clarity helps in understanding the key factors that influence agents' decisions in the sports betting market.
+
+\subsection{Limitations of the Simplified Model}
+
+While the simplifications make the model more manageable, they also introduce limitations that should be acknowledged:
+
+\begin{enumerate}
+    \item \textbf{Hypothesis: Additive Utility Function with No Intertemporal Dependencies}
+        \begin{itemize}
+            \item \textbf{Domain of Validity:} Valid when agents focus solely on immediate wealth without concern for future utility.
+            \item \textbf{Limitation with Reality:} Agents usually consider future wealth and utility; this assumption ignores long-term planning and risk preferences.
+            \item \textbf{Risk:} Ignoring intertemporal effects may result in strategies that maximize short-term gains at the expense of long-term wealth, increasing the risk of ruin or failing to achieve overall financial objectives. Among the utility functions described, only \(U(B)=B\) is additive with time.
+        \end{itemize}
+        
+    \item \textbf{Hypothesis: Discrete Time Steps}
+        \begin{itemize}
+            \item \textbf{Domain of Validity:} Applicable when betting decisions are made at fixed, regular intervals.
+            \item \textbf{Limitation with Reality:} Real betting markets operate continuously; opportunities and information arise at any time, making this assumption somewhat unrealistic.
+            \item \textbf{Risk:} By assuming discrete time steps, we risk missing profitable opportunities that occur between intervals and fail to capture the continuous dynamics of the market, leading to suboptimal strategies.
+        \end{itemize}
+
+    \item \textbf{Hypothesis: Non-Overlapping Time Steps}
+        \begin{itemize}
+            \item \textbf{Domain of Validity:} Valid when all bets are short-term and resolved within the same period.
+            \item \textbf{Limitation with Reality:} In practice, many bets span multiple periods, and unresolved bets can impact future wealth and decisions; this assumption is restrictive.
+            \item \textbf{Risk:} Ignoring overlapping bets may lead to underestimating risk exposure and mismanaging bankrolls, potentially resulting in unexpected losses or liquidity issues.
+        \end{itemize}
+
+    \item \textbf{Hypothesis: Independence of Match Outcomes}
+        \begin{itemize}
+            \item \textbf{Domain of Validity:} Appropriate when matches are truly independent events without any influence on each other.
+            \item \textbf{Limitation with Reality:} In reality, match outcomes can be correlated due to common factors; this simplification overlooks potential dependencies.
+            \item \textbf{Risk:} Assuming independence when correlations exist can lead to inaccurate probability assessments and risk underestimation, possibly causing overbetting on correlated outcomes and increasing the chance of significant losses.
+        \end{itemize}
+
+    \item \textbf{Hypothesis: Static Information Environment}
+        \begin{itemize}
+            \item \textbf{Domain of Validity:} Suitable for very short periods where no new information is expected to arrive.
+            \item \textbf{Limitation with Reality:} Information flows continuously in real markets; ignoring new information is unrealistic and limits strategic adjustments.
+            \item \textbf{Risk:} By not accounting for new information, we risk making decisions based on outdated data, leading to poor betting choices and missed opportunities to adjust strategies in response to market changes.
+        \end{itemize}
+
+\end{enumerate}
+
+\subsection{Conclusion}
+
+By adhering to the constraints imposed by these hypotheses, we effectively narrow the search space, making it easier to find an optimal solution for our simplified problem. However, it's important to note that the first hypothesis —assuming an additive utility function with no intertemporal dependencies— will not be applied (in every case) in our model. As a result, the optimal solution we derive will differ -if using a non additive utility- from the true optimal solution for the general (using the same utility function), constrained problem under the four next assumptions.

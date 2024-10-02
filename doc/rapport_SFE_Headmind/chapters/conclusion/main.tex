@@ -1,0 +1,53 @@
+\section{Summary of Findings}
+
+This study embarked on the ambitious task of developing a comprehensive system for optimizing sports betting strategies, focusing on football matches. Through the integration of predictive modeling, utility-based optimization, and scalable system architecture, we have addressed the critical components necessary for successful sports betting.
+
+The predictive model, developed using logistic regression and advanced feature selection techniques, demonstrated significant accuracy in forecasting match outcomes. Regular retraining of the model proved essential in maintaining performance over time, highlighting the dynamic nature of sports data.
+
+The optimization module applied various bankroll allocation strategies, including the Kelly Criterion, logarithmic, exponential, and linear utility functions. Both Monte Carlo simulations and real-world online testing over a five-week period indicated that sophisticated utility-based strategies substantially outperform naive betting approaches. Strategies like the Kelly Criterion and Exponential Utility provided favorable returns while effectively managing risk.
+
+The system's deployment on Azure Kubernetes Service (AKS) showcased its scalability and readiness for real-time application. By leveraging a microservices architecture and containerization technologies like Docker and Kubernetes, the system can handle the computational demands of real-time data processing and optimization.
+
+\section{Contributions to the Field}
+
+This work contributes to the field of sports analytics and betting strategies in several ways:
+
+\begin{itemize} \item \textbf{Integration of Predictive Modeling and Optimization}: By combining accurate probability estimations with utility-based optimization strategies, the system provides a robust framework for sports betting. \item \textbf{Scalable System Architecture}: The implementation of a microservices architecture and deployment on cloud infrastructure ensures that the system is scalable, maintainable, and adaptable to real-world conditions. \item \textbf{Empirical Evaluation}: The use of both simulations and real-world testing provides empirical evidence of the effectiveness of advanced betting strategies over simpler methods. \end{itemize}
+
+\section{Limitations}
+
+Despite the positive results, several limitations were identified:
+
+\begin{itemize}
+    \item \textbf{Predictive Model Enhancements}: While the current model performs adequately within the constraints of a static framework, it could be significantly improved by incorporating additional features, conducting hyperparameter optimization, and exploring more complex models such as deep learning architectures. These enhancements would allow the model to capture dynamic patterns and temporal dependencies inherent in football matches, which are not fully addressed due to the static nature of the current framework.
+
+    \item \textbf{Static Framework Limitations and Long-Term Gain-Variance Interpretation}: The reduction of the betting problem to a static framework simplifies the optimization process but introduces limitations in interpreting gains and variance over the long term. Since the model does not account for intertemporal dependencies and the evolving nature of the bankroll, the strategies derived may not fully capture the risks associated with long-term betting. This static approach may lead to strategies that optimize short-term gains without adequately considering the cumulative effect on wealth over time. Future work should focus on extending the framework to a dynamic setting, allowing for a more accurate interpretation of long-term gain and variance, and better aligning the strategies with the bettor's long-term financial goals.
+
+    \item \textbf{Risk Preferences and Dynamic Adaptation}: The optimization strategies employed fixed parameters for risk aversion, which do not adjust to changes in the bettor's wealth or market conditions over time. This static treatment of risk preferences limits the adaptability of the betting strategies, especially in a long-term context where the bettor's financial situation and the market dynamics can vary significantly. Introducing dynamic risk preferences that evolve with the bettor's bankroll and external factors would enhance the strategies' responsiveness and effectiveness, leading to better management of gain and variance over the long term.
+
+    \item \textbf{Testing Period and Scope}: The real-world testing was confined to a five-week period focusing on the top five European leagues. Due to the static framework and the short testing duration, the evaluation may not fully reflect the strategies' performance over extended periods or in different market conditions. A longer testing period encompassing a broader range of leagues and varying competitive environments would provide more comprehensive insights into the strategies' long-term viability and their ability to manage gains and risks effectively within a dynamic setting.
+
+\end{itemize}
+\section{Future Work}
+
+Building upon the findings of this study, several promising avenues can be explored to enhance the system's performance and address the challenges identified. 
+
+Firstly, integrating real-time data streams and developing adaptive predictive models could significantly improve forecasting accuracy. By incorporating techniques from time-series analysis and machine learning, the model can capture temporal dependencies and evolving patterns inherent in football matches. This dynamic approach would allow the model to adjust to new information promptly, potentially leading to more accurate probability estimates and better alignment with the actual match outcomes.
+
+Secondly, advancing the optimization strategies to include stochastic elements and multi-period planning could address the complexities associated with long-term gain and variance interpretation. Developing a dynamic framework that accounts for intertemporal dependencies and the evolving nature of the bankroll would enable more effective risk management. Strategies that adapt risk preferences in response to changes in the bettor's financial status or market conditions could lead to more sustainable betting practices and improved long-term financial outcomes.
+
+Thirdly, conducting extensive real-world testing over longer periods and across a broader range of leagues and competitions would provide deeper insights into the robustness and generalizability of the betting strategies. Such testing would help to evaluate the performance of the models under varying market conditions and competitive environments, ensuring that the strategies remain effective over time and are not limited to specific contexts or short-term scenarios.
+
+Finally, enhancing the user interface to offer more advanced analytics and personalized insights could empower users to make more informed decisions. Features that allow users to visualize performance trends, adjust parameters interactively, and receive tailored recommendations would improve the overall user experience. Providing tools for long-term performance monitoring and strategic adjustments would enable users to better understand the implications of their betting decisions and manage their bankrolls more effectively.
+
+These potential developments represent initial steps toward refining the system's capabilities. By focusing on dynamic modeling, adaptive optimization, comprehensive testing, and user-centric design, future work can contribute to more robust predictive performance, effective risk management, and ultimately, more successful sports betting strategies.
+
+\section{Final Remarks}
+
+The integration of predictive modeling and utility-based optimization represents a significant step forward in developing effective sports betting strategies. This work demonstrates that with accurate predictions and strategic bankroll management, it is possible to achieve superior returns while managing risk effectively. The deployment on cloud infrastructure ensures that the system is ready for practical application, paving the way for future advancements in the field.
+
+
+
+
+
+

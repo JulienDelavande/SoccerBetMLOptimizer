@@ -1,0 +1,191 @@
+In the real-world sports betting environment, both bettors and bookmakers do not have access to the true probabilities of match outcomes. Instead, they rely on their own estimations based on available information, statistical models, expert opinions, and other predictive tools. These estimated probabilities often differ from the true underlying probabilities and can vary between bettors and bookmakers due to differences in information, analysis techniques, and biases.
+
+This section introduces the concept of estimated probabilities for match outcomes as perceived by bettors and bookmakers, explains the necessity of considering these estimates in modeling betting strategies, and provides analytical derivations for expected gain and variance incorporating these estimated probabilities. We also explore how these differences influence optimal betting strategies, particularly through the application of the Kelly Criterion.
+
+\subsection{Estimated Probabilities}
+
+Let:
+
+\begin{itemize}
+    \item \( r_i^k \): The true probability of outcome \( \omega_i^k \) occurring in match \( m^k \).
+    \item \( p_i^{k,J} \): The probability estimate of outcome \( \omega_i^k \) as perceived by bettor \( J \).
+    \item \( p_i^{k,B} \): The probability estimate of outcome \( \omega_i^k \) as perceived by bookmaker \( B \).
+\end{itemize}
+
+Due to the inherent uncertainty and complexity of predicting sports outcomes, the estimated probabilities \( p_i^{k,J} \) and \( p_i^{k,B} \) generally differ from the true probabilities \( r_i^k \) and from each other. These discrepancies are critical in the betting market because they create opportunities for bettors to find value bets (situations where they believe the bookmaker's odds underestimate the true likelihood of an outcome) and for bookmakers to manage their risk and profit margins.
+
+
+\subsection{Utility Maximization and the Role of Estimated Probabilities}
+
+The bettor aims to maximize their expected utility, which is influenced by both the expected value and the variance of the bankroll factor. The utility function \( U \) encapsulates the bettor's risk preferences.
+
+\subsubsection{Expected Utility in Terms of Bankroll Factor}
+
+The expected utility at time \( t+1 \) is given by:
+
+\[
+\mathbb{E}_{p^{J}}\left[ U\left( BF_{\text{bettor}}(t+1) \right) \right] = \sum_{\text{all outcomes}} U\left( BF_{\text{bettor}}(t+1) \right) \times \text{Probability of outcomes}
+\]
+
+To compute this expectation, the bettor must consider all possible combinations of match outcomes, weighted by their estimated probabilities \( p_{i_k}^{k,J} \). This requires:
+
+\begin{itemize}
+    \item Knowledge of \( p_{i_k}^{k,J} \) for each outcome \( i_k \) in match \( k \).
+    \item Calculation of \( BF_{\text{bettor}}(t+1) \) for each possible combination of outcomes.
+\end{itemize}
+
+Assuming there are \( M \) matches at time \(t\) to bet on, each with \( N(k) \) possible outcomes, the expected utility expands to:
+
+\[
+\mathbb{E}_{p^{J}}\left[ U\left( BF_{\text{bettor}}(t+1) \right) \right] = \sum_{i_1=1}^{N(1)} \sum_{i_2=1}^{N(2)} \dots \sum_{i_M=1}^{N(M)} U\left( BF_{\text{bettor}}^{(i_1, i_2, \dots, i_M)}(t+1) \right) \times \prod_{k=1}^{M} p_{i_k}^{k,J}
+\]
+
+Where:
+
+\begin{itemize}
+    \item \( i_k \) indexes the outcome of match \( k \).
+    \item \( BF_{\text{bettor}}^{(i_1, i_2, \dots, i_M)}(t+1) \) is the bankroll factor after all matches, given the outcomes \( i_1, i_2, \dots, i_M \).
+    \item \( p_{i_k}^{k,J} \) is the estimated probability of outcome \( i_k \) for match \( k \).
+    \item The product \( \prod_{k=1}^{M} p_{i_k}^{k,J} \) represents the joint probability of the specific combination of outcomes, assuming independence between matches.
+\end{itemize}
+
+For each outcome combination \( (i_1, i_2, \dots, i_M) \), the bankroll factor is calculated as:
+
+\[
+BF_{\text{bettor}}^{(i_1, i_2, \dots, i_M)}(t+1) = BF_{\text{bettor}}(t) \times \left( 1 + \sum_{k=1}^{M} f_{k,o_{i_k}} \left( o_{k,o_{i_k}} - 1 \right) \right)
+\]
+
+Where:
+
+\begin{itemize}
+    \item \( f_{k,o_{i_k}} \) is the fraction of the bankroll wagered on outcome \( o_{i_k} \) in match \( k \).
+    \item \( o_{k,o_{i_k}} \) is the odds offered by the bookmaker for outcome \( o_{i_k} \) in match \( k \).
+\end{itemize}
+
+An analytic simplification demonstration for the Kelly criteria, \(u = ln\), can be found at the end of this work \ref{appendix:analytical_solution_using_the_kelly_criterion}.
+
+\subsubsection{Importance of Accurate Probability Estimates}
+
+The bettor's decisions hinge on their estimated probabilities. Inaccurate estimates can lead to sub-optimal betting strategies:
+
+\begin{itemize}
+     \item\textbf{Overestimation} of probabilities may cause the bettor to wager too much, increasing the risk of significant losses.
+    \item \textbf{Underestimation} may result in conservative wagers, leading to missed opportunities for profit.
+\end{itemize}
+
+By accurately estimating the probabilities, the bettor can better align their strategy with their utility function, optimizing the trade-off between expected return and risk.
+
+
+\subsection{Expected Bankroll Factor}
+
+\paragraph{}
+The expected value \( \mathbb{E} \) of the bankroll factor \( BF \) corresponds to a simple utility function \( U(B) = B \), representing a risk-neutral perspective. This expected value is crucial in understanding the growth of wealth without considering risk preferences. An analytic form for this expectation can be derived straightforwardly.
+
+
+\paragraph{}
+The expected bankroll factor at time \( t+1 \) incorporates the bettor's actions and the estimated probabilities of outcomes. The evolution of the bankroll factor from time \( t \) to \( t+1 \) is given by:
+
+\[
+BF_{\text{bettor}}^J(t+1) = BF_{\text{bettor}}^J(t) \left[ 1 + \sum_{k=1}^{M} \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) X_i^k - 1 \right) \right]
+\]
+
+Here, \( X_i^k \) is an indicator variable that equals 1 if outcome \( \omega_i^k \) occurs and 0 otherwise. The term inside the square brackets represents the return on the bettor's wagers during time \( t \).
+
+\subsubsection{Calculating Expected Bankroll Factor}
+
+To find the expected bankroll factor at time \( t+1 \), we take the expectation with respect to the bettor's estimated probabilities \( p_i^{k,J} \):
+
+\[
+\mathbb{E}_{p^{J}}\left[ BF_{\text{bettor}}^J(t+1) \right] = BF_{\text{bettor}}^J(t) \left[ 1 + \sum_{k=1}^{M} \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) p_i^{k,J} - 1 \right) \right]
+\]
+
+This expression shows that the expected growth of the bettor's bankroll factor depends on:
+
+\begin{itemize}
+    \item The fraction of the bankroll wagered \( f_i^{k,J}(t) \).
+    \item The odds offered \( o_i^{k,B}(t) \).
+    \item The bettor's estimated probabilities \( p_i^{k,J} \) of the outcomes.
+\end{itemize}
+
+
+
+\subsection{Variance of the Bankroll Factor}
+
+The variance of the bankroll factor provides insight into the risk or uncertainty associated with the bettor's strategy. A higher variance indicates greater risk, which may or may not be acceptable depending on the bettor's utility function.
+
+\subsubsection{Calculating Variance for a Single Match}
+
+For a single match \( m^k \), the variance of the bankroll factor component due to that match is:
+
+\[
+\text{Var}_{p^{J}}\left[ BF_{\text{bettor}}^{J,k}(t+1) \right] = \left( BF_{\text{bettor}}^J(t) \right)^2 \text{Var}\left[ \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) X_i^k - 1 \right) \right]
+\]
+
+Within match \( m^k \), the outcomes are mutually exclusive and collectively exhaustive, so we account for the covariance between different outcomes.
+
+The variance expands to:
+
+\[
+\begin{aligned}
+\text{Var}_{p^{J}}\left[ BF_{\text{bettor}}^{J,k}(t+1) \right] = & \left( BF_{\text{bettor}}^J(t) \right)^2 \Bigg[ \sum_{i=1}^{N^k} \left( f_i^{k,J}(t) o_i^{k,B}(t) \right)^2 \text{Var}[X_i^k] 
+& - 2 \sum_{i<j} f_i^{k,J}(t) o_i^{k,B}(t) f_j^{k,J}(t) o_j^{k,B}(t) \text{Cov}[X_i^k, X_j^k] \Bigg]
+\end{aligned}
+\]
+
+Given that \( X_i^k \) is a Bernoulli random variable with success probability \( r_i^k \), the true probability of outcome \( \omega_i^k \):
+
+\[
+\text{Var}[X_i^k] = r_i^k (1 - r_i^k)
+\]
+
+However, the bettor does not know \( r_i^k \) and may use their estimated probability \( p_i^{k,J} \) in their calculations. Despite this, the true variance depends on \( r_i^k \), reflecting the inherent risk in the actual outcomes.
+
+For the covariance between different outcomes:
+
+\[
+\text{Cov}[X_i^k, X_j^k] = -r_i^k r_j^k
+\]
+
+This negative covariance arises because only one outcome can occur in a match.
+
+\subsubsection{Total Variance Across All Matches}
+
+Assuming independence between different matches, the total variance of the bankroll factor is the sum over all matches:
+
+\[
+\text{Var}_{p^{J}}\left[ BF_{\text{bettor}}^J(t+1) \right] = \left( BF_{\text{bettor}}^J(t) \right)^2 \sum_{k=1}^{M} \Bigg[ \sum_{i=1}^{N^k} \left( f_i^{k,J}(t) o_i^{k,B}(t) \right)^2 r_i^k (1 - r_i^k) - 2 \sum_{i<j} f_i^{k,J}(t) o_i^{k,B}(t) f_j^{k,J}(t) o_j^{k,B}(t) r_i^k r_j^k \Bigg]
+\]
+
+\paragraph{Implications for Risk Management}
+
+Understanding the variance of the bankroll factor helps the bettor manage risk. A higher variance indicates that the bankroll factor is more sensitive to the outcomes of the bets, which could lead to larger fluctuations in wealth.
+
+
+\subsection{Comparison of Objectives: Bettor vs. Bookmaker}
+
+\subsubsection{Bettor's Perspective}
+
+The bettor observes the odds \( o_i^{k,B}(t) \) offered by the bookmaker and decides on the fractions \( f_i^{k,J}(t) \) of their bankroll to wager on each outcome \( \omega_i^k \). The bettor's optimization problem is to choose \( f_i^{k,J}(t) \) to maximize their expected utility, given their estimated probabilities \( p_i^{k,J} \).
+
+\subsubsection{Bookmaker's Perspective}
+
+The bookmaker sets the odds \( o_i^{k,B}(t) \) before knowing the exact fractions \( f_i^{k,J}(t) \) that bettors will wager. The bookmaker faces uncertainty regarding the bettors' actions and must estimate the aggregate fractions:
+
+\[
+F_i^k(t) = \sum_{J} f_i^{k,J}(t)
+\]
+
+across all bettors.
+
+The bookmaker's optimization problem involves setting the odds \( o_i^{k,B}(t) \) to maximize their expected utility, considering their own estimated probabilities \( p_i^{k,B} \) and their expectations about bettors' wagering behavior.
+
+\subsubsection{Asymmetry and Strategic Interaction}
+
+This asymmetry creates a strategic interaction:
+
+\begin{itemize}
+    \item \textbf{Bettor's Advantage:} The bettor acts after observing the odds, optimizing their bets based on their own estimated probabilities and the offered odds.
+    \item \textbf{Bookmaker's Challenge:} The bookmaker sets the odds without knowing the exact betting fractions but must anticipate bettors' reactions. They need to estimate \( F_i^k(t) \) to manage risk and ensure profitability.
+\end{itemize}
+
+If the aggregate fractions wagered by bettors are biased relative to the true probabilities, the bookmaker's optimization may lead to odds that create opportunities for bettors. This can happen if bettors do not optimize their bets uniformly or have varying probability estimates, giving an advantage to informed bettors even when their estimated probabilities are closer to the bookmaker's than to the true probabilities.

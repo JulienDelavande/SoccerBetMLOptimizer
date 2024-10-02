@@ -1,0 +1,47 @@
+\chapter{Derivation of the linear Objective Function}
+\label{appendix:analytical_solution_using_linear_expected_utility}
+
+This appendix provides a formal derivation of the objective function \( E(B) - \lambda \cdot \text{Var}(B) \) from a quadratic utility function.
+
+\section{Quadratic Utility Function}
+
+Consider a quadratic utility function of the form:
+\[
+U(B) = B - \frac{\lambda}{2} B^2
+\]
+where \( B \) is the wealth (or bankroll), and \( \lambda \) is a constant representing the individual's risk aversion. The function is concave, capturing the notion of diminishing marginal utility and aversion to risk.
+
+\section{Expected Utility}
+
+The expected utility is given by:
+\[
+E[U(B)] = E\left[ B - \frac{\lambda}{2} B^2 \right] = E[B] - \frac{\lambda}{2} E[B^2]
+\]
+The term \( E[B^2] \) can be expressed as:
+\[
+E[B^2] = \text{Var}(B) + E(B)^2
+\]
+Substituting this into the expression for expected utility:
+\[
+E[U(B)] = E[B] - \frac{\lambda}{2} \left( \text{Var}(B) + E(B)^2 \right)
+\]
+
+\section{Simplification of the Objective Function}
+
+Expanding the expression:
+\[
+E[U(B)] = E[B] - \frac{\lambda}{2} \text{Var}(B) - \frac{\lambda}{2} E(B)^2
+\]
+To simplify, we assume that the term \( \frac{\lambda}{2} E(B)^2 \) is small enough to be negligible, or we focus on cases where the effect of the variance is more significant. Therefore, the expected utility becomes:
+\[
+E[U(B)] \approx E(B) - \frac{\lambda}{2} \text{Var}(B)
+\]
+
+Multiplying the entire expression by 2 (to match the typical form of the objective function):
+\[
+E[U(B)] \approx E(B) - \lambda \cdot \text{Var}(B)
+\]
+
+\section{Conclusion}
+
+Thus, the objective function \( E(B) - \lambda \cdot \text{Var}(B) \) can be derived from a quadratic utility function, where \( \lambda \) represents the individual's degree of risk aversion. This form is widely used in decision theory and finance to model the trade-off between expected return and risk (variance).

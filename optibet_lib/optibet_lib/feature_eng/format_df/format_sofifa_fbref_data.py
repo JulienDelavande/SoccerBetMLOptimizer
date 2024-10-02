@@ -29,6 +29,10 @@ def format_sofifa_fbref_data(fbref_df_date_filtered_concat, date_stop=None,
         The formatted dataset.
     """
 
+    # Fill hom_g and away_g with score value if they are NaN and score is not NaN
+    fbref_df_date_filtered_concat.loc[:, home_team_goal_col] = fbref_df_date_filtered_concat.apply(lambda x: int(x['score'].split('–')[0]) if pd.isna(x[home_team_goal_col]) and not pd.isna(x['score']) else x[home_team_goal_col], axis=1)
+    fbref_df_date_filtered_concat.loc[:, away_team_goal_col] = fbref_df_date_filtered_concat.apply(lambda x: int(x['score'].split('–')[1]) if pd.isna(x[away_team_goal_col]) and not pd.isna(x['score']) else x[away_team_goal_col], axis=1)
+
     # Add the full time result column
     fbref_df_date_filtered_concat.loc[:, ftr_col] = fbref_df_date_filtered_concat.apply(lambda x: 1 if x[home_team_goal_col] > x[away_team_goal_col] else 0 if x[home_team_goal_col] == x[away_team_goal_col] else -1 if x[home_team_goal_col] < x[away_team_goal_col] else None, axis=1)
     

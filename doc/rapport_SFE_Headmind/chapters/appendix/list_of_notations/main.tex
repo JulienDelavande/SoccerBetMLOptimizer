@@ -1,0 +1,103 @@
+\chapter{List of Notations}
+\label{appendix:list_of_notations}
+
+\section{General Notations}
+
+\item \( t \in \mathbb{R}^+ \): Time.
+\item \( \mathbb{M}(t) = \{ m^1, m^2, \dots, m^{M(t)} \} \): Set of matches available for betting at time \( t \).
+\item \( M(t) \in \mathbb{N} \): Total number of matches available at time \( t \).
+\item \( m^k \in \mathbb{M}(t) \): A specific match \( k \).
+\item \( \Omega^k = \{ \omega_1^k, \omega_2^k, \dots, \omega_{N^k}^k \} \): Set of possible outcomes for match \( m^k \).
+\item \( N^k \in \mathbb{N} \): Number of possible outcomes for match \( m^k \).
+\item \( \omega_i^k \): Outcome \( i \) of match \( m^k \).
+
+\section{Probabilities of Outcomes}
+
+\item \( \mathbb{P}_Y( \omega_i^k ) \): Probability that outcome \( \omega_i^k \) occurs for match \( m^k \) at time \( t \).
+\item \( r_i^k(t) = \mathbb{P}_Y( \omega_i^k ) \): Probability of outcome \( \omega_i^k \) occurring at time \( t \).
+\item \( X_i^k \): Random variable indicating whether outcome \( \omega_i^k \) occurs:
+  \[
+  X_i^k = \begin{cases}
+  1, & \text{if outcome } \omega_i^k \text{ occurs}, \\
+  0, & \text{otherwise}.
+  \end{cases}
+  \]
+
+\section{Bettors and Bookmakers}
+
+\item \( \mathbb{J} \): Set of bettors.
+\item \( \mathbb{B} \): Set of bookmakers.
+\item \( B_{\text{bettor}}^J(t) \): Bankroll of bettor \( J \) at time \( t \).
+\item \( B_{\text{bookmaker}}^B(t) \): Bankroll of bookmaker \( B \) at time \( t \).
+
+\section{Odds}
+
+\item \( \mathbb{O}^k(B, t) = \{ o_1^{k,B}(t), o_2^{k,B}(t), \dots, o_{N^k}^{k,B}(t) \} \): Set of odds offered by bookmaker \( B \) for match \( m^k \) at time \( t \).
+\item \( o_i^{k,B}(t) \): Odds offered by bookmaker \( B \) for outcome \( \omega_i^k \) of match \( m^k \).
+
+\section{Bets and Wagers}
+
+\item \( f_i^{k,J}(t) \): Fraction of bettor \( J \)'s bankroll wagered on outcome \( \omega_i^k \) at time \( t \).
+\item \( b_i^{k,J}(t) \): Bookmaker with whom bettor \( J \) places the bet on outcome \( \omega_i^k \) at time \( t \).
+\item \( w_i^{k,J}(t) = f_i^{k,J}(t) \times B_{\text{bettor}}^J(t) \): Amount wagered by bettor \( J \) on outcome \( \omega_i^k \) at time \( t \).
+
+\section{Bankroll Evolution}
+
+\item \( \mathcal{B}_{\text{settled}}^J(\tau) \): Set of bets settled for bettor \( J \) at time \( \tau \).
+\item \( G_{\text{bettor}}^J(b) \): Gain or loss from bet \( b \) for bettor \( J \):
+  \[
+  G_{\text{bettor}}^J(b) = w^{J}(b) \times \left( o^{B}(b) \times X(b) - 1 \right)
+  \]
+  \item \( w^{J}(b) \): Amount wagered on bet \( b \).
+  \item \( o^{B}(b) \): Odds offered by bookmaker \( B \) for bet \( b \).
+  \item \( X(b) \): Indicator variable for whether bet \( b \) wins.
+
+\section{Bookmaker's Gain}
+
+\item \( \mathcal{J} \): Set of bettors placing bets with bookmaker \( B \).
+\item \( G_{\text{bookmaker}}^B(b) \): Gain or loss for bookmaker \( B \) from bet \( b \):
+  \[
+  G_{\text{bookmaker}}^B(b) = w^{J}(b) \times \left( 1 - o^{B}(b) \times X(b) \right)
+  \]
+
+\section{Bankroll Factors}
+
+\item \( BF_{\text{bettor}}^J(t) = \frac{B_{\text{bettor}}^J(t)}{B_{\text{bettor}}^J(0)} \): Bankroll factor for bettor \( J \).
+\item \( BF_{\text{bookmaker}}^B(t) = \frac{B_{\text{bookmaker}}^B(t)}{B_{\text{bookmaker}}^B(0)} \): Bankroll factor for bookmaker \( B \).
+
+\section{Gain Calculation}
+
+\item \( G_{\text{bettor}}^J(t) = B_{\text{bettor}}^J(t) - B_{\text{bettor}}^J(0) = B_{\text{bettor}}^J(0) \left( BF_{\text{bettor}}^J(t) - 1 \right) \): Gain for bettor \( J \).
+\item \( G_{\text{bookmaker}}^B(t) = B_{\text{bookmaker}}^B(t) - B_{\text{bookmaker}}^B(0) = B_{\text{bookmaker}}^B(0) \left( BF_{\text{bookmaker}}^B(t) - 1 \right) \): Gain for bookmaker \( B \).
+
+\section{Utility Functions}
+
+\item \( U(B) \): Utility function for wealth \( B \).
+\item Expected value utility: \( U(B) = B \).
+\item Logarithmic utility: \( U(B) = \ln(B) \).
+\item Power utility: \( U(B) = \frac{B^{1 - \gamma}}{1 - \gamma}, \quad \gamma \neq 1 \).
+\item Exponential utility: \( U(B) = -e^{-\alpha B} \).
+\item Quadratic utility: \( U(B) = B - \frac{\lambda}{2} B^2 \).
+
+\section{Agent's State Space}
+
+\item \( S(t) \): State of the betting market at time \( t \):
+  \[
+  S(t) = \left( \mathbb{M}(t), \Omega(t), \mathbb{O}(t), B_{\text{bettor}}(t), B_{\text{bookmaker}}(t), H(t), \mathcal{I}(t) \right)
+  \]
+  \item \( H(t) \): History of past events.
+  \item \( \mathcal{I}(t) \): Additional information available to agents at time \( t \).
+
+\section{Action Space}
+
+\item \( A_{\text{bettor}}^J(t) \): Action of bettor \( J \) at time \( t \), choosing \( f_i^k \) values.
+\item \( A_{\text{bookmaker}}^B(t) \): Action of bookmaker \( B \) at time \( t \), setting odds \( o_i^k(t) \).
+
+\section{Transition Dynamics}
+
+\item \( \frac{dS(t)}{dt} = \Phi\left( S(t), A_{\text{bettor}}(t), A_{\text{bookmaker}}(t), \epsilon(t) \right) \): Transition function.
+
+\section{Policies}
+
+\item \( \pi_{\text{bettor}}^J \): Policy for bettor \( J \), mapping states to actions.
+\item \( \pi_{\text{bookmaker}}^B \): Policy for bookmaker \( B \), mapping states to actions.
