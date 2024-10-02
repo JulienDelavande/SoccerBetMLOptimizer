@@ -1,0 +1,158 @@
+\chapter{Analytical Reduction of \( \mathbb{E}[\ln(B)] \)}
+\label{appendix:analytical_reduction_using_log_expected_utility}
+
+\section{Problem Setup}
+
+The bettor aims to maximize the expected logarithmic utility of their bankroll:
+
+\[
+\max_{\{ f_i^{k,J}(t) \}} \mathbb{E}_{p^{J}}\left[ \ln\left( B_{\text{bettor}}^J(t+1) \right) \right]
+\]
+
+where:
+
+\[
+B_{\text{bettor}}^J(t+1) = B_{\text{bettor}}^J(t) \times \text{BF}(t+1)
+\]
+
+The \textbf{bankroll factor} \( \text{BF}(t+1) \) is given by:
+
+\[
+\text{BF}(t+1) = 1 + \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) X_i^k - 1 \right)
+\]
+
+However, this can be reformulated as:
+
+\[
+\text{BF}(t+1) = 1 - F(t) + \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) o_i^{k,B}(t) X_i^k
+\]
+
+where:
+
+\begin{itemize}
+    \item \( F(t) = \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \) is the total fraction of the bankroll bet.
+\end{itemize}
+
+In this context, the expected value of the logarithmic utility of the future bankroll is:
+
+\[
+\mathbb{E}_{p^{J}}\left[ \ln\left( B_{\text{bettor}}^J(t+1) \right) \right] = \ln\left( B_{\text{bettor}}^J(t) \right) + \mathbb{E}_{p^{J}}\left[ \ln\left( \text{BF}(t+1) \right) \right]
+\]
+
+Our goal is to compute \( \mathbb{E}_{p^{J}}\left[ \ln\left( \text{BF}(t+1) \right) \right] \) without any approximations.
+
+\section{Expected Value of the Logarithm of the Bankroll Factor}
+
+Given that the matches are independent and the outcomes within each match are mutually exclusive, we can consider the bankroll factor as the product of the individual match factors.
+
+\paragraph{For each match \( k \):}
+
+The bankroll factor for match \( k \) is:
+
+\[
+\text{BF}_k = 1 - F_k + \sum_{i=1}^{N^k} f_i^{k,J}(t) o_i^{k,B}(t) X_i^k
+\]
+
+where:
+\begin{itemize}
+\item \( F_k = \sum_{i=1}^{N^k} f_i^{k,J}(t) \) is the fraction of the bankroll wagered on match \( k \).
+\item \( X_i^k \) is a random variable that indicates whether outcome \( i \) of match \( k \) occurs (\( X_i^k = 1 \)) or not (\( X_i^k = 0 \)).
+\end{itemize}
+
+Since only one outcome occurs for each match, we can write \( \text{BF}_k \) for match \( k \) as:
+
+\[
+\text{BF}_k = 1 - F_k + f_{i^*}^{k,J}(t) o_{i^*}^{k,B}(t)
+\]
+
+where \( i^* \) is the realized outcome of match \( k \).
+
+\paragraph{Total Bankroll Factor:}
+
+Since matches are independent, the total bankroll factor is the product of the factors of each match:
+
+\[
+\text{BF}(t+1) = \prod_{k=1}^M \text{BF}_k
+\]
+
+\section{Expected Logarithm of the Bankroll Factor}
+
+The expected value of the logarithm of the total bankroll factor is:
+
+\[
+\mathbb{E}_{p^{J}}\left[ \ln\left( \text{BF}(t+1) \right) \right] = \sum_{k=1}^M \mathbb{E}_{p^{J}}\left[ \ln\left( \text{BF}_k \right) \right]
+\]
+
+\paragraph{For a single match \( k \):}
+
+For each match \( k \), the expectation is:
+
+\[
+\mathbb{E}_{p^{J}}\left[ \ln\left( \text{BF}_k \right) \right] = \sum_{i=1}^{N^k} p_i^{k,J} \ln\left( 1 - F_k + f_i^{k,J}(t) o_i^{k,B}(t) \right)
+\]
+
+where \( p_i^{k,J} \) is the bettor's estimated probability for outcome \( i \) of match \( k \).
+
+\section{Final Expression for the Expected Logarithm of the Future Bankroll}
+
+Combining the expressions for all matches, we obtain:
+
+\[
+\mathbb{E}_{p^{J}}\left[ \ln\left( B_{\text{bettor}}^J(t+1) \right) \right] = \ln\left( B_{\text{bettor}}^J(t) \right) + \sum_{k=1}^M \left[ \sum_{i=1}^{N^k} p_i^{k,J} \ln\left( 1 - F_k + f_i^{k,J}(t) o_i^{k,B}(t) \right) \right]
+\]
+
+This expression makes no assumption about the smallness of the betting fractions \( f_i^{k,J}(t) \) or the return factor, and is therefore exact.
+
+\section{Optimization Without Approximation}
+
+The bettor must solve the following optimization problem:
+
+\[
+\max_{\{ f_i^{k,J}(t) \}} \sum_{k=1}^M \left[ \sum_{i=1}^{N^k} p_i^{k,J} \ln\left( 1 - F_k + f_i^{k,J}(t) o_i^{k,B}(t) \right) \right]
+\]
+
+subject to the constraints:
+
+\begin{itemize}
+    \item \( f_i^{k,J}(t) \in [0, 1] \) for all \( i, k \).
+    \item \( F_k = \sum_{i=1}^{N^k} f_i^{k,J}(t) \leq 1 \) for all \( k \)
+    \item  \( \sum_{k=1}^M F_k \leq 1 \)
+\end{itemize}
+
+
+\section{Example of Simplification}
+
+To illustrate this method, consider a match \( k \) with two possible outcomes (e.g., win or loss):
+
+\begin{itemize}
+\item Outcomes: \( i = 1, 2 \)
+\item Estimated probabilities: \( p_1^{k,J} \), \( p_2^{k,J} \)
+\item Betting fractions: \( f_1^{k,J}(t) \), \( f_2^{k,J}(t) \)
+\item Odds: \( o_1^{k,B}(t) \), \( o_2^{k,B}(t) \)
+\item \( F_k = f_1^{k,J}(t) + f_2^{k,J}(t) \)
+\end{itemize}
+
+The expected logarithm of the return factor for this match is:
+
+\[
+\mathbb{E}_{p^{J}}\left[ \ln\left( \text{BF}_k \right) \right] = p_1^{k,J} \ln\left( 1 - F_k + f_1^{k,J}(t) o_1^{k,B}(t) \right) + p_2^{k,J} \ln\left( 1 - F_k + f_2^{k,J}(t) o_2^{k,B}(t) \right)
+\]
+
+The bettor must choose \( f_1^{k,J}(t) \) and \( f_2^{k,J}(t) \) to maximize this expression, subject to the constraints:
+
+\begin{itemize}
+\item \( f_1^{k,J}(t) \geq 0 \)
+\item \( f_2^{k,J}(t) \geq 0 \)
+\item \( f_1^{k,J}(t) + f_2^{k,J}(t) \leq 1 \)
+\end{itemize}
+\section{Numerical Optimization}
+
+This optimization can be solved analytically in some simple cases, or more generally using numerical methods such as nonlinear optimization algorithms (e.g., Newton-Raphson, gradient-based methods).
+
+\section{The Role of Estimated Probabilities}
+
+The estimated probabilities \( p_i^{k,J} \) directly influence the expected logarithm of the return factor. A higher estimated probability for a particular outcome increases the weight of the logarithmic return factor associated with that outcome in the overall expectation. Thus, the bettor is incentivized to bet more on outcomes they believe are more likely to occur, while considering the offered odds.
+
+\section{Conclusion}
+
+In conclusion, it is entirely possible to analytically compute \( \mathbb{E}_{p^{J}}\left[ \ln\left( B_{\text{bettor}}^J(t+1) \right) \right] \) without assuming that the return factor is small. This allows the bettor to optimize their betting strategy by fully considering the impact of each wager on their future bankroll, without approximation.

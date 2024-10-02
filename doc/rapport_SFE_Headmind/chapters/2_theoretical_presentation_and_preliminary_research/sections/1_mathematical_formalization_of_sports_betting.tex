@@ -1,0 +1,345 @@
+\subsection{Matches and Outcomes}
+
+At any given time \( t \in \mathbb{R}^+ \), we define the set of matches available for betting as:
+
+\[
+\mathbb{M}(t) = \{ m^1, m^2, \dots, m^{M(t)} \}
+\]
+
+where \( M(t) \in \mathbb{N} \) represents the total number of matches available at time \( t \).
+
+For each match \( m^k \in \mathbb{M}(t) \), there is a set of possible outcomes:
+
+\[
+\Omega^k = \{ \omega_1^k, \omega_2^k, \dots, \omega_{N^k}^k \}
+\]
+
+where \( N^k \in \mathbb{N} \) represents the number of possible outcomes for match \( m^k \).
+
+\paragraph{Example:} 
+In a football match, possible outcomes might be chosen as \{home team wins, draw, away team wins\}, so \( N^k = 3\) \(\forall k\).
+
+\subsection{Probabilities of Outcomes}
+
+We define \( \mathbb{P}_Y( \omega_i^k ) \) as the probability that outcome \( \omega_i^k \) occurs for match \( m^k \), given the state of the world \( Y \) at time \( t \):
+
+\[
+r_i^k(t) = \mathbb{P}_Y( \omega_i^k )
+\]
+
+These probabilities may change over time as new information becomes available.
+
+We introduce the random variable \( X_i^k \) associated with outcome \( \omega_i^k \):
+
+\[
+X_i^k = \begin{cases}
+1, & \text{if outcome } \omega_i^k \text{ occurs}, \\
+0, & \text{otherwise}.\\
+\end{cases}
+\]
+
+Therefore, \( r_i^k(t) = \mathbb{P}_Y( X_i^k = 1 ) \). \\
+
+\paragraph{Example:} 
+Consider a football match \( m^k \) between Team A and Team B. The possible outcomes \( \omega_i^k \) are:
+
+\[
+\omega_1^k = \text{Team A wins}, \quad \omega_2^k = \text{Draw}, \quad \omega_3^k = \text{Team B wins}.
+\]
+
+At time \( t \), based on current information \( Y \) (such as form, injuries, and past results), the probabilities of these outcomes are:
+
+\[
+r_1^k(t) = \mathbb{P}_Y(\text{Team A wins}), \quad r_2^k(t) = \mathbb{P}_Y(\text{Draw}), \quad r_3^k(t) = \mathbb{P}_Y(\text{Team B wins}).
+\]
+
+For example, if \( r_1^k(t) = 0.55 \), it means there is a 55\% chance that Team A will win.
+
+\subsection{Bettors and Bookmakers}
+
+Let \( \mathbb{J} \) be the set of bettors, and \( \mathbb{B} \) be the set of bookmakers.
+
+Each bettor \( J \in \mathbb{J} \) has a bankroll at time \( t \), denoted by:
+
+\[
+B_{\text{bettor}}^J(t)
+\]
+
+Similarly, each bookmaker \( B \in \mathbb{B} \) has a bankroll at time \( t \), denoted by:
+
+\[
+B_{\text{bookmaker}}^B(t)
+\]
+
+\subsection{Odds}
+
+At time \( t \), bookmaker \( B \) offers odds on the outcomes of matches. For match \( m^k \), the odds offered by bookmaker \( B \) are:
+
+\[
+\mathbb{O}^k(B, t) = \{ o_1^{k,B}(t), o_2^{k,B}(t), \dots, o_{N^k}^{k,B}(t) \}
+\]
+
+where \( o_i^{k,B}(t) \) represents the odds offered on outcome \( \omega_i^k \) of match \( m^k \) at time \( t \). \\
+
+\paragraph{Example:}
+Consider the same football match \( m^k \) between Team A and Team B. At time \( t \), bookmaker \( B \) offers the following odds:
+
+\[
+\mathbb{O}^k(B, t) = \{ 2.00, 3.50, 4.00 \}
+\]
+
+Where \( o_1^{k,B}(t) = 2.00 \) for Team A to win, \( o_2^{k,B}(t) = 3.50 \) for a draw, and \( o_3^{k,B}(t) = 4.00 \) for Team B to win.
+
+These odds represent the potential payouts for each outcome.
+
+\subsection{Bets and Wagers}
+
+At time \( t \), bettor \( J \) may choose to place bets on various outcomes. We define:
+
+\begin{itemize}
+    \item \( f_i^{k,J}(t) \): The fraction of bettor \( J \)'s bankroll \( B_{\text{bettor}}^J(t) \) that is wagered on outcome \( \omega_i^k \) of match \( m^k \).
+    \item \( b_i^{k,J}(t) \): The bookmaker \( B \) with whom bettor \( J \) places the bet on outcome \( \omega_i^k \) of match \( m^k \).
+\end{itemize}
+
+Therefore, the amount wagered by bettor \( J \) on outcome \( \omega_i^k \) at time \( t \) is:
+
+\[
+w_i^{k,J}(t) = f_i^{k,J}(t) \times B_{\text{bettor}}^J(t)
+\]
+
+
+\paragraph{Example:}
+Consider bettor \( J \) with a bankroll of \( B_{\text{bettor}}^J(t) = 100 \) units at time \( t \). Bettor \( J \) decides to wager:
+
+\[
+f_1^{k,J}(t) = 0.2 \quad \text{(20\% of the bankroll on Team A to win)}
+\]
+
+Thus, the amount wagered is:
+
+\[
+w_1^{k,J}(t) = 0.2 \times 100 = 20 \text{ units}
+\] 
+
+Bettor \( J \) places the 20-unit bet with bookmaker \( B \).
+
+\subsection{Bankroll Evolution}
+
+The evolution of the bettors' and bookmakers' bankrolls depends on the outcomes of the matches and the settlement of bets.
+
+\subsubsection{Bettor's Bankroll Evolution}
+
+The bankroll of bettor \( J \) at time \( t \) is given by:
+
+\[
+B_{\text{bettor}}^J(t) = B_{\text{bettor}}^J(0) + \int_0^t \sum_{b \in \mathcal{B}_{\text{settled}}^J(\tau)} G_{\text{bettor}}^J(b) \, d\tau
+\]
+
+where:
+
+\begin{itemize}
+    \item \( \mathcal{B}_{\text{settled}}^{J}(s) \) is the set of bets placed by bettor \( J \) that are settled at time \( s \).
+    \item \( G_{\text{bettor}}^J(b) \) is the gain or loss from bet \( b \), calculated as:
+    \[
+    G_{\text{bettor}}^J(b) = w^{J}(b) \times \left( o^{B}(b) \times X(b) - 1 \right)
+    \]
+    \begin{itemize}
+        \item \( w^{J}(b) \) is the amount wagered on bet \( b \).
+        \item \( o^{B}(b) \) is the odds offered by bookmaker \( B \) for bet \( b \).
+        \item \( X(b) \) indicates whether the bet was successful (\( X(b) = 1 \)) or not (\( X(b) = 0 \)).
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Example:}
+
+Consider bettor \( J \) starts with a bankroll of \( B_{\text{bettor}}^J(0) = 100 \) units. At time \( t_1 \), the bettor places a bet of \( w^{J}(b) = 20 \) units on a match with odds \( o^{B}(b) = 2.50 \) offered by bookmaker \( B \).
+
+If the outcome \( X(b) = 1 \) (the bettor wins the bet), the gain from the bet is:
+
+\[
+G_{\text{bettor}}^J(b) = 20 \times (2.50 \times 1 - 1) = 30 \text{ units}
+\]
+
+Thus, the updated bankroll at time \( t_1 \) is:
+
+\[
+B_{\text{bettor}}^J(t_1) = 100 + 30 = 130 \text{ units}
+\]
+
+If the bettor loses another bet at time \( t_2 \) with a wager of 30 units on odds of 3.00, then \( X(b) = 0 \) and the loss is:
+
+\[
+G_{\text{bettor}}^J(b) = 30 \times (3.00 \times 0 - 1) = -30 \text{ units}
+\]
+
+The bankroll at time \( t_2 \) becomes:
+
+\[
+B_{\text{bettor}}^J(t_2) = 130 - 30 = 100 \text{ units}
+\]
+
+\subsubsection{Bookmaker's Bankroll Evolution}
+
+Similarly, the bankroll of bookmaker \( B \) at time \( t \) is given by:
+
+\[
+B_{\text{bookmaker}}^B(t) = B_{\text{bookmaker}}^B(0) + \int_0^t \sum_{J \in \mathcal{J}} \sum_{b \in \mathcal{B}_{\text{settled}}^{B,J}(\tau)} G_{\text{bookmaker}}^B(b) \, d\tau
+\]
+
+where:
+
+\begin{itemize}
+
+    \item \( \mathcal{J} \) is the set of all bettors \( \{ J_1, J_2, \dots, J_N \} \) placing bets with bookmaker \( B \).
+    \item \( \mathcal{B}_{\text{settled}}^{B,J}(s) \) is the set of bets accepted by bookmaker \( B \) from bettor \( J \) that are settled at time \( s \).
+    \item \( G_{\text{bookmaker}}^B(b) \) is the gain or loss from bet \( b \), which now takes into account multiple bettors \( J \), calculated as:
+    
+    \[
+    G_{\text{bookmaker}}^B(b) = w^{J}(b) \times \left( 1 - o^{B}(b) \times X(b) \right)
+    \]
+    
+    where:
+    \begin{itemize}
+        \item \( w^{J}(b) \) is the amount wagered by bettor \( J \) on bet \( b \).
+        \item \( o^{B}(b) \) is the odds offered by bookmaker \( B \) for bet \( b \).
+        \item \( X(b) \) indicates whether the bet was successful (\( X(b) = 1 \)) or not (\( X(b) = 0 \)).
+    \end{itemize}
+\end{itemize}
+\subsubsection{Impact of Multiple Bettors}
+
+For each bet \( b \), the gain or loss for bookmaker \( B \) depends on which bettor placed the bet. If bettor \( J \) wins, bookmaker \( B \) pays out, and if bettor \( J \) loses, bookmaker \( B \) gains:
+
+\[
+G_{\text{bookmaker}}^B(b) = - G_{\text{bettor}}^J(b)
+\]
+
+Thus, for each bet placed by a bettor \( J \), the bookmaker’s gain is equal to the bettor’s loss, and vice versa. With multiple bettors, the bookmaker's bankroll reflects the combined gains and losses from all bets settled across the bettors \( J_1, J_2, \dots, J_N \).
+
+
+\subsection{Bankroll Factor}
+
+To abstract from the initial bankroll amounts, we can define the \textit{Bankroll Factor} for bettors and bookmakers.
+
+\subsubsection{Bettor's Bankroll Factor}
+
+The bankroll factor for bettor \( J \) at time \( t \) is defined as:
+
+\[
+BF_{\text{bettor}}^J(t) = \frac{B_{\text{bettor}}^J(t)}{B_{\text{bettor}}^J(0)}
+\]
+
+This represents the growth of the bettor's bankroll relative to their initial bankroll.
+
+\subsubsection{Bookmaker's Bankroll Factor}
+
+Similarly, the bankroll factor for bookmaker \( B \) at time \( t \) is:
+
+\[
+BF_{\text{bookmaker}}^B(t) = \frac{B_{\text{bookmaker}}^B(t)}{B_{\text{bookmaker}}^B(0)}
+\]
+
+\subsection{Gain Calculation}
+
+The cumulative gain for bettor \( J \) up to time \( t \) is:
+
+\[
+G_{\text{bettor}}^J(t) = B_{\text{bettor}}^J(t) - B_{\text{bettor}}^J(0) = B_{\text{bettor}}^J(0) \left( BF_{\text{bettor}}^J(t) - 1 \right)
+\]
+
+Similarly, for bookmaker \( B \):
+
+\[
+G_{\text{bookmaker}}^B(t) = B_{\text{bookmaker}}^B(t) - B_{\text{bookmaker}}^B(0) = B_{\text{bookmaker}}^B(0) \left( BF_{\text{bookmaker}}^B(t) - 1 \right)
+\]
+
+
+\subsection{Utility Function}
+
+The utility function \( U \) represents the agent's preferences regarding risk and reward, crucial in decision-making under uncertainty \cite{KahnemanTversky1979}. Bettors and bookmakers use this function to optimize their gains over time while minimizing risk. Unlike expected returns, utility functions incorporate risk preferences, allowing agents to balance the trade-off between potential gains and variability 
+\cite{Markowitz1952} \cite{Arrow1971} \cite{Pratt1964}.
+
+\subsubsection{Forms of Utility Functions}
+
+Different utility functions capture varying risk attitudes, ranging from risk-neutral to risk-averse behaviors. Below are the common types of utility functions in the betting market:
+
+\paragraph{1. Expected Value Utility (Risk-Neutral)}
+
+The simplest form, where utility is directly proportional to wealth:
+
+\[
+U(B) = B
+\]
+
+Agents using this function are risk-neutral, focusing solely on maximizing expected returns without considering risk.
+
+\paragraph{2. Logarithmic Utility (Moderate Risk Aversion)}
+
+Logarithmic utility models constant relative risk aversion (CRRA) and is expressed as:
+
+\[
+U(B) = \ln(B)
+\]
+
+This function reflects diminishing marginal utility of wealth, balancing risk and reward, commonly used in the Kelly Criterion \cite{Kelly1956} \cite{Thorp1975} for long-term growth.
+
+\paragraph{3. Power Utility (CRRA)}
+
+A generalization of logarithmic utility, with risk aversion controlled by \( \gamma \):
+
+\[
+U(B) = \frac{B^{1 - \gamma}}{1 - \gamma}, \quad \gamma \neq 1
+\]
+
+Higher \( \gamma \) values indicate greater risk aversion. When \( \gamma = 1 \), the function becomes logarithmic.
+
+\paragraph{4. Exponential Utility (Constant Absolute Risk Aversion - CARA)}
+
+The exponential utility models constant absolute risk aversion (CARA):
+
+\[
+U(B) = -e^{-\alpha B}
+\]
+
+Here, \( \alpha \) controls risk aversion. Agents using this function maintain consistent risk preferences regardless of wealth level.
+
+\paragraph{5. Quadratic Utility}
+
+Quadratic utility is given by:
+
+\[
+U(B) = B - \frac{\lambda}{2} B^2
+\]
+
+Though it captures increasing risk aversion, it has the drawback of implying decreasing utility at higher wealth levels, making it less commonly used.
+
+\subsubsection{Implications of Different Utility Functions}
+
+Each utility function models specific risk preferences, influencing the agent’s decisions:
+
+\paragraph{Risk-Neutral Behavior}
+
+Agents with linear utility (\( U(B) = B \)) focus solely on maximizing returns, indifferent to risk. This behavior is rare in practice due to the inherent risks in betting.
+
+\paragraph{Risk-Averse Behavior}
+
+Utility functions like logarithmic, power, and exponential represent risk-averse behavior:
+
+\begin{itemize}
+    \item \textbf{Logarithmic Utility:} Moderate risk aversion, favoring long-term growth.
+    \item \textbf{Power Utility (CRRA):} Flexibility in modeling different degrees of risk aversion via \( \gamma \).
+    \item \textbf{Exponential Utility (CARA):} Constant risk aversion regardless of wealth.
+\end{itemize}
+
+\paragraph{Risk-Seeking Behavior}
+
+Agents may occasionally exhibit risk-seeking behavior, favoring higher variance. This is typically modeled by utility functions with convex regions or negative coefficients but is unsustainable in the long term.
+
+\subsubsection{Choosing an Appropriate Utility Function}
+
+Selecting the right utility function depends on:
+
+\begin{itemize}
+    \item \textbf{Risk Preference:} It should reflect the agent’s risk tolerance.
+    \item \textbf{Mathematical Tractability:} Functions like logarithmic utility offer simpler analytical solutions.
+    \item \textbf{Realism:} The chosen function should realistically model the agent’s behavior in the market.
+\end{itemize}

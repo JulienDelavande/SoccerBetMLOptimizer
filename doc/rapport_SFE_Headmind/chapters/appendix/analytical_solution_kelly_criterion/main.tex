@@ -1,0 +1,99 @@
+
+\chapter{Analytical Solution Using the Kelly Criterion}
+\label{appendix:analytical_solution_using_the_kelly_criterion}
+
+
+\section{Derivation of the Optimal Betting Fraction}
+
+The bettor seeks to maximize:
+
+\[
+\max_{\{ f_i^{k,J}(t) \}} \mathbb{E}_{p^{J}}\left[ \ln\left( B_{\text{bettor}}^J(t+1) \right) \right]
+\]
+
+Since:
+
+\[
+B_{\text{bettor}}^J(t+1) = B_{\text{bettor}}^J(t) + G_{\text{bettor}}^J(t)
+\]
+
+and the gain is:
+
+\[
+G_{\text{bettor}}^J(t) = B_{\text{bettor}}^J(t) \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) X_i^k - 1 \right)
+\]
+
+we can write:
+
+\[
+\ln\left( B_{\text{bettor}}^J(t+1) \right) = \ln\left( B_{\text{bettor}}^J(t) \right) + \ln\left( 1 + \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) X_i^k - 1 \right) \right)
+\]
+
+Assuming that the fractions \( f_i^{k,J}(t) \) are small, we can approximate the logarithm using a Taylor expansion around 0:
+
+\[
+\ln(1 + \delta) \approx \delta - \frac{\delta^2}{2}
+\]
+
+Applying this approximation:
+
+\[
+\ln\left( B_{\text{bettor}}^J(t+1) \right) \approx \ln\left( B_{\text{bettor}}^J(t) \right) + \Delta - \frac{\Delta^2}{2}
+\]
+
+where:
+
+\[
+\Delta = \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) X_i^k - 1 \right)
+\]
+
+Taking the expectation with respect to the bettor's estimated probabilities \( p_i^{k,J} \):
+
+\[
+\mathbb{E}_{p^{J}}\left[ \ln\left( B_{\text{bettor}}^J(t+1) \right) \right] \approx \ln\left( B_{\text{bettor}}^J(t) \right) + \mathbb{E}_{p^{J}}\left[ \Delta \right] - \frac{1}{2} \mathbb{E}_{p^{J}}\left[ \Delta^2 \right]
+\]
+
+Computing the expected value and variance:
+
+\[
+\mathbb{E}_{p^{J}}\left[ \Delta \right] = \sum_{k=1}^M \sum_{i=1}^{N^k} f_i^{k,J}(t) \left( o_i^{k,B}(t) p_i^{k,J} - 1 \right)
+\]
+
+\[
+\mathbb{E}_{p^{J}}\left[ \Delta^2 \right] = \left( \mathbb{E}_{p^{J}}\left[ \Delta \right] \right)^2 + \text{Var}_{p^{J}}\left( \Delta \right)
+\]
+
+Thus:
+
+\[
+\mathbb{E}_{p^{J}}\left[ \ln\left( B_{\text{bettor}}^J(t+1) \right) \right] \approx \ln\left( B_{\text{bettor}}^J(t) \right) + \mathbb{E}_{p^{J}}\left[ \Delta \right] - \frac{1}{2} \left( \left( \mathbb{E}_{p^{J}}\left[ \Delta \right] \right)^2 + \text{Var}_{p^{J}}\left( \Delta \right) \right)
+\]
+
+Since \( \left( \mathbb{E}_{p^{J}}\left[ \Delta \right] \right)^2 \) is typically small compared to the variance term, we can focus on maximizing:
+
+\[
+\mathbb{E}_{p^{J}}\left[ \Delta \right] - \frac{1}{2} \text{Var}_{p^{J}}\left( \Delta \right)
+\]
+
+This shows that the bettor's optimization involves a trade-off between expected return and risk, both of which depend on the estimated probabilities \( p_i^{k,J} \).
+
+\section{Optimal Betting Fraction}
+
+By taking the derivative with respect to \( f_i^{k,J}(t) \) and setting it to zero:
+
+\[
+\frac{\partial}{\partial f_i^{k,J}(t)} \left( \mathbb{E}_{p^{J}}\left[ \Delta \right] - \frac{1}{2} \text{Var}_{p^{J}}\left( \Delta \right) \right) = 0
+\]
+
+After calculation, the optimal fraction is:
+
+\[
+f_i^{k,J*}(t) = \frac{ \left( o_i^{k,B}(t) p_i^{k,J} - 1 \right ) }{ o_i^{k,B}(t) - 1 }
+\]
+
+This is the classical Kelly formula, showing that the optimal betting fraction depends on:
+
+\begin{itemize}
+    \item The bettor's estimated probability \( p_i^{k,J} \).
+    \item The odds offered \( o_i^{k,B}(t) \).
+\end{itemize}

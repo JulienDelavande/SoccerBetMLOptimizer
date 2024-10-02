@@ -1,0 +1,118 @@
+\documentclass[10pt]{report}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{multicol}
+\usepackage{graphics}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{geometry}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage{empheq}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\geometry{hmargin=2.5cm,vmargin=2.2cm}
+\usepackage{hyperref}
+\usepackage{diagbox}
+\usepackage[style=numeric, backend=biber]{biblatex}
+\addbibresource{references.bib}
+\usepackage{changepage}
+\usepackage{array}
+\usepackage{amssymb}
+\usepackage{lipsum} % For filler text
+\setlength{\parindent}{8pt}
+
+
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+    citecolor=red,
+    }
+
+\begin{document}
+\pagenumbering{roman}
+    
+\input{components/first_page/main}
+
+\input{components/abstract/main}
+
+\newpage 
+
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic} % Passe à la numérotation en chiffres arabes
+\setcounter{page}{1}    % Redémarre la numérotation des pages à 1
+
+% \chapter{Introduction}
+
+% General context of betting
+
+% \section{About the firm}
+
+% Headmind Partners (formerly Beijaflore) is a consulting firm located in the 16th district of Paris. It gathers 1500 associates split into 3 business units, Digital, Cybersecurity and AI\&Blockchain. The digital BU is the most important with around 1000 people. Then this is the cybersecurity BU with around 450 people and finally the AI\&Blockchain BU with approximately 45 people. Headmind Partners offices are located only in two countries, France and Belgium, and the firm represents around 130M€ of turnover.
+
+% \section{About the team}
+
+% I joined the AI\&Blockchain team composed of 24 permanent AI consultants, 13 interns and 4 people responsible for communication. In terms of percentage, 95\% of the subjects treated by the BU is about AI and only 5\% is about Blockchain and cryptocurrency. The AI BU is built around 4 teams which are: NLP, Computer Vision, Anomaly detection, Time Series. I was integrated into the NLP team but I was also working with the Computer Vision team since my internship subject involved both fields. The internship was organized as follows: I started my internship on the 17th of April and during 2 months I only worked on my internship subject (ImageSearch) then for the last 4 months, in parallel of my internship subject, I have been working for my Energy client, 2 days per week and working from mid-June to the end of July for an intern client which was the Cybersecurity BU.
+
+% \section{Addressed problem}
+
+% \section{Internship objectives}
+
+\chapter{Introduction}
+
+Sports betting has evolved into a sophisticated industry that combines statistical analysis, predictive modeling, and strategic financial management \cite{AndersonSally2013}. With the global popularity of football and the abundance of data available, there is a significant opportunity to apply advanced analytical techniques to optimize betting strategies. The challenge lies in accurately predicting match outcomes and effectively managing the allocation of betting capital to maximize returns while minimizing risk.
+
+This report presents the development and implementation of a comprehensive system designed to address these challenges in sports betting. The system integrates predictive modeling to forecast football match outcomes and optimization algorithms to determine the optimal allocation of a bettor's bankroll. The focus is on creating a practical, scalable solution that can operate in real-time, leveraging cloud-based technologies and microservices architecture.
+
+\section{Background and Motivation}
+
+The sports betting market is highly competitive, with bettors seeking any edge to improve their chances of success. Traditional betting strategies often rely on intuition or simplistic models that fail to account for the complexities of sports data and market dynamics. The advancement of machine learning and statistical methods offers the potential to enhance predictive accuracy and optimize betting decisions systematically \cite{CainEtAl2000}.
+
+Effective bankroll management is equally important, as even accurate predictions can lead to losses if the betting amounts are not strategically allocated. The application of utility theory and optimization techniques, such as the Kelly Criterion, provides a mathematical framework for balancing risk and reward in betting decisions. 
+
+\section{Objectives of the Study}
+
+The primary objectives of this study are:
+
+\begin{itemize}
+\item To establish a rigorous mathematical framework that defines the theoretical foundations and sets the stage for the study.
+\item To develop a predictive model that accurately estimates the probabilities of football match outcomes using historical and real-time data. \item To design an optimization module that calculates the optimal fraction of the bankroll to wager on each betting opportunity, applying various utility-based strategies. \item To implement a scalable, microservices-based system architecture that integrates data collection, predictive modeling, optimization, and user interface components. \item To deploy the system on a cloud platform using Kubernetes for scalability and reliability. \item To evaluate the performance of different betting strategies through Monte Carlo simulations and real-world online testing. \end{itemize}
+
+\section{Scope of the Report}
+
+This report details the theoretical framework underlying the predictive modeling and optimization strategies, the system architecture and implementation, and the results of both simulated and real-world testing. The report is organized as follows:
+
+\begin{itemize} \item Chapter 2 provides a theoretical presentation of the models and preliminary research conducted. \item Chapter 3 describes the design and implementation of the solution, including system architecture and data management. \item Chapter 4 focuses on the development, training, and evaluation of the predictive models for match outcomes. \item Chapter 5 discusses the optimization of bankroll allocation using various strategies. \item Chapter 6 details the deployment of the complete system on Azure Kubernetes Service and the practical considerations involved. \item Chapter 7 presents the conclusions drawn from the study and discusses potential future work. \end{itemize}
+
+\section{Significance of the Study}
+
+By integrating advanced predictive modeling with optimized bankroll allocation, this work aims to contribute to the field of sports analytics and betting strategies. The deployment of the system on a scalable cloud infrastructure demonstrates its practical applicability and readiness for real-world use. The findings from this study have implications for bettors seeking to enhance their strategies, as well as for researchers interested in the application of machine learning and optimization techniques in sports betting.
+
+\chapter{Theoretical presentation and preliminary research}
+\input{chapters/2_theoretical_presentation_and_preliminary_research/main}
+
+\chapter{Design and implementation of the solution}
+\input{chapters/3_design_and_implementation_of_the_solution/main}
+
+\chapter{Predictive Modeling of Match Outcomes}
+\input{chapters/4_predictive_modeling_of_match_outcomes/main}
+
+\chapter{Optimization of bankroll allocation}
+\input{chapters/5_Optimization_of_bankroll_allocation/main}
+
+\chapter{Development of the Complete System and Production Deployment}
+\input{chapters/6_Development_of_the_Complete_System and_Production _Deployment/main}
+
+\chapter{Discussion and Conclusion}
+\input{chapters/conclusion/main}
+
+\appendix
+\input{chapters/appendix/main}
+
+\printbibliography[heading=bibintoc,title={References}]
+
+\end{document}

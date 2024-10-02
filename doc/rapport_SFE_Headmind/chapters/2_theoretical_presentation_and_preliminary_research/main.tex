@@ -1,0 +1,30 @@
+
+\section{Introduction}
+
+In this section, we introduce a mathematical framework that describes the sports betting market. We model the interactions between bettors and bookmakers, considering key elements such as match outcomes, associated probabilities, odds, and bankroll dynamics. Bettors aim to maximize their utility by placing bets based on their estimated probabilities of match outcomes, while bookmakers strategically set odds to manage risk and ensure profitability. This agent-based framework enables a systematic analysis of decision-making processes in sports betting, balancing risk and reward. The complete list of notations can be found here \ref{appendix:list_of_notations}.
+
+\section{Mathematical Formalization of Sports Betting}
+
+\input{chapters/2_theoretical_presentation_and_preliminary_research/sections/1_mathematical_formalization_of_sports_betting}
+
+\section{General Agent-Based Betting Framework}
+
+\input{chapters/2_theoretical_presentation_and_preliminary_research/sections/2_general_agent_based_betting_framework}
+
+\section{Reduction to the Studied Case}
+
+\input{chapters/2_theoretical_presentation_and_preliminary_research/sections/3_reduction_to_studied_case}
+
+
+\section{Incorporating Estimated Probabilities in Betting Strategies}
+
+\input{chapters/2_theoretical_presentation_and_preliminary_research/sections/4_incorporating_estimated_probabilities_in_betting_strategies}
+
+
+\section{Conclusion}
+
+While this framework provides a solid structure for understanding the dynamics of the betting market, it comes with several limitations. First, the assumptions of independent match outcomes and a static information environment simplify the complexity of real-world dynamics, where outcomes may be correlated, and new information arrives continuously. Additionally, we do not optimize the timing of bets, which is a critical factor in real betting markets where odds fluctuate over time.
+
+Moreover, the non-additivity of certain utility functions, such as logarithmic and exponential utilities, limits the general interpretation of long-term gain and risk. While maximizing utility in each time period offers insights into short-term decision-making, it does not fully capture the long-term wealth dynamics, especially under more realistic non-additive frameworks. This can affect the risk management strategies of both bettors and bookmakers, particularly when considering future opportunities and evolving market conditions.
+
+In the next section, we will focus on the implementation of a system to apply this framework and evaluate it in practice, through both simulation and the integration of real-world data. This will allow us to test the framework's assumptions and explore the effects of relaxing some of these limitations.
