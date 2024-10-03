@@ -83,6 +83,21 @@ services:
     port: "8104"
     replica: 1
 
-  
+ingress:
+  enabled: true
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: myresolver
+  hosts:
+    - host: optibet.delavande.fr
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: optibet-cert
+      hosts:
+        - optibet.delavande.fr
+
 
 
