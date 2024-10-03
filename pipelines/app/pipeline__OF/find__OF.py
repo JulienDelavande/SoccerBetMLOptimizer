@@ -11,6 +11,8 @@ from app._config import DB_TN_MODELS_RESULTS, DB_TN_ODDS, DB_TN_OPTIM_RESULTS
 from app._config import engine
 
 from optim.functions.player_utility_kelly_criteria import player_utility_kelly_criteria
+from optim.functions.player_expected_utility_log import player_expected_utility_log
+from optim.functions.player_expected_utility_exp_ce import player_expected_utility_exp_ce
 from optim.resolve.resolve_fik import resolve_fik
 
 
@@ -54,7 +56,7 @@ mapping_dict = {
 
 def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_PR_LR', n_matches : int = None, same_day: bool = False,  
              bookmakers : list[str] =  None, bankroll : float = 1, method='SLSQP', 
-             utility_fn='Kelly', optim_label='manual') -> datetime.datetime:
+             utility_fn='Kelly', optim_label='manual', l=10) -> datetime.datetime:
 
     logging.info(f"--- Starting the OF pipeline")
     # Retrieve data from the database
@@ -174,6 +176,40 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
             datetime_optim = datetime.datetime.now()
             df_models_results_joined['datetime_optim'] = datetime_optim
             logger.info(f"Kelly computed in {time.time() - start_invest:.2f} seconds")
+            
+        # Log
+        if utility_fn == 'Log':
+            obectif_log_fn = lambda  f, o, t : - player_expected_utility_log(f, o, t, B=bankroll)
+            result_log = resolve_fik(o, r, obectif_log_fn, logger=logger, method=method)
+            result_log[result_log < 1e-10] = 0
+            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_log
+            df_models_results_joined['utility_fn'] = utility_fn
+            datetime_optim = datetime.datetime.now()
+            df_models_results_joined['datetime_optim'] = datetime_optim
+            logger.info(f"Log computed in {time.time() - start_invest:.2f} seconds")
+            
+        # Exponential
+        if utility_fn == 'Exp':
+            obectif_exp_fn = lambda  f, o, t : - player_expected_utility_exp_ce(f, o, t, B=B_exp)
+            result_exp = resolve_fik(o, r, obectif_exp_fn, logger=logger, method=method)
+            result_exp[result_exp < 1e-10] = 0
+            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_exp
+            df_models_results_joined['utility_fn'] = utility_fn
+            datetime_optim = datetime.datetime.now()
+            df_models_results_joined['datetime_optim'] = datetime_optim
+            logger.info(f"Exp computed in {time.time() - start_invest:.2f} seconds")
+            
+        # Linear
+        if utility_fn == 'Linear':
+            obectif_linear_fn = lambda  f, o, t : player_utility_linear(f, o, t, B=B_linar, l=l)
+            result_linear = resolve_fik(o, r, obectif_linear_fn, logger=logger, method=method)
+            result_linear[result_linear < 1e-10] = 0
+            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_linear
+            df_models_results_joined['utility_fn'] = utility_fn
+            datetime_optim = datetime.datetime.now()
+            df_models_results_joined['datetime_optim'] = datetime_optim
+            logger.info(f"Linear computed in {time.time() - start_invest:.2f} seconds")
+            
     except Exception as e:
         logger.error(f"Error while computing the bankroll fraction to invest: {e}")
         raise
