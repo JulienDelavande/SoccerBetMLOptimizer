@@ -1,8 +1,8 @@
 containerRegistry:
-  registry: optimsportbets.azurecr.io
+  registry: juliendelavande
   imagePullSecrets:
     name: cr-secret
-    enabled: true
+    enabled: false
 
 global:
   envRef: global-config
@@ -83,6 +83,19 @@ services:
     port: "8104"
     replica: 1
 
-  
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt"
+  hosts:
+    - host: optibet.delavande.fr
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: optibet-cert
+      hosts:
+        - optibet.delavande.fr
+
 
 
