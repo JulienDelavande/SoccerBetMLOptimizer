@@ -85,7 +85,7 @@ helm upgrade --install optimsportbets ./k8s/helm-deploy/optimsportbets/ -f ./k8s
 kubectl apply -R -f ./k8s/helm-deploy/cron-jobs
 kubectl create job --from=cronjob/ingest-data-cronjob ingest-data-job -n optimsportbets
 kubectl delete job ingest-data-job -n optimsportbets
-
+    
 ### Deploy the application
 kubectl create namespace optimsportbets
 kubectl config set-context --current --namespace=optimsportbets
@@ -108,3 +108,5 @@ pg_dump -h localhost -p 8110 -U kube -d optimsportbets-db -v -f database_backup.
 # User: kube
 # password:
 psql -h localhost -p 8110 -U kube -d optimsportbets-db -f database_backup.sql
+
+pg_dump -h localhost -p 8110 -U kube -d optimsportbets-db -t fbref_results -t sofifa_teams_stats -t soccer_odds -t models_results -t optim_results -v -F c -b --no-owner --no-comments -f filtered_backup.sql

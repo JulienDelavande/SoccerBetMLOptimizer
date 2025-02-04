@@ -23,3 +23,6 @@ k8s/helm-deploy-contabo/secrets/
 mlruns/
 
 db/database_backup.sql
+db/soccer_stats.sql
+db/*.csv
+db/*.dbml
