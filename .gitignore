@@ -16,6 +16,7 @@ __pycache__/
 k8s/manifests/secrets/
 k8s/helm-deploy/secrets/
 k8s/helm-deploy-contabo/secrets/
+k8s/helm-deploy-old/secrets/
 
 .pid
 .vscode/
