@@ -13,60 +13,6 @@ DN_TN_TEMP_TABLE = 'temp_table'
 logger = logging.getLogger("fbref_results")
 pd.set_option('display.max_columns', None)
 
-
-def scrap_data_SOFIFA(teams='big 5', use_cache=False, scrap_all=False, KEY_1='team', KEY_2='update'):
-    """Recuperer les donnees des equipes de SoFIFA"""
-    try:
-        logger.info(f"Chargement des donnees des equipes {teams} - latest")
-        so_fifa_latest = sd.SoFIFA(versions="latest", no_cache=not use_cache)
-        team_ratings = so_fifa_latest.read_team_ratings() if teams == 'big 5' else so_fifa_latest.read_team_ratings_nationals()
-        if scrap_all:
-            logger.info(f"Chargement des donnees des equipes {teams} - all")
-            sofifa_all = sd.SoFIFA(versions="all", no_cache=True)
-            team_ratings_all = sofifa_all.read_team_ratings() if teams == 'big 5' else sofifa_all.read_team_ratings_nationals()
-            team_ratings = pd.concat([team_ratings_all, team_ratings], ignore_index=True)
-            team_ratings = team_ratings.drop_duplicates(subset=[KEY_1, KEY_2], keep='last')
-        team_ratings.reset_index(inplace=True)
-        logger.info(f'Head of sofifa scrapped data: \n{team_ratings.head()}')
-        return team_ratings
-    except Exception as e:
-        logger.error(f"Erreur lors du chargement des donnees des equipes {teams} : {e}")
-        raise
-
-
-def convert_data_types(team_ratings, team_ratings_nat):
-    """Convertir les types de donnees"""
-    logger.info("Conversion des types de donnees")
-    try: 
-        team_ratings_nat["league"] = "INT"
-        team_ratings_nat.loc[team_ratings_nat["update"] == "World Cup 2022", "update"] = "Nov 20, 2022"
-        team_ratings = pd.concat([team_ratings, team_ratings_nat], ignore_index=True)
-
-        # Convertir les types de donnees
-        team_ratings['update'] = pd.to_datetime(team_ratings['update'])
-        team_ratings["overall"] = team_ratings["overall"].astype(int)
-        team_ratings["attack"] = team_ratings["attack"].astype(int)
-        team_ratings["midfield"] = team_ratings["midfield"].astype(int)
-        team_ratings["defence"] = team_ratings["defence"].astype(int)
-        team_ratings["transfer_budget"] = team_ratings["transfer_budget"].str.replace("€", "").str.replace("M", "0000").str.replace("K", "000").str.replace(".", "").astype(int)
-        team_ratings["club_worth"] = team_ratings["club_worth"].str.replace("€", "").str.replace("M", "0000").str.replace("K", "000").str.replace("B", "000000000").str.replace(".", "").astype(float)
-        team_ratings["defence_domestic_prestige"] = team_ratings["defence_domestic_prestige"].astype(int)
-        team_ratings["international_prestige"] = team_ratings["international_prestige"].astype(int)
-        team_ratings["players"] = team_ratings["players"].astype(int)
-        team_ratings["starting_xi_average_age"] = team_ratings["starting_xi_average_age"].astype(float)
-        team_ratings["whole_team_average_age"] = team_ratings["whole_team_average_age"].astype(float)
-        team_ratings['datetime_insert'] = pd.to_datetime('now')
-        team_ratings.sort_values('update', ascending=False)
-
-        logger.info(f'Head of converted sofifa scrapped data: \n{team_ratings.head()}')
-        logger.info(f'Number of rows of converted sofifa scrapped data: {team_ratings.shape[0]}')
-        return team_ratings
-    
-    except Exception as e:
-        logger.error(f"Erreur lors de la conversion des types de donnees: {e}")
-        raise
-
-
 def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
     """Inserer les donnees des equipes de SoFIFA dans la table SOFIFA teams stats"""
 
@@ -125,6 +71,62 @@ def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
         raise
     
     logger.info("Fin de l'insertion des donnees dans la table SOFIFA teams stats\n\n")
+
+
+def scrap_data_SOFIFA(teams='big 5', use_cache=False, scrap_all=False, KEY_1='team', KEY_2='update'):
+    """Recuperer les donnees des equipes de SoFIFA"""
+    try:
+        logger.info(f"Chargement des donnees des equipes {teams} - latest")
+        so_fifa_latest = sd.SoFIFA(versions="latest", no_cache=not use_cache)
+        team_ratings = so_fifa_latest.read_team_ratings() if teams == 'big 5' else so_fifa_latest.read_team_ratings_nationals()
+        if scrap_all:
+            logger.info(f"Chargement des donnees des equipes {teams} - all")
+            sofifa_all = sd.SoFIFA(versions="all", no_cache=True)
+            team_ratings_all = sofifa_all.read_team_ratings() if teams == 'big 5' else sofifa_all.read_team_ratings_nationals()
+            team_ratings = pd.concat([team_ratings_all, team_ratings], ignore_index=True)
+            team_ratings = team_ratings.drop_duplicates(subset=[KEY_1, KEY_2], keep='last')
+        team_ratings.reset_index(inplace=True)
+        #logger.info(f'Head of sofifa scrapped data: \n{team_ratings.head()}')
+        return team_ratings
+    except Exception as e:
+        logger.error(f"Erreur lors du chargement des donnees des equipes {teams} : {e}")
+        raise
+
+
+def convert_data_types(team_ratings, team_ratings_nat):
+    """Convertir les types de donnees"""
+    logger.info("Conversion des types de donnees")
+    try: 
+        team_ratings_nat["league"] = "INT"
+        team_ratings_nat.loc[team_ratings_nat["update"] == "World Cup 2022", "update"] = "Nov 20, 2022"
+        team_ratings = pd.concat([team_ratings, team_ratings_nat], ignore_index=True)
+
+        # Convertir les types de donnees
+        team_ratings['update'] = pd.to_datetime(team_ratings['update'])
+        team_ratings["overall"] = team_ratings["overall"].astype(int)
+        team_ratings["attack"] = team_ratings["attack"].astype(int)
+        team_ratings["midfield"] = team_ratings["midfield"].astype(int)
+        team_ratings["defence"] = team_ratings["defence"].astype(int)
+        team_ratings["transfer_budget"] = team_ratings["transfer_budget"].str.replace("€", "").str.replace("M", "0000").str.replace("K", "000").str.replace(".", "").astype(int)
+        team_ratings["club_worth"] = team_ratings["club_worth"].str.replace("€", "").str.replace("M", "0000").str.replace("K", "000").str.replace("B", "000000000").str.replace(".", "").astype(float)
+        team_ratings["defence_domestic_prestige"] = team_ratings["defence_domestic_prestige"].astype(int)
+        team_ratings["international_prestige"] = team_ratings["international_prestige"].astype(int)
+        team_ratings["players"] = team_ratings["players"].astype(int)
+        team_ratings["starting_xi_average_age"] = team_ratings["starting_xi_average_age"].astype(float)
+        team_ratings["whole_team_average_age"] = team_ratings["whole_team_average_age"].astype(float)
+        team_ratings['datetime_insert'] = pd.to_datetime('now')
+        team_ratings.sort_values('update', ascending=False)
+
+        #logger.info(f'Head of converted sofifa scrapped data: \n{team_ratings.head()}')
+        logger.info(f'Number of rows of converted sofifa scrapped data: {team_ratings.shape[0]}')
+        return team_ratings
+    
+    except Exception as e:
+        logger.error(f"Erreur lors de la conversion des types de donnees: {e}")
+        raise
+
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Insert SOFIFA teams stats into the database.')
