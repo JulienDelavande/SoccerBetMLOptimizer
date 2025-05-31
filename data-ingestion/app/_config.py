@@ -27,7 +27,10 @@ DB_TN_SOFIFA_TEAMS_STATS = os.getenv('DB_TN_SOFIFA_TEAMS_STATS')
 DB_TN_ODDS_TEMP = 'db_tn_odds_temp'
 DB_TN_ODDS = os.getenv('DB_TN_ODDS')
 THE_ODDS_API_KEY = os.getenv('THE_ODDS_API_KEY')
-
+THE_ODDS_API_BASE_URL = os.getenv('THE_ODDS_API_BASE_URL')
+THE_ODDS_API_SPORTS = os.getenv('THE_ODDS_API_SPORTS')
+THE_ODDS_API_REGIONS = os.getenv('THE_ODDS_API_REGIONS')
+THE_ODDS_API_MARKETS = os.getenv('THE_ODDS_API_MARKETS')
 # database connection
 DB_URL = f'{DB_TYPE}+{DB_PILOT}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 engine = create_engine(DB_URL)

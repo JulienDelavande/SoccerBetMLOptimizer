@@ -3,14 +3,15 @@ from sqlalchemy import text
 import logging
 import pandas as pd
 
-from app._config import DB_TN_ODDS_TEMP, DB_TN_ODDS, THE_ODDS_API_KEY, engine
+from app._config import DB_TN_ODDS_TEMP, DB_TN_ODDS, THE_ODDS_API_KEY, THE_ODDS_API_BASE_URL, THE_ODDS_API_SPORTS, THE_ODDS_API_REGIONS, THE_ODDS_API_MARKETS, engine
 from feature_eng.odds.odds_extraction import json_to_pandas_the_odds_api_get_odds
 
 
-sports = ['soccer_france_ligue_one', 'soccer_spain_la_liga', 'soccer_italy_serie_a', 'soccer_germany_bundesliga', 'soccer_epl']
+sports = THE_ODDS_API_SPORTS.split(',')
 regions = 'eu'
 markets = 'h2h'
-urls = [f'https://api.the-odds-api.com/v4/sports/{sport}/odds/?apiKey={THE_ODDS_API_KEY}&regions={regions}&markets={markets}' for sport in sports]
+urls = [f'{THE_ODDS_API_BASE_URL}/{sport}/odds/?apiKey={THE_ODDS_API_KEY}&regions={THE_ODDS_API_REGIONS}&markets={THE_ODDS_API_MARKETS}' for sport in sports]
+
 
 logger = logging.getLogger("the_odds_api")
 pd.set_option('display.max_columns', None)
