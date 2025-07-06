@@ -227,10 +227,47 @@ helm install optimsportbets ./k8s/helm-deploy/optimsportbets/ -f ./k8s/helm-depl
 kubectl apply -R -f ./k8s/helm-deploy/cron-jobs
 ```
 
-### Update the project
-If you want to update the project with the latest changes, you can run the following commands:
+### Developpment and deployment workflow
 
 ```bash
+## DEVELOPMENT WORKFLOW
+# Develop localy the app-backend, data-ingestion, pipelines and frontend
+set -a
+source .env
+source secrets.env
+source venv/bin/activate
+cd data-ingestion/
+uvicorn main:app --port 8000
+cd ..
+
+## DEPLOYMENT WORKFLOW
+# Build wheel for local lib if changes in it:
+cd optibets-lib/
+python setup.py bdist_wheel
+cp dist/*.whl ../app-backend/lib/
+cp dist/*.whl ../pipelines/lib/
+cp dist/*.whl ../data-ingestion/lib/
+
+cd ..
+kubectl config set-context --current --namespace=optimsportbets
+
+# If change in the database schema:
+kubectl port-forward svc/postgresql-global 5432:5432 -n optimsportbets
+# Change the var in the .env to fit the forwarded port for the db user=kube, rest is same as the local one
+cd db/
+python apply_migrations.py
+# Change the tag version in the Makefile
+
+## Build the Docker images
+cd ..
+make build-mac
+# Verify the images are built correctly
+make up
+# Tag and push the Docker images to juliendelavande registry
+make tag
+make push
+# Update the helm chart values.yaml file with the new tag (verify if no new vars are added)
+cd k8s/helm-deploy/optimsportbets
 helm upgrade optimsportbets . -f values.yaml
 ```
 
