@@ -16,6 +16,10 @@ data:
   DATA_INGESTION_ENDPOINT_SOFIFA_TEAMS_STATS : sofifa/team_stats
   ## Other
   SOCCERDATA_DIR : lib/soccerdata
+  THE_ODDS_API_BASE_URL : https://api.the-odds-api.com/v4/sports
+  THE_ODDS_API_SPORTS : soccer_fifa_club_world_cup,soccer_france_ligue_one,soccer_spain_la_liga,soccer_italy_serie_a,soccer_germany_bundesliga,soccer_epl,soccer_uefa_champs_league
+  THE_ODDS_API_REGIONS : eu,uk
+  THE_ODDS_API_MARKETS : h2h
 
   # Pipelines
   ## API
@@ -38,6 +42,8 @@ data:
   APP_BACKEND_PORT : "{{ .Values.services.appBackend.port }}"
   APP_BACKEND_ENDPOINT_COMPUTE_PREDICTIONS : compute/predictions
   APP_BACKEND_ENDPOINT_FETCH_LAST_PREDICTIONS : fetch/last_predictions
+  APP_BACKEND_ENDPOINT_FETCH_PAST_PERFORMANCES : fetch/past_performances
+  APP_BACKEND_ENDPOINT_FETCH_PAST_PERFORMANCES_GAINS : fetch/past_performances_gains
 
   # App-frontend
   ## API
@@ -54,12 +60,8 @@ data:
   DB_PORT : "{{ .Values.postgresqlGlobal.service.ports.postgresql }}"
   ## Structure
   DB_NAME : "{{ .Values.postgresqlGlobal.auth.database }}"
-  DB_TN_MATCHES : matches
-  DB_TN_ODDS_EURO : odds_euro
-  DB_TN_MATCHES_EURO : matches_euro
+  DB_TN_LOGS : logs
   DB_TN_MIGRATION_HISTORY : migration_history
-  DB_TN_MATCHES_BIG5 : matches_big5
-  DB_TN_MATCHES_WC : matches_wc
   DB_TN_FBREF_RESULTS : fbref_results
   DB_TN_SOFIFA_TEAMS_STATS : sofifa_teams_stats
   DB_TN_MODELS_RESULTS : models_results

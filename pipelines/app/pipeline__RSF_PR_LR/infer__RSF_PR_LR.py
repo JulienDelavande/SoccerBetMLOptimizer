@@ -8,30 +8,24 @@ import pandas as pd
 from sqlalchemy import text
 import numpy as np
 
-import mlflow
-import mlflow.sklearn
-
 from .utils.test_model_and_infer import test_model_and_infer
 from .utils.insert_results_to_db import insert_results_to_db
 from feature_eng.format_df import merge_sofifa_fbref_results, format_sofifa_fbref_data, add_signals
-from app._config import DB_TN_FBREF_RESULTS, DB_TN_SOFIFA_TEAMS_STATS, DB_TN_MODELS_RESULTS, MLFLOW_TRACKING_URI
+from app._config import DB_TN_FBREF_RESULTS, DB_TN_SOFIFA_TEAMS_STATS, DB_TN_MODELS_RESULTS
 from app._config import engine
 
 
 #### settings ####
-MLFLOW_EXPERIMENT_NAME = "RSF_PR_LR"
 logger = logging.getLogger("RSF_PR_LR")
 
-def infer__RSF_PR_LR__pipeline(date_stop=None, mlflow=True):
+def infer__RSF_PR_LR__pipeline(date_stop=None):
     """
     Inference pipeline for LR model. Data is retrieved from the database, processed, the model is trained and tested, and the results are inserted back into the database.
     
     Parameters
     ----------
     date_stop : datetime.datetime, optional
-        The date of the match to stop training and start the inference, by default None (today)
-    mlflow : bool, optional
-        If True, the pipeline will log the metrics and parameters to MLflow, by default True, Mlflow server must be set up and running
+        The date of the match to stop training and start the inference, by default None (today at 00:00:00)
     
     Returns
     -------
@@ -43,19 +37,11 @@ def infer__RSF_PR_LR__pipeline(date_stop=None, mlflow=True):
     
     start_pipeline = time.time()
     logger.info("---- Starting the inference pipeline")
+    date_stop = date_stop if date_stop else datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     logger.info(f"date_stop: {date_stop}")
-    logger.info(f"mlflow: {mlflow}")
-
-    #### MLflow setup ####
-    if mlflow:
-        mlflow.set_tracking_uri(uri=MLFLOW_TRACKING_URI)
-        if not mlflow.get_experiment_by_name(MLFLOW_EXPERIMENT_NAME):
-            mlflow.create_experiment(MLFLOW_EXPERIMENT_NAME)
-        mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
 
 
     #### Connection to the database and retrieve data ####
-
     start_data_retrieval = time.time()
     try:
         with engine.connect() as connection:
@@ -78,7 +64,6 @@ def infer__RSF_PR_LR__pipeline(date_stop=None, mlflow=True):
     #### Data processing ####
     start_data_processing = time.time()
     try:
-        date_stop = date_stop if date_stop else datetime.datetime.now()
         fbref_results_df__sofifa_merged = merge_sofifa_fbref_results(fbref_results_df, sofifa_teams_stats_df)
         fbref_results_df__sofifa_merged__data_formated = format_sofifa_fbref_data(fbref_results_df__sofifa_merged, date_stop=date_stop)
         fbref_results_df__sofifa_merged__data_formated__signals_added = add_signals(fbref_results_df__sofifa_merged__data_formated, date_stop=date_stop)
@@ -88,6 +73,8 @@ def infer__RSF_PR_LR__pipeline(date_stop=None, mlflow=True):
         fbref_results_df__sofifa_merged__data_formated__signals_added__infer = fbref_results_df__sofifa_merged__data_formated__signals_added[~rule_is_before_datetime]
 
         logger.info(f"Data processing completed successfully in {time.time() - start_data_processing} seconds")
+        logger.info(f"Number of matches in train set: {fbref_results_df__sofifa_merged__data_formated__signals_added__train.shape[0]}")
+        logger.info(f"Number of matches in inference set: {fbref_results_df__sofifa_merged__data_formated__signals_added__infer.shape[0]}")
     except Exception as e:
         logger.error(f"Error during data processing: {e}")
         raise
@@ -95,20 +82,10 @@ def infer__RSF_PR_LR__pipeline(date_stop=None, mlflow=True):
     #### Train and test the model and infer the results ####
     start_train_test_inference = time.time()
     try:
-        if mlflow:
-            with mlflow.start_run():
-                train_test_metrics, fbref_results_df__sofifa_merged__data_formated__signals_added__infered = test_model_and_infer(
-                    fbref_results_df__sofifa_merged__data_formated__signals_added__train, 
-                    fbref_results_df__sofifa_merged__data_formated__signals_added__infer
-                )
-                mlflow.log_metrics({metric['metrics']: metric['values'] for metric in train_test_metrics.to_dict('records')})
-                mlflow.log_param("date_stop", str(date_stop))
-
-        else:
-            train_test_metrics, fbref_results_df__sofifa_merged__data_formated__signals_added__infered = test_model_and_infer(
-                fbref_results_df__sofifa_merged__data_formated__signals_added__train, 
-                fbref_results_df__sofifa_merged__data_formated__signals_added__infer
-            )
+        train_test_metrics, fbref_results_df__sofifa_merged__data_formated__signals_added__infered = test_model_and_infer(
+            fbref_results_df__sofifa_merged__data_formated__signals_added__train, 
+            fbref_results_df__sofifa_merged__data_formated__signals_added__infer
+        )
         logger.info(f"Model training and inference completed successfully completed in {time.time() - start_train_test_inference} seconds, accuray on train test : {train_test_metrics}")
     except Exception as e:
         logger.error(f"Error during model training and inference: {e}")
@@ -143,10 +120,11 @@ if __name__ == "__main__":
     start_time = time.time()
 
     args = argparse.ArgumentParser()
-    args.add_argument("--date_stop", type=str, default=None)
+    args.add_argument("--date_stop", type=str, default="2025-07-05 00:00:00", 
+                      help="Date to stop the training and start the inference, format: YYYY-MM-DD HH:MM:SS. Default is '2025-07-05 00:00:00'")
     args = args.parse_args()
 
-    date_stop = None
+    #date_stop = None
     if args.date_stop:
         try:
             date_stop = datetime.datetime.strptime(args.date_stop, "%Y-%m-%d %H:%M:%S")
@@ -156,7 +134,7 @@ if __name__ == "__main__":
             raise
 
     try:
-        train_test_metrics, df_infered, nb_matches_infered, first_match_name, last_match_name = infer__RSF_PR_LR__pipeline(date_stop=date_stop)
+        train_test_metrics, df_infered, nb_matches_infered, first_match_name, last_match_name, datetime_inference = infer__RSF_PR_LR__pipeline(date_stop=date_stop)
         end_time = time.time()
         duration = end_time - start_time
         logger.info(f"Pipeline executed successfully in {duration:2f} seconds \n\n")

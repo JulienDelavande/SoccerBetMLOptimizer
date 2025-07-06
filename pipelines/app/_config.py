@@ -1,7 +1,6 @@
 "Configuration file for the pipelines service"
 
 import os
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 import logging
 import logging.config
@@ -9,12 +8,10 @@ import sys
 from pathlib import Path
 from rich.logging import RichHandler
 from logger.postgressqlhandler import PostgreSQLHandler
-import mlflow
 
 # environment variables
 ENV_VARS_REQUIRED = ["DB_TYPE", "DB_PILOT", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME",
-                        "DB_TN_FBREF_RESULTS", "DB_TN_SOFIFA_TEAMS_STATS", "DB_TN_MODELS_RESULTS", "DB_TN_ODDS", "DB_TN_OPTIM_RESULTS",
-                        "MLFLOW_PROTOCOL", "MLFLOW_HOST", "MLFLOW_PORT"]
+                        "DB_TN_FBREF_RESULTS", "DB_TN_SOFIFA_TEAMS_STATS", "DB_TN_MODELS_RESULTS", "DB_TN_ODDS", "DB_TN_OPTIM_RESULTS"]
 
 DB_TYPE = os.getenv('DB_TYPE')
 DB_PILOT = os.getenv('DB_PILOT')
@@ -29,16 +26,10 @@ DB_TN_MODELS_RESULTS = os.getenv('DB_TN_MODELS_RESULTS')
 DB_TN_ODDS = os.getenv('DB_TN_ODDS')
 DB_TN_OPTIM_RESULTS = os.getenv('DB_TN_OPTIM_RESULTS')
 
-MLFLOW_PROTOCOL = os.getenv('MLFLOW_PROTOCOL')
-MLFLOW_HOST= os.getenv('MLFLOW_HOST')
-MLFLOW_PORT= os.getenv('MLFLOW_PORT')
-MLFLOW_TRACKING_URI = f"{MLFLOW_PROTOCOL}://{MLFLOW_HOST}:{MLFLOW_PORT}"
 
 for var in ENV_VARS_REQUIRED:
     if not os.getenv(var):
         raise ValueError(f"Missing environment variable: {var}")
-
-mlflow.set_tracking_uri(uri=MLFLOW_TRACKING_URI)
 
 # database connection
 DB_URL = f'{DB_TYPE}+{DB_PILOT}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'

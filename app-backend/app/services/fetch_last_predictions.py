@@ -40,6 +40,7 @@ def fetch_last_predictions_fn(optim_label = 'manual', datetime_optim_last = None
     try:
         with engine.connect() as connection:
             df_optim_results = pd.read_sql(text(query), connection, params={"optim_label": optim_label, "datetime_optim_last": datetime_optim_last})
+            print(f"{df_optim_results.columns}")
         if df_optim_results.empty:
             logger.info(f"No results found for datetime_optim_last: {datetime_optim_last} with optim_label: {optim_label}")
             return df_optim_results

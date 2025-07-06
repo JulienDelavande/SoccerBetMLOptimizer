@@ -45,7 +45,7 @@ def format_sofifa_fbref_data(fbref_df_date_filtered_concat, date_stop=None,
     fbref_df_date_filtered_concat_no_nan.loc[:, datetime_col] = fbref_df_date_filtered_concat_no_nan[datetime_col] + fbref_df_date_filtered_concat_no_nan[f'{time_col}_']
 
     # Drop rows with NaN values in the ftr_col but keep future matches
-    date_stop = datetime.datetime.now() if not date_stop else date_stop
+    date_stop = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) if not date_stop else date_stop
     rule_is_null = (fbref_df_date_filtered_concat_no_nan[ftr_col].isnull())
     rule_is_future_match = (fbref_df_date_filtered_concat_no_nan[date_col] >= date_stop)
     rule_remove_nan_and_keep_future_matches = ~rule_is_null | rule_is_future_match

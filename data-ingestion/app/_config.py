@@ -24,7 +24,6 @@ DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 DB_TN_FBREF_RESULTS = os.getenv('DB_TN_FBREF_RESULTS')
 DB_TN_SOFIFA_TEAMS_STATS = os.getenv('DB_TN_SOFIFA_TEAMS_STATS')
-DB_TN_ODDS_TEMP = 'db_tn_odds_temp'
 DB_TN_ODDS = os.getenv('DB_TN_ODDS')
 THE_ODDS_API_KEY = os.getenv('THE_ODDS_API_KEY')
 THE_ODDS_API_BASE_URL = os.getenv('THE_ODDS_API_BASE_URL')

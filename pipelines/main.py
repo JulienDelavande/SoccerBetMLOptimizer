@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from app.pipeline__RSF_PR_LR.infer__RSF_PR_LR import infer__RSF_PR_LR__pipeline
-from app.pipeline__RSF_PS_LR.infer__RSF_PS_LR import infer__RSF_PS_LR__pipeline
+#from app.pipeline__RSF_PS_LR.infer__RSF_PS_LR import infer__RSF_PS_LR__pipeline
 from app.pipeline__OF.find__OF import find__of
 import app._config
 import logging
@@ -15,12 +15,12 @@ def read_root():
     return {"Info": "Microservice for ml pipelines"}
 
 @app.get("/infer/RSF_PR_LR")
-def infer__RSF_PR_LR__pipeline_route(date_stop : str = None, mlflow : bool = True):
+def infer__RSF_PR_LR__pipeline_route(date_stop : str = None):
     try:
         #to date time
         if date_stop:
             date_stop = datetime.datetime.strptime(date_stop, "%Y-%m-%d %H:%M:%S")
-        train_test_metrics, df_infered, nb_matches_infered, first_match_name, last_match_name, datetime_inference = infer__RSF_PR_LR__pipeline(date_stop=date_stop, mlflow=mlflow)
+        train_test_metrics, df_infered, nb_matches_infered, first_match_name, last_match_name, datetime_inference = infer__RSF_PR_LR__pipeline(date_stop=date_stop)
 
         logging.info(f"RSF_PR_LR pipeline completed")
         return {"status": "success", "datetime_inference" : datetime_inference,
@@ -34,8 +34,6 @@ def infer__RSF_PR_LR__pipeline_route(date_stop : str = None, mlflow : bool = Tru
 def resolve_fik_route(datetime_first_match=None, model='RSF_PR_LR', n_matches = None, same_day = False, bookmakers = None, 
                       bankroll = 1, method = 'SLSQP', utility_fn = 'Kelly', optim_label = 'manual'):
     try:
-        if datetime_first_match:
-            datetime_first_match = datetime.datetime.strptime(datetime_first_match, "%Y-%m-%d %H:%M:%S")
         if n_matches:
             n_matches = int(n_matches)
         if bookmakers:

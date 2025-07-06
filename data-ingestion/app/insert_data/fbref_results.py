@@ -16,15 +16,16 @@ KEY_1 = 'game'
 DB_TN_TEMP_TABLE = 'temp_table_fbref_results'
 logger = logging.getLogger("sofifa_teams_stats")
 pd.set_option('display.max_columns', None)
+SLEEP_TIME = 5  # Default sleep time in seconds to avoid rate limiting
 
-def insert_recent_fbref_matches(get_current_season_only=True, use_cache=True, cutoff_days=7):
+def insert_recent_fbref_matches(get_current_season_only=True, use_cache=True, cutoff_days=7, leagues=None):
     logger.info(f"--- Debut de l'insertion des donnees dans la table fbref_results")
 
     #### SCRAPPING SOFIFA TEAMS DATA ####
     logger.info("Chargement des donnees de Fbref")
     logger.info(f"get_current_season_only: {get_current_season_only}")
     logger.info(f"use_cache: {use_cache}")
-    fbref_df = scrap_data_fbref(get_current_season_only=get_current_season_only, use_cache=use_cache)
+    fbref_df = scrap_data_fbref(get_current_season_only=get_current_season_only, use_cache=use_cache, leagues=leagues)
 
 
     #### CONVERSION DES TYPES DE DONNEES ####
@@ -84,29 +85,33 @@ def insert_recent_fbref_matches(get_current_season_only=True, use_cache=True, cu
     return fbref_df
 
 
-def scrap_data_fbref(get_current_season_only=True, use_cache=True):
+def scrap_data_fbref(get_current_season_only=True, use_cache=True, leagues=None):
     """Recuperer les schedule et scores des matchs de fbref"""
     try:
         fbref = sd.FBref()
-        leagues = ["UEFA Champions League", "INT-World Cup", "INT-European Championships", "Big 5 European Leagues Combined"]
-        first_seasons = ["9091", "3031", "0001", "3031"]
-        skip_seasons = [['3940', '4041', '4142', '4243', '4344', '4546'], ['4243', '4344', '4647'], None, ['3940', '4041', '4142', '4243', '4344', '4546']]  # Seasons to skip due to WWII
-        steps = [1, 4, 4, 1]  # Steps for each league to get the first season
+        leagues = leagues or ["FIFA Club World Cup", "UEFA Champions League", "INT-World Cup", "INT-European Championships", "Big 5 European Leagues Combined"]
+        first_seasons = ["2425", "9091", "3031", "0001", "3031"]
+        skip_seasons = [None, ['3940', '4041', '4142', '4243', '4344', '4546'], ['4243', '4344', '4647'], None, ['3940', '4041', '4142', '4243', '4344', '4546']]  # Seasons to skip due to WWII
+        steps = [1, 1, 4, 4, 1]  # Steps for each league to get the first season
         leagues_df = fbref.read_leagues()
 
         dfs_fbref = []
         for i, league in enumerate(leagues):
-            logger.info(f"Chargement des donnees des matchs {league}")
-            first_season = first_seasons[i]
-            last_season = leagues_df.loc[league, 'last_season']
-            seasons = get_all_seasons_string(first_season, last_season, step=steps[i], skip_seasons=skip_seasons[i])
-            if get_current_season_only:
-                seasons = [seasons[-1]]
-            fbref = sd.FBref(leagues=[league], seasons=seasons)
-            df = fbref.read_schedule(force_cache=use_cache) if seasons else None
-            df = df.reset_index() if df is not None else None
-            logger.info(f"Nombre de matchs recuperes pour {league}: {df.shape[0] if df is not None else 0}")
-            dfs_fbref.append(df) if df is not None else None
+            try:
+                logger.info(f"Chargement des donnees des matchs {league}")
+                first_season = first_seasons[i]
+                last_season = leagues_df.loc[league, 'last_season']
+                seasons = get_all_seasons_string(first_season, last_season, step=steps[i], skip_seasons=skip_seasons[i])
+                if get_current_season_only:
+                    seasons = [seasons[-1]]
+                fbref = sd.FBref(leagues=[league], seasons=seasons, no_cache=not use_cache, sleep_time=SLEEP_TIME)
+                df = fbref.read_schedule(force_cache=use_cache) if seasons else None
+                df = df.reset_index() if df is not None else None
+                logger.info(f"Nombre de matchs recuperes pour {league}: {df.shape[0] if df is not None else 0}")
+                dfs_fbref.append(df) if df is not None else None
+            except Exception as e:
+                logger.error(f"Erreur lors du chargement des donnees des matchs pour {league}: {e}")
+                continue
         fbref_df = pd.concat(dfs_fbref, ignore_index=True) if dfs_fbref else pd.DataFrame()
         logger.info(f"Nombre de matchs recuperes: {fbref_df.shape[0]}")
         return fbref_df
@@ -114,7 +119,6 @@ def scrap_data_fbref(get_current_season_only=True, use_cache=True):
     except Exception as e:
         logger.error(f"Erreur lors du chargement des donnees des matchs fbref: {e}")
         raise
-
 
 def convert_data_types_fbref(fbref_df):
     """Convertir les types de donnees"""
@@ -148,12 +152,14 @@ def convert_data_types_fbref(fbref_df):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Insert fbref results into the database')
     parser.add_argument('--get_current_season_only', type=bool, default=True, help='Scrap only the last season')
-    parser.add_argument('--use_cache', type=bool, default=True, help='Use cached data')
+    parser.add_argument('--use_cache', type=bool, default=False, help='Use cached data')
     parser.add_argument('--cutoff_days', type=int, default=7, help='Number of days to consider for recent matches')
+    parser.add_argument('--leagues', type=str, nargs='*', default=None, help='List of leagues to scrape (default: None, which scrapes all leagues)')
 
     args = parser.parse_args()
     get_current_season_only = args.get_current_season_only
     use_cache = args.use_cache
+    leagues = args.leagues
 
-    insert_recent_fbref_matches(get_current_season_only=get_current_season_only, use_cache=use_cache, cutoff_days=args.cutoff_days)
+    insert_recent_fbref_matches(get_current_season_only=get_current_season_only, use_cache=use_cache, cutoff_days=args.cutoff_days, leagues=leagues)
     

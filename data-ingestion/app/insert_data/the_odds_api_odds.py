@@ -3,16 +3,15 @@ from sqlalchemy import text
 import logging
 import pandas as pd
 
-from app._config import DB_TN_ODDS_TEMP, DB_TN_ODDS, THE_ODDS_API_KEY, THE_ODDS_API_BASE_URL, THE_ODDS_API_SPORTS, THE_ODDS_API_REGIONS, THE_ODDS_API_MARKETS, engine
-from feature_eng.odds.odds_extraction import json_to_pandas_the_odds_api_get_odds
+from app._config import DB_TN_ODDS, THE_ODDS_API_KEY, THE_ODDS_API_BASE_URL, THE_ODDS_API_SPORTS, THE_ODDS_API_REGIONS, THE_ODDS_API_MARKETS, engine
+from app.insert_data.utils import json_to_pandas_the_odds_api_get_odds
 
 
 sports = THE_ODDS_API_SPORTS.split(',')
-regions = 'eu'
-markets = 'h2h'
 urls = [f'{THE_ODDS_API_BASE_URL}/{sport}/odds/?apiKey={THE_ODDS_API_KEY}&regions={THE_ODDS_API_REGIONS}&markets={THE_ODDS_API_MARKETS}' for sport in sports]
 
-
+### Variables ###
+DB_TN_ODDS_TEMP = 'temp_table_odds_the_odds_api'  
 logger = logging.getLogger("the_odds_api")
 pd.set_option('display.max_columns', None)
 
@@ -41,12 +40,15 @@ def ingest_odds_the_odds_api():
 def get_odds():
     try:
         responses = [requests.get(url) for url in urls]
-        dfs_odds = [json_to_pandas_the_odds_api_get_odds(response.json()) for response in responses]
-        df_odds = pd.concat(dfs_odds, ignore_index=True)
+        for response in responses:
+            if response.status_code != 200:
+                logger.error(f"Erreur lors de la recuperation des donnees: {response.status_code} - {response.text}")
+                raise Exception(f"Erreur lors de la recuperation des donnees: {response.status_code} - {response.text}")
+        dfs_odds = [json_to_pandas_the_odds_api_get_odds(response.json()) for response in responses if response.json()]
+        df_odds = pd.concat(dfs_odds, ignore_index=True) if dfs_odds else pd.DataFrame()
         df_odds['datetime_insert'] = pd.to_datetime('now')
         logger.info("Cotes récupérérées avec succces depuis l'API The Odds Api")
-        logger.info(f'Head of odds data scrapped: \n{df_odds.head()}')
-        logger.info(f'Number of rows of odds data scrapped: {df_odds.shape[0]}')
+        logger.info(f'Nombre de lignes récupérées: {len(df_odds)}')
     except Exception as e:
         logger.error(f"Erreur lors de la recuperation des donnees: {e}")
         raise
@@ -77,6 +79,4 @@ def put_odds_in_db(df_odds):
         raise
 
 if __name__ == '__main__':
-    df = get_odds()
-    df.to_csv('odds.csv', index=False)
-
+    ingest_odds_the_odds_api()
