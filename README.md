@@ -227,6 +227,13 @@ helm install optimsportbets ./k8s/helm-deploy/optimsportbets/ -f ./k8s/helm-depl
 kubectl apply -R -f ./k8s/helm-deploy/cron-jobs
 ```
 
+### Update the project
+If you want to update the project with the latest changes, you can run the following commands:
+
+```bash
+helm upgrade optimsportbets . -f values.yaml
+```
+
 
 ### Access the services
 

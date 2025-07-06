@@ -65,18 +65,27 @@ start: start-data-ingestion start-pipelines start-mlflow start-frontend start-ba
 
 # Docker
 
-CONTAINER_REGISTRY = optimsportbets.azurecr.io
-#CONTAINER_REGISTRY = juliendelavande
+#CONTAINER_REGISTRY = optimsportbets.azurecr.io
+CONTAINER_REGISTRY = juliendelavande
 IMAGE_PREFIX = optim-sportbet
-DATA_INGESTION_TAG = 1.4
-PIPELINES_TAG = 1.4
+DATA_INGESTION_TAG = 1.52
+PIPELINES_TAG = 1.52
 #MLFLOW_TAG = 1.3
-APP_BACKEND_TAG = 1.3
-APP_FRONTEND_TAG = 1.4
+APP_BACKEND_TAG = 1.52
+APP_FRONTEND_TAG = 1.52
 
 stop:
 	@cat .pid | xargs kill -9 || true
 	@rm -f .pid
+
+build-mac:
+	docker buildx build --platform linux/amd64 -t $(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG) ./data-ingestion
+	docker buildx build --platform linux/amd64 -t $(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) ./pipelines
+	docker buildx build --platform linux/amd64 -t $(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG) ./app-backend
+	docker buildx build --platform linux/amd64 -t $(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG) ./app-frontend
+
+build-mac-pipelines:
+	docker buildx build --platform linux/amd64 -t $(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) ./pipelines
 
 build:
 	docker compose build
@@ -85,10 +94,10 @@ up:
 	docker compose up
 
 tag:
-	docker tag $(IMAGE_PREFIX)-data-ingestion:latest $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG)
-	docker tag $(IMAGE_PREFIX)-pipelines:latest	     $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) 
-	docker tag $(IMAGE_PREFIX)-app-backend:latest	 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG)
-	docker tag $(IMAGE_PREFIX)-app-frontend:latest   $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG)
+	docker tag $(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG)
+	docker tag $(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG)
+	docker tag $(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG)
+	docker tag $(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG)
 
 tag-mlflow:
 	docker tag $(IMAGE_PREFIX)-mlflow:latest		 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG)

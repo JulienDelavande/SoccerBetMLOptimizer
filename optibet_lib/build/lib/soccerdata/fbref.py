@@ -5,6 +5,7 @@ from datetime import date, datetime
 from functools import reduce
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
+import time
 
 import pandas as pd
 from lxml import etree, html
@@ -19,6 +20,7 @@ from ._config import DATA_DIR, NOCACHE, NOSTORE, TEAMNAME_REPLACEMENTS, logger
 
 FBREF_DATADIR = DATA_DIR / "FBref"
 FBREF_API = "https://fbref.com"
+SLEEP_TIME = 0  # seconds to wait between requests
 
 BIG_FIVE_DICT = {
     "Serie A": "ITA-Serie A",
@@ -66,6 +68,8 @@ class FBref(BaseRequestsReader):
         If True, will not store downloaded data.
     data_dir : Path
         Path to directory where data will be cached.
+    sleep_time : float
+        Time in seconds to wait between requests to avoid rate limiting.
     """
 
     def __init__(
@@ -78,6 +82,7 @@ class FBref(BaseRequestsReader):
         no_cache: bool = NOCACHE,
         no_store: bool = NOSTORE,
         data_dir: Path = FBREF_DATADIR,
+        sleep_time: int = SLEEP_TIME,
     ):
         """Initialize FBref reader."""
         super().__init__(
@@ -89,6 +94,7 @@ class FBref(BaseRequestsReader):
         )
         self.rate_limit = 3
         self.seasons = seasons  # type: ignore
+        self.sleep_time = sleep_time
         # check if all top 5 leagues are selected
         if (
             set(BIG_FIVE_DICT.values()).issubset(self.leagues)
@@ -135,8 +141,8 @@ class FBref(BaseRequestsReader):
         """
         url = f"{FBREF_API}/en/comps/"
         filepath = self.data_dir / "leagues.html"
+        time.sleep(self.sleep_time)
         reader = self.get(url, filepath)
-        print(reader)
 
         # extract league links
         dfs = []
@@ -184,6 +190,7 @@ class FBref(BaseRequestsReader):
 
         seasons = []
         for lkey, league in df_leagues.iterrows():
+            time.sleep(self.sleep_time)
             url = FBREF_API + league.url
             filepath = self.data_dir / filemask.format(lkey)
             reader = self.get(url, filepath)
@@ -206,7 +213,7 @@ class FBref(BaseRequestsReader):
             else:
                 df_table["Format"] = "round-robin"
             seasons.append(df_table)
-
+        
         df = pd.concat(seasons).pipe(standardize_colnames)
         df = df.rename(columns={"competition_name": "league"})
         df["season"] = df["season"].apply(season_code)
@@ -655,6 +662,7 @@ class FBref(BaseRequestsReader):
         # collect teams
         schedule = []
         for (lkey, skey), season in seasons.iterrows():
+            time.sleep(self.sleep_time)  # wait a bit to avoid rate limiting
             # read html page (league overview)
             url_stats = FBREF_API + season.url
             filepath_stats = self.data_dir / f"teams_{lkey}_{skey}.html"

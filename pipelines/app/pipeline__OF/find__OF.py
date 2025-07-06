@@ -13,6 +13,7 @@ from app._config import engine
 from optim.functions.player_utility_kelly_criteria import player_utility_kelly_criteria
 from optim.functions.player_expected_utility_log import player_expected_utility_log
 from optim.functions.player_expected_utility_exp_ce import player_expected_utility_exp_ce
+from optim.functions.player_utility_linear import player_utility_linear
 from optim.resolve.resolve_fik import resolve_fik
 
 
@@ -54,9 +55,42 @@ mapping_dict = {
 }
 
 
-def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_PR_LR', n_matches : int = None, same_day: bool = False,  
+def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_matches : int = None, same_day: bool = False,  
              bookmakers : list[str] =  None, bankroll : float = 1, method='SLSQP', 
              utility_fn='Kelly', optim_label='manual', l=10) -> datetime.datetime:
+    """
+    Find the optimal fraction to invest for each match based on the model results and the odds.
+    Parameters
+    ----------
+    datetime_first_match : str, optional
+        The datetime of the first match to consider for the optimization, by default None (today). 
+        Will filter the models result by date (>=today 00:00:00 for example). 
+        Will also filter the last odds for all matches before the given datetime.
+        Format should be 'YYYY-MM-DD HH:MM:SS'. If None, will use the current date and time.
+    model : str, optional
+        The model to use for the optimization, by default 'RSF_PR_LR'
+    n_matches : int, optional
+        The number of matches to consider for the optimization, by default None (all matches)
+    same_day : bool, optional
+        If True, only consider matches of the same day as the first match, by default False
+    bookmakers : list[str], optional
+        The list of bookmakers to consider for the optimization, by default None (all bookmakers)
+    bankroll : float, optional
+        The initial bankroll to use for the optimization, by default 1
+    method : str, optional
+        The optimization method to use, by default 'SLSQP'
+    utility_fn : str, optional
+        The utility function to use for the optimization, by default 'Kelly'
+    optim_label : str, optional
+        The label to use to store the optimization results, by default 'manual'
+    l : int, optional
+        The lambda parameter for the Linear optimization, by default 10
+
+    Returns
+    -------
+    datetime.datetime
+        The datetime of the first match to consider for the optimization
+    """
 
     logging.info(f"--- Starting the OF pipeline")
     # Retrieve data from the database
@@ -68,9 +102,8 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         logging.info(f"bookmakers: {bookmakers}")
         logging.info(f"bankroll: {bankroll}")
         logging.info(f"method: {method}")
-        datetime_first_match = datetime_first_match if datetime_first_match else datetime.datetime.now()
+        datetime_first_match = datetime.datetime.strptime(datetime_first_match, "%Y-%m-%d %H:%M:%S") if datetime_first_match else datetime.datetime.now()
         date_first_match = datetime_first_match.date()
-        time_first_match = datetime_first_match.time()
 
         logging.info(f"Retrieving data from the database, table {DB_TN_MODELS_RESULTS}")
         with engine.connect() as connection:
@@ -81,7 +114,7 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
 
             df_models_results = pd.read_sql(text(query_models_results), connection, params={"date_match": date_first_match, "model": model})
             df_odds = pd.read_sql(text(query_odds), connection, params={"commence_time": datetime_first_match})
-            logger.info(f"Data retrieved in {time.time() - start_data_retrieval:.2f} seconds")
+            logger.info(f"Data retrieved in {time.time() - start_data_retrieval:.2f} seconds with {len(df_models_results)} models results and {len(df_odds)} odds entries")
     except Exception as e:
         logger.error(f"Error while retrieving data from the database: {e}")
         raise
@@ -110,7 +143,6 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         df_odds__last_odds__away = df_odds__last_odds__away[['match_id', 'bookmaker_key', 'odds_away', 'odds_away_datetime']]
         df_odds__last_odds__home_draw = pd.merge(df_odds__last_odds__home, df_odds__last_odds__draw, on=['match_id', 'bookmaker_key'], how='inner')
         df_odds__last_odds__home_draw_away = pd.merge(df_odds__last_odds__home_draw, df_odds__last_odds__away, on=['match_id', 'bookmaker_key'], how='inner')
-
         # keep only the bookmakers in the list
         if bookmakers:
             df_odds__last_odds__home_draw_away = df_odds__last_odds__home_draw_away[df_odds__last_odds__home_draw_away['bookmaker_key'].isin(bookmakers)]
@@ -129,7 +161,7 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         max_odds_df_all = max_odds_df_all.drop_duplicates(subset=['match_id'], keep='first')
 
         # Keep only the odds for the big 5 leagues
-        sports = ['soccer_france_ligue_one', 'soccer_spain_la_liga', 'soccer_italy_serie_a', 'soccer_germany_bundesliga', 'soccer_epl']
+        sports = ['soccer_fifa_club_world_cup', 'soccer_france_ligue_one', 'soccer_spain_la_liga', 'soccer_italy_serie_a', 'soccer_germany_bundesliga', 'soccer_epl']
         max_odds_df_all_big5 = max_odds_df_all[max_odds_df_all['sport_key'].isin(sports)]
         max_odds_df_all_mapped = max_odds_df_all_big5.replace({'home_team': mapping_dict, 'away_team': mapping_dict})
 
@@ -138,7 +170,13 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
         max_odds_df_all_mapped['date_match'] = max_odds_df_all_mapped['commence_time'].dt.date
 
         # Merge the models results with the odds
+        print(f"Number of matches before merging models results and odds: {len(df_models_results_last_infered)}")
+        print(f"Number of matches in odds: {len(max_odds_df_all_mapped)}")
+        print(f"df_models_results_last_infered: \n{df_models_results_last_infered}")
+        print(f"max_odds_df_all_mapped: \n{max_odds_df_all_mapped.columns}")
+        print(f"max_odds_df_all_mapped: \n{max_odds_df_all_mapped[['odds_home', 'odds_draw', 'odds_away', 'commence_time', 'home_team', 'away_team']].sort_values(by=['commence_time'], ascending=True)}")
         df_models_results_joined = df_models_results_last_infered.merge(max_odds_df_all_mapped, left_on=['home_team', 'away_team', 'date_match'], right_on=['home_team', 'away_team', 'date_match'], how='inner')
+        print(f"Number of matches after merging models results and odds: {len(df_models_results_joined)}")
 
         # Sort by date start
         df_models_results_joined = df_models_results_joined.sort_values(by=['date_match', 'time_match'], ascending=True)
@@ -190,7 +228,7 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
             
         # Exponential
         if utility_fn == 'Exp':
-            obectif_exp_fn = lambda  f, o, t : - player_expected_utility_exp_ce(f, o, t, B=B_exp)
+            obectif_exp_fn = lambda  f, o, t : - player_expected_utility_exp_ce(f, o, t, B=bankroll)
             result_exp = resolve_fik(o, r, obectif_exp_fn, logger=logger, method=method)
             result_exp[result_exp < 1e-10] = 0
             df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_exp
@@ -201,7 +239,7 @@ def find__of(datetime_first_match: datetime.datetime = None, model: str = 'RSF_P
             
         # Linear
         if utility_fn == 'Linear':
-            obectif_linear_fn = lambda  f, o, t : player_utility_linear(f, o, t, B=B_linar, l=l)
+            obectif_linear_fn = lambda  f, o, t : player_utility_linear(f, o, t, B=bankroll, l=l)
             result_linear = resolve_fik(o, r, obectif_linear_fn, logger=logger, method=method)
             result_linear[result_linear < 1e-10] = 0
             df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_linear
@@ -268,7 +306,7 @@ if __name__ == '__main__':
     
     n_matches = 10
     logging.info("-- Starting the OF pipeline --")
-    datetime_first_match = '2024-08-26 00:00:00'
+    datetime_first_match = '2025-07-05 17:00:00'
     model =  'RSF_PR_LR'
     find__of(datetime_first_match=datetime_first_match, model=model, n_matches=n_matches, bookmakers=bookmaker_keys)
     logging.info("-- Pipeline completed --")

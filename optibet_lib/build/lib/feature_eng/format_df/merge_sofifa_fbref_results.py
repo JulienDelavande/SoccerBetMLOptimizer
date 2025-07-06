@@ -41,7 +41,7 @@ def merge_sofifa_fbref_results(fbref_results_df, sofifa_teams_stats_df,
     mapping = {
     "VfL Bochum 1848": "Bochum",
     "Tottenham Hotspur": "Tottenham",
-    "Paris Saint Germain": "Paris S-G",
+    "Paris Saint-Germain": "Paris S-G",
     "FC Köln": "Köln",
     "Real Zaragoza": "Zaragoza",
     "Wolverhampton Wanderers": "Wolves",
@@ -98,7 +98,8 @@ def merge_sofifa_fbref_results(fbref_results_df, sofifa_teams_stats_df,
     "SpVgg Greuther Fürth": "Greuther Fürth",
     "Ingolstadt": "Ingolstadt 04",
     "Eintracht Braunschweig": "Braunschweig",
-    "Blackburn Rovers": "Blackburn"
+    "Blackburn Rovers": "Blackburn",
+    "Stade de Reims ": "Reims",
 }
 
 

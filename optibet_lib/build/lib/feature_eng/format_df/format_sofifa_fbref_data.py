@@ -29,6 +29,10 @@ def format_sofifa_fbref_data(fbref_df_date_filtered_concat, date_stop=None,
         The formatted dataset.
     """
 
+    # Fill hom_g and away_g with score value if they are NaN and score is not NaN
+    fbref_df_date_filtered_concat.loc[:, home_team_goal_col] = fbref_df_date_filtered_concat.apply(lambda x: int(x['score'].split('–')[0]) if pd.isna(x[home_team_goal_col]) and not pd.isna(x['score']) else x[home_team_goal_col], axis=1)
+    fbref_df_date_filtered_concat.loc[:, away_team_goal_col] = fbref_df_date_filtered_concat.apply(lambda x: int(x['score'].split('–')[1]) if pd.isna(x[away_team_goal_col]) and not pd.isna(x['score']) else x[away_team_goal_col], axis=1)
+
     # Add the full time result column
     fbref_df_date_filtered_concat.loc[:, ftr_col] = fbref_df_date_filtered_concat.apply(lambda x: 1 if x[home_team_goal_col] > x[away_team_goal_col] else 0 if x[home_team_goal_col] == x[away_team_goal_col] else -1 if x[home_team_goal_col] < x[away_team_goal_col] else None, axis=1)
     
@@ -41,7 +45,7 @@ def format_sofifa_fbref_data(fbref_df_date_filtered_concat, date_stop=None,
     fbref_df_date_filtered_concat_no_nan.loc[:, datetime_col] = fbref_df_date_filtered_concat_no_nan[datetime_col] + fbref_df_date_filtered_concat_no_nan[f'{time_col}_']
 
     # Drop rows with NaN values in the ftr_col but keep future matches
-    date_stop = datetime.datetime.now() if not date_stop else date_stop
+    date_stop = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) if not date_stop else date_stop
     rule_is_null = (fbref_df_date_filtered_concat_no_nan[ftr_col].isnull())
     rule_is_future_match = (fbref_df_date_filtered_concat_no_nan[date_col] >= date_stop)
     rule_remove_nan_and_keep_future_matches = ~rule_is_null | rule_is_future_match

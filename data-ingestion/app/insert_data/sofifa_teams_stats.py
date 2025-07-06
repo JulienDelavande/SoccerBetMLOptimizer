@@ -9,7 +9,7 @@ from app._config import engine
 #### VARIABLES ####
 KEY_1 = 'team'
 KEY_2 = 'update'
-DN_TN_TEMP_TABLE = 'temp_table'
+DB_TN_TEMP_TABLE = 'temp_table_sofifa_teams_stats'
 logger = logging.getLogger("fbref_results")
 pd.set_option('display.max_columns', None)
 
@@ -38,8 +38,8 @@ def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
     logger.info(f"BD_NAME: {engine.url.database}")
     try:
         with engine.begin() as conn:
-            team_ratings.to_sql(DN_TN_TEMP_TABLE, conn, if_exists='replace', index=False)
-            logger.info(f"Table {DN_TN_TEMP_TABLE} creee avec succes")
+            team_ratings.to_sql(DB_TN_TEMP_TABLE, conn, if_exists='replace', index=False)
+            logger.info(f"Table {DB_TN_TEMP_TABLE} creee avec succes")
 
         with engine.begin() as conn:
             # Liste des colonnes
@@ -50,7 +50,7 @@ def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
                 WITH inserted_rows AS (
                     INSERT INTO {DB_TN_SOFIFA_TEAMS_STATS} ({columns})
                     SELECT {columns}
-                    FROM {DN_TN_TEMP_TABLE}
+                    FROM {DB_TN_TEMP_TABLE}
                     WHERE {KEY_1} IS NOT NULL AND {KEY_2} IS NOT NULL
                     ON CONFLICT ({KEY_1}, {KEY_2}) DO NOTHING
                     RETURNING {KEY_1}, {KEY_2}
@@ -63,8 +63,8 @@ def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
             inserted_rows = result.scalar()
             logger.info(f"{inserted_rows} nouvelles lignes inserees")
 
-            conn.execute(text(f"DROP TABLE {DN_TN_TEMP_TABLE}"))
-            logger.info(f"Table {DN_TN_TEMP_TABLE} supprimee avec succes")
+            conn.execute(text(f"DROP TABLE {DB_TN_TEMP_TABLE}"))
+            logger.info(f"Table {DB_TN_TEMP_TABLE} supprimee avec succes")
 
     except Exception as e:
         logger.error(f"Erreur lors de l'insertion des donnees: {e}")
