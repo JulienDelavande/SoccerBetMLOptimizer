@@ -51,7 +51,7 @@ services:
   dataIngestion:
     host: data-ingestion-svc
     image: optim-sportbet-data-ingestion
-    tag: 1.52
+    tag: 1.55
     port: "8100"
     replica: 1
     apiKeys:
@@ -65,21 +65,21 @@ services:
   pipelines:
     host: pipelines-svc
     image: optim-sportbet-pipelines
-    tag: 1.52
+    tag: 1.55
     port: "8101"
     replica: 1
 
   appBackend:
     host: app-backend-svc
     image: optim-sportbet-app-backend
-    tag: 1.52
+    tag: 1.55
     port: "8103"
     replica: 1
 
   appFrontend:
     host: app-frontend-svc
     image: optim-sportbet-app-frontend
-    tag: 1.52
+    tag: 1.55
     port: "8104"
     replica: 1
 

@@ -68,11 +68,12 @@ start: start-data-ingestion start-pipelines start-mlflow start-frontend start-ba
 #CONTAINER_REGISTRY = optimsportbets.azurecr.io
 CONTAINER_REGISTRY = juliendelavande
 IMAGE_PREFIX = optim-sportbet
-DATA_INGESTION_TAG = 1.52
-PIPELINES_TAG = 1.52
+DATA_INGESTION_TAG = 1.55
+PIPELINES_TAG = 1.55
 #MLFLOW_TAG = 1.3
-APP_BACKEND_TAG = 1.52
-APP_FRONTEND_TAG = 1.52
+APP_BACKEND_TAG = 1.55
+APP_FRONTEND_TAG = 1.55
+
 
 stop:
 	@cat .pid | xargs kill -9 || true
