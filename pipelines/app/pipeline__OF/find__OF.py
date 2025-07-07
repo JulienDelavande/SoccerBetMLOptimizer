@@ -19,7 +19,12 @@ from optim.resolve.resolve_fik import resolve_fik
 
 logger = logging.getLogger("OF")
 
-query_models_results = f"SELECT * FROM {DB_TN_MODELS_RESULTS} WHERE date_match >= :date_match AND model = :model"
+query_models_results = f"""
+SELECT * FROM {DB_TN_MODELS_RESULTS}
+WHERE date_match > :date_match
+   OR (date_match = :date_match AND time_match >= :time_match)
+  AND model = :model
+"""
 query_odds = f"SELECT * FROM {DB_TN_ODDS} WHERE commence_time >= :commence_time"
 
 mapping_dict = {
@@ -55,7 +60,7 @@ mapping_dict = {
 }
 
 
-def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_matches : int = None, same_day: bool = False,  
+def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_matches : int = None, same_day: bool = False,
              bookmakers : list[str] =  None, bankroll : float = 1, method='SLSQP', 
              utility_fn='Kelly', optim_label='manual', l=10) -> datetime.datetime:
     """
@@ -104,6 +109,7 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
         logging.info(f"method: {method}")
         datetime_first_match = datetime.datetime.strptime(datetime_first_match, "%Y-%m-%d %H:%M:%S") if datetime_first_match else datetime.datetime.now()
         date_first_match = datetime_first_match.date()
+        time_first_match = datetime_first_match.time()
 
         logging.info(f"Retrieving data from the database, table {DB_TN_MODELS_RESULTS}")
         with engine.connect() as connection:
@@ -112,7 +118,7 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
             logging.info(f"DB_PORT: {engine.url.port}")
             logging.info(f"DB_NAME: {engine.url.database}")
 
-            df_models_results = pd.read_sql(text(query_models_results), connection, params={"date_match": date_first_match, "model": model})
+            df_models_results = pd.read_sql(text(query_models_results), connection, params={"date_match": date_first_match, "time_match": time_first_match, "model": model})
             df_odds = pd.read_sql(text(query_odds), connection, params={"commence_time": datetime_first_match})
             logger.info(f"Data retrieved in {time.time() - start_data_retrieval:.2f} seconds with {len(df_models_results)} models results and {len(df_odds)} odds entries")
     except Exception as e:

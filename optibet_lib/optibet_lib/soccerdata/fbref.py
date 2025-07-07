@@ -472,9 +472,6 @@ class FBref(BaseRequestsReader):
             df_table = _parse_table(html_table)
             df_table["season"] = skey
             df_table["team"] = team
-            df_table["Time"] = [
-                x.get('csk', None) for x in html_table.xpath(".//td[@data-stat='start_time']")
-            ]
             df_table["Match Report"] = [
                 (
                     mlink.xpath("./a/@href")[0]
@@ -709,6 +706,7 @@ class FBref(BaseRequestsReader):
             )
             .pipe(standardize_colnames)
         )
+        print("df.columns:", df.columns)
         df["date"] = pd.to_datetime(df["date"]).ffill()
         df["game"] = df.apply(make_game_id, axis=1)
         df.loc[~df.match_report.isna(), "game_id"] = (

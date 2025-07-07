@@ -267,7 +267,7 @@ make up
 make tag
 make push
 # Update the helm chart values.yaml file with the new tag (verify if no new vars are added)
-cd k8s/helm-deploy/optimsportbets
+cd k8s/helm-deploy-contabo/optimsportbets
 helm upgrade optimsportbets . -f values.yaml
 ```
 

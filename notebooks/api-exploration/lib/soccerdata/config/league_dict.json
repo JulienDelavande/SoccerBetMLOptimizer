@@ -6,5 +6,8 @@
     },
     "UEFA Champions League" : {
         "FBref": "UEFA Champions League"
+    },
+    "FIFA Club World Cup": {
+        "FBref": "FIFA Club World Cup"
     }
 }

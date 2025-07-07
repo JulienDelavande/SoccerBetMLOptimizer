@@ -14,27 +14,49 @@ from app._config import engine
 import logging
 
 bookmaker_keys = [
-    "onexbet",
-    "sport888",
-    "betclic",
-    "betanysports",
-    "betfair_ex_eu",
-    "betonlineag",
-    "betsson",
-    "betvictor",
-    "coolbet",
-    "everygame",
-    "gtbets",
-    "livescorebet_eu",
-    "marathonbet",
-    "matchbook",
-    "mybookieag",
-    "nordicbet",
-    "pinnacle",
-    "suprabets",
-    "tipico_de",
-    "unibet_eu",
-    "williamhill"
+"betanysports",
+"betclic",
+"betclic_fr",
+"betfair_ex_eu",
+"betfair_ex_uk",
+"betfair_sb_uk",
+"betonlineag",
+"betsson",
+"betvictor",
+"betway",
+"boylesports",
+"casumo",
+"coolbet",
+"coral",
+"everygame",
+"grosvenor",
+"gtbets",
+"ladbrokes_uk",
+"leovegas",
+"livescorebet",
+"livescorebet_eu",
+"marathonbet",
+"matchbook",
+"mybookieag",
+"nordicbet",
+"onexbet",
+"paddypower",
+"parionssport_fr",
+"pinnacle",
+"skybet",
+"smarkets",
+"sport888",
+"suprabets",
+"tipico_de",
+"unibet_eu",
+"unibet_fr",
+"unibet_it",
+"unibet_nl",
+"unibet_uk",
+"virginbet",
+"williamhill",
+"winamax_de",
+"winamax_fr"
 ]
 
 
@@ -42,7 +64,7 @@ logger = logging.getLogger('get_optim_results')
 query = f"SELECT * FROM {DB_TN_OPTIM_RESULTS} WHERE datetime_optim = :datetime_optim"
 URL_OPTIM = f"{PIPELINES_PROTOCOL}://{PIPELINES_HOST}:{PIPELINES_PORT}/{PIPELINES_ENDPOINT_OPTIMIZATION}"
 
-def get_optim_results(datetime_first_match: str = None, n_matches: int = None, bookmakers: str = None, bankroll: float = 1, method: str = 'SLSQP', utility_fn: str = 'Kelly'):
+def get_optim_results(datetime_first_match: str = None, n_matches: int = None, bookmakers: str = None, bankroll: float = 1, method: str = 'SLSQP', utility_fn: str = 'Kelly', same_day: bool = False):
     logger.info(f"Getting optim results for datetime_first_match: {datetime_first_match}, n_matches: {n_matches}, bookmakers: {bookmakers}")
 
     # validation
@@ -55,7 +77,7 @@ def get_optim_results(datetime_first_match: str = None, n_matches: int = None, b
 
     # perform optim request
     time_optim_start = time.time()
-    params = {"datetime_first_match": datetime_first_match, "n_matches": n_matches, "bookmakers": bookmakers, "bankroll": bankroll, "method": method, "utility_fn": utility_fn}
+    params = {"datetime_first_match": datetime_first_match, "n_matches": n_matches, "bookmakers": bookmakers, "bankroll": bankroll, "method": method, "utility_fn": utility_fn, "same_day": same_day, "optim_label": "user_request"}
     logger.info(f"Requesting optim results from {URL_OPTIM} with params: {params}")
     results = requests.get(URL_OPTIM, params=params)
     datetime_optim = results.json().get("datetime_optim")
