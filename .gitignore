@@ -23,3 +23,5 @@ k8s/helm-deploy-contabo/secrets/
 mlruns/
 
 db/database_backup.sql
+db/*.dump
+db/*.dbml

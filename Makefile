@@ -63,30 +63,19 @@ start-backend:
 
 start: start-data-ingestion start-pipelines start-mlflow start-frontend start-backend
 
-# Docker
-
-#CONTAINER_REGISTRY = optimsportbets.azurecr.io
-CONTAINER_REGISTRY = juliendelavande
-IMAGE_PREFIX = optim-sportbet
-DATA_INGESTION_TAG = 1.55
-PIPELINES_TAG = 1.55
-#MLFLOW_TAG = 1.3
-APP_BACKEND_TAG = 1.55
-APP_FRONTEND_TAG = 1.55
-
 
 stop:
 	@cat .pid | xargs kill -9 || true
 	@rm -f .pid
 
 build-mac:
-	docker buildx build --platform linux/amd64 -t $(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG) ./data-ingestion
-	docker buildx build --platform linux/amd64 -t $(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) ./pipelines
-	docker buildx build --platform linux/amd64 -t $(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG) ./app-backend
-	docker buildx build --platform linux/amd64 -t $(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG) ./app-frontend
+	docker buildx build --platform linux/amd64 --load -t $(IMAGE_PREFIX)-data-ingestion:$(TAG) ./data-ingestion
+	docker buildx build --platform linux/amd64 --load -t $(IMAGE_PREFIX)-pipelines:$(TAG) ./pipelines
+	docker buildx build --platform linux/amd64 --load -t $(IMAGE_PREFIX)-app-backend:$(TAG) ./app-backend
+	docker buildx build --platform linux/amd64 --load -t $(IMAGE_PREFIX)-app-frontend:$(TAG) ./app-frontend
 
 build-mac-pipelines:
-	docker buildx build --platform linux/amd64 -t $(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) ./pipelines
+	docker buildx build --platform linux/amd64 --load -t $(IMAGE_PREFIX)-pipelines:$(TAG) ./pipelines
 
 build:
 	docker compose build
@@ -95,22 +84,22 @@ up:
 	docker compose up
 
 tag:
-	docker tag $(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG)
-	docker tag $(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG)
-	docker tag $(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG)
-	docker tag $(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG)
-
-tag-mlflow:
-	docker tag $(IMAGE_PREFIX)-mlflow:latest		 $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG)
+	docker tag $(IMAGE_PREFIX)-data-ingestion:$(TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(TAG)
+	docker tag $(IMAGE_PREFIX)-pipelines:$(TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(TAG)
+	docker tag $(IMAGE_PREFIX)-app-backend:$(TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(TAG)
+	docker tag $(IMAGE_PREFIX)-app-frontend:$(TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(TAG)
 
 push:
-	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(DATA_INGESTION_TAG)
-	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(PIPELINES_TAG)
-	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(APP_BACKEND_TAG)
-	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(APP_FRONTEND_TAG)
+	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(TAG)
+	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(TAG)
+	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(TAG)
+	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(TAG)
 
-push-mlflow:
-	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-mlflow:$(MLFLOW_TAG)
+deploy:
+	kubectl create namespace $(NAMESPACE) || true
+	helm upgrade --install optimsportbets ./k8s/helm-deploy-contabo/optimsportbets --namespace $(NAMESPACE) --set containerRegistry.registry=$(CONTAINER_REGISTRY) --set services.dataIngestion.tag=$(TAG) \
+		--set services.pipelines.tag=$(TAG) --set services.appBackend.tag=$(TAG) --set services.appFrontend.tag=$(TAG)
+	kubectl apply -n $(NAMESPACE) -f ./k8s/helm-deploy-contabo/cron-jobs
 
 test:
 	export $(grep -v '^#' compose.env)

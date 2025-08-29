@@ -6,6 +6,7 @@ x-osportbet-common:
     - .env
     - compose.env
     - secrets.env
+    - dev.env
   networks:
     - optim-sportbet-network
 
@@ -15,7 +16,7 @@ services:
     build:
       context: ./data-ingestion
       dockerfile: Dockerfile
-    image: optim-sportbet-data-ingestion:1.51
+    image: optim-sportbet-data-ingestion:${TAG}
     ports:
       - "${DATA_INGESTION_PORT_BRIDGE:-8000}:${DATA_INGESTION_PORT:-80}"
 
@@ -24,7 +25,7 @@ services:
     build:
       context: ./pipelines
       dockerfile: Dockerfile
-    image: optim-sportbet-pipelines:1.51
+    image: optim-sportbet-pipelines:${TAG}
     ports:
       - "${PIPELINES_PORT_BRIDGE:-8001}:${PIPELINES_PORT:-80}"
 
@@ -42,7 +43,7 @@ services:
     build:
        context: ./app-backend
        dockerfile: Dockerfile
-    image: optim-sportbet-app-backend:1.51
+    image: optim-sportbet-app-backend:${TAG}
     ports:
       - "${APP_BACKEND_PORT_BRIDGE:-8003}:${APP_BACKEND_PORT:-80}"
     
@@ -51,7 +52,7 @@ services:
     build:
        context: ./app-frontend
        dockerfile: Dockerfile
-    image: optim-sportbet-app-frontend:1.51
+    image: optim-sportbet-app-frontend:${TAG}
     ports:
       - "${APP_FRONTEND_PORT_BRIDGE:-8004}:${APP_FRONTEND_PORT:-80}"
 

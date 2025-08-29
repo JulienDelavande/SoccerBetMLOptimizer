@@ -189,7 +189,11 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
 
         # Keep only the matches of the same day
         if same_day:
-            df_models_results_joined = df_models_results_joined[df_models_results_joined['date_match'] == df_models_results_joined['date_match'].min()]
+            today = pd.Timestamp.today().date()
+            df_models_results_joined = df_models_results_joined[
+                df_models_results_joined['date_match'].dt.date == today
+            ]
+
         
         # Keep only the n_matches first matches
         if n_matches:

@@ -271,7 +271,7 @@ def fetch_past_performances(optim_label = 'manual', datetime_first_match = None,
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.get("/fetch/past_performances_gains")
-def fetch_past_performances_gains(optim_label = 'manual', datetime_first_match = None, datetime_last_match = None):
+def fetch_past_performances_gains(optim_label = 'manual', datetime_first_match = None, datetime_last_match = None, divisor=2):
     if optim_label == 'test':
         return {
   "status": "success",
@@ -310,7 +310,7 @@ def fetch_past_performances_gains(optim_label = 'manual', datetime_first_match =
 }
 
     try:
-        results = fetch_past_performances_gains_fn(optim_label=optim_label, datetime_first_match=datetime_first_match, datetime_last_match=datetime_last_match)
+        results = fetch_past_performances_gains_fn(optim_label=optim_label, datetime_first_match=datetime_first_match, datetime_last_match=datetime_last_match, divisor=divisor)
         logger.info(f"/fetch_past_performances_gains route completed")
         return {"status": "success", "results": results.to_dict(orient='records')}
     except Exception as e:
