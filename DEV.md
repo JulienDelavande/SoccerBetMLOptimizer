@@ -9,16 +9,24 @@ cd SoccerBetMLOptimizer
 # 2. Get the db
 You will need psql (PostgreSQL client) and preferably pgAdmin to see the database (can manage as well but we use migrations with a custom script to apply changes).
 ```
-kubectl port-forward -n optimsportbets pod/postgresql-global-0 5432:5432
+set -a
+source prod.env
+set +a
+kubectl port-forward -n optimsportbets pod/postgresql-global-0 $DB_PORT:5432
 cd db
-pg_dump -h localhost -U kube -d optimsportbets-db -F c -b -v -f optimsportbets-db.dump
+pg_dump -h localhost -U $DB_USER -p $DB_PORT -d optimsportbets-db -F c -b -v -f optimsportbets-db.dump
 
 # if you already created the database skip next line
-createdb -U postgres optimsportbets-db
-pg_restore -h localhost -U postgres -d optimsportbets-db -v optimsportbets-db.dump
+cd ..
+set -a
+source dev.env
+set +a
+createdb -U $DB_USER -p $DB_PORT optimsportbets-db
+cd db
+pg_restore -h localhost -U $DB_USER -p $DB_PORT -d optimsportbets-db -v optimsportbets-db.dump
 
 # to access the database with command line
-psql -U postgres -d optimsportbets-db
+psql -U $DB_USER -p $DB_PORT -d optimsportbets-db
 ```
 
 # 3. Install dependencies

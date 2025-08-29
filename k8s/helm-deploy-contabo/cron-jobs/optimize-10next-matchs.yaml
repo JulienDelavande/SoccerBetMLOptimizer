@@ -18,8 +18,19 @@ spec:
               - |
                 # Optimisation du capital à investir
                 echo "Optimizing -- Strategy: auto_regular-10next-matchs \n\n"
-                echo "curl -X GET ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Kelly&optim_label=auto_regular -H accept: application/json"
-                curl -X GET "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Kelly&optim_label=auto_regular" -H "accept: application/json"
+                
+                echo "curl -X GET ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Kelly&n_matches=10&optim_label=auto_next10_kelly -H accept: application/json"
+                curl -X GET "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Kelly&n_matches=10&optim_label=auto_next10_kelly" -H "accept: application/json"
+
+                echo "curl -X GET ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Linear&n_matches=10&optim_label=auto_next10_linear_l10 -H accept: application/json"
+                curl -X GET "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Linear&n_matches=10&optim_label=auto_next10_linear_l10" -H "accept: application/json"
+
+                echo "curl -X GET ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Log&n_matches=10&optim_label=auto_next10_log -H accept: application/json"
+                curl -X GET "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Log&n_matches=10&optim_label=auto_next10_log" -H "accept: application/json"
+
+                echo "curl -X GET ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Exp&n_matches=10&optim_label=auto_next10_exp -H accept: application/json"
+                curl -X GET "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}?model=RSF_PR_LR&bankroll=1&method=SLSQP&utility_fn=Exp&n_matches=10&optim_label=auto_next10_exp" -H "accept: application/json"
+
                 echo "Optimized bankroll to invest"
             envFrom:
               - configMapRef:
