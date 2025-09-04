@@ -119,6 +119,7 @@ node_modules/
 tmp/
 temp/
 *.tmp
+test_improvements.py
 
 # Documentation build
 docs/_build/
