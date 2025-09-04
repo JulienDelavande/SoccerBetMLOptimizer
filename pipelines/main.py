@@ -1,20 +1,55 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from app.pipeline__RSF_PR_LR.infer__RSF_PR_LR import infer__RSF_PR_LR__pipeline
 #from app.pipeline__RSF_PS_LR.infer__RSF_PS_LR import infer__RSF_PS_LR__pipeline
 from app.pipeline__OF.find__OF import find__of
 import app._config
+
 import logging
 import datetime
+import os
+import time
 
-app = FastAPI()
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+app = FastAPI(
+    title="OptiBet ML Pipelines",
+    description="ML inference and optimization pipelines for soccer betting",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=os.getenv("CORS_ORIGINS", "*").split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 logger = logging.getLogger('pipelines')
 
-@app.get("/")
+@app.get("/", tags=["General"])
 def read_root():
     return {"Info": "Microservice for ml pipelines"}
 
-@app.get("/infer/RSF_PR_LR")
+@app.get("/health", tags=["Health"])
+def health_check():
+    """Health check endpoint for monitoring"""
+    return {
+        "status": "healthy",
+        "timestamp": time.time(),
+        "service": "pipelines",
+        "version": "1.0.0"
+    }
+
+@app.get("/infer/RSF_PR_LR", tags=["ML Inference"])
 def infer__RSF_PR_LR__pipeline_route(date_stop : str = None):
     try:
         #to date time
@@ -30,7 +65,7 @@ def infer__RSF_PR_LR__pipeline_route(date_stop : str = None):
         logging.error(f"RSF_PR_LR pipeline failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.get("/optim")
+@app.get("/optim", tags=["Optimization"])
 def resolve_fik_route(datetime_first_match=None, model='RSF_PR_LR', n_matches = None, same_day = False, bookmakers = None, 
                       bankroll = 1, method = 'SLSQP', utility_fn = 'Kelly', optim_label = 'manual'):
     try:

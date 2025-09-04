@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from app.services.get_optim_results import get_optim_results
 from app.services.strategy_regular import strategy_regular
 from app.services.fetch_last_predictions import fetch_last_predictions_fn
@@ -6,17 +7,50 @@ from app.services.fetch_past_performances import fetch_past_performances_fn
 from app.services.fetch_past_performances_gains import fetch_past_performances_gains_fn
 
 import logging
+import os
+import time
 from typing import Optional
 
-app = FastAPI()
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+app = FastAPI(
+    title="OptiBet App Backend",
+    description="API for computing predictions and optimization for soccer betting",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=os.getenv("CORS_ORIGINS", "*").split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 logger = logging.getLogger('app-backend')
 
-@app.get("/")
+@app.get("/", tags=["General"])
 def read_root():
     return {"Info": "App backend for monitoring and display of data"}
 
-@app.get("/compute/predictions")
+@app.get("/health", tags=["Health"])
+def health_check():
+    """Health check endpoint for monitoring"""
+    return {
+        "status": "healthy",
+        "timestamp": time.time(),
+        "service": "app-backend",
+        "version": "1.0.0"
+    }
+
+@app.get("/compute/predictions", tags=["Predictions"])
 def get_optim_results_route(
     datetime_first_match: Optional[str] = None,
     n_matches: Optional[int] = None,
