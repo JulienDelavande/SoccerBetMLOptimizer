@@ -1,7 +1,8 @@
 fastapi
-uvicorn
+uvicorn[standard]
 sqlalchemy
 pandas
 rich
 psycopg2-binary
 requests
+python-multipart

@@ -1,0 +1,57 @@
+version: 2
+updates:
+  # Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "JulienDelavande"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+
+  # App-backend dependencies
+  - package-ecosystem: "pip"
+    directory: "/app-backend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # App-frontend dependencies
+  - package-ecosystem: "pip"
+    directory: "/app-frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Data-ingestion dependencies
+  - package-ecosystem: "pip"
+    directory: "/data-ingestion"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Pipelines dependencies
+  - package-ecosystem: "pip"
+    directory: "/pipelines"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5

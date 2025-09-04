@@ -1,0 +1,66 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+# Use with: docker-compose -f compose.yml -f compose.override.yml up
+
+services:
+  data-ingestion:
+    volumes:
+      - ./data-ingestion:/app
+      - ./optibet_lib:/optibet_lib
+    environment:
+      - PYTHONPATH=/app:/optibet_lib
+      - RELOAD=true
+    command: uvicorn main:app --host 0.0.0.0 --port 80 --reload
+
+  pipelines:
+    volumes:
+      - ./pipelines:/app
+      - ./optibet_lib:/optibet_lib
+    environment:
+      - PYTHONPATH=/app:/optibet_lib
+      - RELOAD=true
+    command: uvicorn main:app --host 0.0.0.0 --port 80 --reload
+
+  app-backend:
+    volumes:
+      - ./app-backend:/app
+      - ./optibet_lib:/optibet_lib
+    environment:
+      - PYTHONPATH=/app:/optibet_lib
+      - RELOAD=true
+    command: uvicorn main:app --host 0.0.0.0 --port 80 --reload
+
+  app-frontend:
+    volumes:
+      - ./app-frontend:/app
+      - ./optibet_lib:/optibet_lib
+    environment:
+      - PYTHONPATH=/app:/optibet_lib
+    command: streamlit run main.py --server.port 80 --server.address 0.0.0.0
+
+  # Development database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: optimsportbets-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - optim-sportbet-network
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - optim-sportbet-network
+
+volumes:
+  postgres_data:

@@ -23,6 +23,49 @@ ifneq (,$(wildcard ./compose.env))
 endif
 ##############################################
 
+# Development targets
+.PHONY: dev-setup dev-start dev-stop dev-test dev-format dev-lint dev-check
+
+dev-setup:
+	@echo "Setting up development environment..."
+	./dev.sh setup
+
+dev-start:
+	@echo "Starting development environment..."
+	./dev.sh start
+
+dev-stop:
+	@echo "Stopping development environment..."
+	./dev.sh stop
+
+dev-test:
+	@echo "Running tests..."
+	./dev.sh test
+
+dev-format:
+	@echo "Formatting code..."
+	./dev.sh format
+
+dev-lint:
+	@echo "Linting code..."
+	./dev.sh lint
+
+dev-check:
+	@echo "Running all checks..."
+	./dev.sh check
+
+# Docker development
+dev-docker:
+	@echo "Starting Docker development environment..."
+	docker-compose -f compose.yml -f compose.override.yml up --build
+
+dev-docker-down:
+	@echo "Stopping Docker development environment..."
+	docker-compose -f compose.yml -f compose.override.yml down
+
+# Original targets below
+##############################################
+
 
 start-data-ingestion:
 	@source $(VENV)/Scripts/activate && \

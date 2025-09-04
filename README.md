@@ -1,295 +1,351 @@
-# Optim-sportbet
+# 🏆 OptiBet - Soccer Betting ML Optimizer
 
-## Description
+> **Intelligent soccer betting optimization using machine learning and real-time data analysis**
 
-This project aims to deliver day to day prediction on what to bet on sport games.
+[![CI/CD Pipeline](https://github.com/JulienDelavande/SoccerBetMLOptimizer/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/JulienDelavande/SoccerBetMLOptimizer/actions/workflows/ci-cd.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/kubernetes-ready-green.svg)](https://kubernetes.io/)
 
-## Installation
+## 🎯 Overview
 
-There is 3 ways to install the project:
+OptiBet is a comprehensive machine learning platform that optimizes soccer betting strategies using:
 
-1. Local installation
-2. Docker installation
-3. Kubernetes installation
+- **Real-time data ingestion** from multiple sources (FBRef, SofaIFA, The Odds API)
+- **Advanced ML models** for match outcome prediction
+- **Portfolio optimization** using Kelly Criterion and modern portfolio theory
+- **Interactive web interface** for strategy visualization and execution
+- **Microservices architecture** for scalability and maintainability
 
-### Local installation
+## 🏗️ Architecture
 
-To install the project locally, you need to have the following dependencies installed on your machine:
-
-- Python 3.10
-- make
-
-First replace the `secrets_template.env` file with your own secrets and rename it to `secrets.env`.
-
-```bash	
-echo secrets_template.env > secrets.env
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Data Sources  │    │   Data Ingestion │    │    Database     │
+│                 │───▶│                  │───▶│   PostgreSQL    │
+│ FBRef, SofaIFA  │    │    FastAPI       │    │                 │
+│ The Odds API    │    │                  │    │                 │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+                                                          │
+┌─────────────────┐    ┌──────────────────┐              │
+│   Frontend UI   │    │   App Backend    │              │
+│                 │◀──▶│                  │◀─────────────┘
+│   Streamlit     │    │    FastAPI       │
+│                 │    │                  │
+└─────────────────┘    └──────────────────┘
+                                 │
+                       ┌──────────────────┐
+                       │   ML Pipelines   │
+                       │                  │
+                       │    FastAPI       │
+                       │                  │
+                       └──────────────────┘
 ```
 
-Then you can install the project by running the following command:
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.10+
+- PostgreSQL
+- Docker & Docker Compose (optional)
+- Make
+
+### 🔧 Local Development Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/JulienDelavande/SoccerBetMLOptimizer.git
+   cd SoccerBetMLOptimizer
+   ```
+
+2. **Setup environment**
+   ```bash
+   # Quick setup with our development script
+   ./dev.sh setup
+   
+   # Or manual setup
+   python -m venv venv
+   source venv/bin/activate  # or venv\Scripts\activate on Windows
+   pip install -r requirements.txt -r requirements-dev.txt
+   ```
+
+3. **Configure secrets**
+   ```bash
+   cp secrets_template.env secrets.env
+   # Edit secrets.env with your API keys and database credentials
+   ```
+
+4. **Setup database**
+   ```bash
+   # Create PostgreSQL database
+   createdb optimsportbets-db
+   
+   # Apply migrations
+   cd db
+   python apply_migrations.py
+   ```
+
+5. **Start development environment**
+   ```bash
+   ./dev.sh start
+   ```
+
+6. **Access the application**
+   - Frontend: http://localhost:8204
+   - Backend API: http://localhost:8203/docs
+   - Data Ingestion API: http://localhost:8200/docs
+
+### 🐳 Docker Development
 
 ```bash
-python -m venv venv
-source venv/Scripts/activate
-pip install -r requirements.txt
-```
+# Build and start all services
+docker-compose up --build
 
-```bash
-make start
-```
-
-To stop the project, you can run the following command:
-
-```bash
-make stop
-```
-
-### Docker installation
-
-To install the project with Docker, you need to have the following dependencies installed on your machine:
-
-- Docker
-- Docker Compose
-
-First replace the `secrets_template.env` file with your own secrets and rename it to `secrets.env`.
-
-```bash
-echo secrets_template.env > secrets.env
-```
-
-Then you can install the project by running the following command:
-
-```bash
-export $(grep -v '^#' .env)
-export $(grep -v '^#' compose.env)
-docker compose --env-file .env --env-file compose.env -f compose.yml up
-```
-
-If you want airflow to be installed, you can run the following command:
-
-```bash
-export $(grep -v '^#' .env)
-export $(grep -v '^#' compose.env)
-docker compose -f compose.yml -f airflow.yml up
-```
-
-To stop the project, you can run the following command:
-
-```bash
-docker compose down
-```
-
-### Kubernetes installation
-
-To install the project with Kubernetes, you need to have access to a Kubernetes cluster.
-You need to have the following dependencies installed on your machine:
-
-- kubectl
-- helm
-- Docker
-- Docker Compose
-- make
-
-#### Creation of all needed services using Azure
-
-You need to have the following dependencies installed on your machine:
-
-- Azure CLI
-
-```bash
-az login
-```
-
-A resource group, named `Optim-sportBets`, has been created on Azure, with all the services needed for the project. You can either use the existing resource group and the ressources if still available, or create your own.
-
-Within the ressource group, you will find the following services:
-- Azure Kubernetes Service (AKS) [existing name: `optimsportbets`]
-- Azure Container Registry (ACR) [existing name: `optimsportbets`]
-
-As well as remote repositories on Azure DevOps for the project's code [existing name: `optim-sportbet`].
-
-Create a resource group on Azure if you need by running the following command:
-
-```bash
-az group create --name <resource-group> --location <location>
-```
-
-##### Create a ACR registry on Azure
-
-To create an ACR registry on Azure, you can run the following command:
-
-```bash
-az acr create --resource-group <resource-group> --name <registry-name> --sku Basic
-```
-
-Then you can get the credentials of the registry by running the following command:
-
-```bash
-az acr login --name <registry-name>
-```
-
-##### Create an AKS cluster
-
-To create an AKS cluster on Azure, you can run the following command:
-
-
-```bash
-az aks create --resource-group <resource-group> --name <cluster-name> --node-count 2 --generate-ssh-keys
-```
-
-Then you can get the credentials of the cluster by running the following command:
-
-```bash
-az aks get-credentials --resource-group <resource-group> --name <cluster-name>
-```
-
-### Configure the secrets
-
-Get the three folowing secrets files and put then in k8s/helm-deploy/secrets:
-- api-keys-secrets.yaml : The odds api key to scrapp odds from the-odds-api.com
-```yaml	
-apiVersion: v1
-kind: Secret
-metadata:
-  name: api-keys-secrets
-  namespace: optimsportbets
-data:
-  theOddsApiKey: <base64-encoded-theOddsApiKey> # Get the api key from https://the-odds-api.com/ and encode it in base64
-```
-- cr-secrets.yaml : The credentials of the CR registry if the container registry is private - if public, you can remove this file and put containerRegistry.enabled to false in values.yaml
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-    name: cr-secret
-    namespace: optimsportbets
-    type: kubernetes.io/dockerconfigjson
-data:
-    .dockerconfigjson: <base64-encoded-.dockerconfigjson> # Get the credentials of the ACR registry by running the command az acr login --name <registry-name> and encode it in base64, the dockerconfigjson is the output of the command az acr login --name <registry-name> encoded in base64
-```
-- db-credentials-secrets.yaml
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-    name: db-credentials-secrets
-    namespace: optimsportbets
-data:
-    admin-password: <base64-encoded-admin-password> # the admin password of the postgres database encoded in base64 - you can choose the password you want
-    user-password: <base64-encoded-user-password> # the user password of the postgres database encoded in base64 - you can choose the password you want
-```
-
-Make sure the secrets are correctly configured with the right credentials.
-
-#### You created your own ACR registry
-
-If you created your own ACR registry, you need to modify the `values.yaml` file in `k8s/helm-deploy/optimsportbets` with the name of your ACR registry:
-```yaml
-containerRegistry:
-    registry: <your-acr-registry>.azurecr.io
-```
-
-If the name and tag of the images new, you also need to modify the `values.yaml` file in `k8s/helm-deploy/optimsportbets` with the name and tag of the images:
-```yaml
-appFrontend: # Do the same for the other services
-    image: <name-of-your-image-on-your-container-registry>
-    tag: <tag-of-your-image-on-your-container-registry>
-```
-### Build, tag and push the Docker images
-
-To build, tag and push the Docker images to the ACR registry, you can run the following command:
-
-```bash
-docker compose build
-```
-
-```bash
-make tag
-```
-
-```bash
-make push
-```
-
-If you created your own container registry, you need to modify the `CONTAINER_REGISTRY` field in Makefile with the name of your ACR registry before running the commands.
-
-### Deploy the project
-
-To deploy the project on Kubernetes, you can run the following commands from the root of the project:
-
-```bash
-# Create the namespace and switch to it
-kubectl create namespace optimsportbets
-kubectl config set-context --current --namespace=optimsportbets
-
-# Deploy the secrets the helm chart of the project and the cron jobs
-kubectl apply -f ./k8s/helm-deploy/secrets/
-helm install optimsportbets ./k8s/helm-deploy/optimsportbets/ -f ./k8s/helm-deploy/optimsportbets/values.yaml --namespace optimsportbets
-kubectl apply -R -f ./k8s/helm-deploy/cron-jobs
-```
-
-### Developpment and deployment workflow
-
-```bash
-## DEVELOPMENT WORKFLOW
-# Develop localy the app-backend, data-ingestion, pipelines and frontend
-set -a
-source .env
-source secrets.env
-source venv/bin/activate
-cd data-ingestion/
-uvicorn main:app --port 8000
-cd ..
-
-## DEPLOYMENT WORKFLOW
-# Build wheel for local lib if changes in it:
-cd optibets-lib/
-python setup.py bdist_wheel
-cp dist/*.whl ../app-backend/lib/
-cp dist/*.whl ../pipelines/lib/
-cp dist/*.whl ../data-ingestion/lib/
-
-cd ..
-kubectl config set-context --current --namespace=optimsportbets
-
-# If change in the database schema:
-kubectl port-forward svc/postgresql-global 5432:5432 -n optimsportbets
-# Change the var in the .env to fit the forwarded port for the db user=kube, rest is same as the local one
-cd db/
-python apply_migrations.py
-# Change the tag version in the Makefile
-
-## Build the Docker images
-cd ..
-make build-mac
-# Verify the images are built correctly
+# Or use make commands
+make build
 make up
-# Tag and push the Docker images to juliendelavande registry
-make tag
-make push
-# Update the helm chart values.yaml file with the new tag (verify if no new vars are added)
-cd k8s/helm-deploy-contabo/optimsportbets
-helm upgrade optimsportbets . -f values.yaml
 ```
 
+## 📁 Project Structure
 
-### Access the services
+```
+SoccerBetMLOptimizer/
+├── 🎨 app-frontend/          # Streamlit web interface
+├── ⚙️  app-backend/          # Main FastAPI backend
+├── 📊 data-ingestion/        # Data collection microservice
+├── 🤖 pipelines/             # ML inference pipelines
+├── 📚 optibet_lib/           # Shared Python library
+├── 🗄️  db/                   # Database schema & migrations
+├── ☸️  k8s/                  # Kubernetes deployments
+├── 📓 notebooks/             # Jupyter notebooks for analysis
+├── 📖 doc/                   # Documentation
+├── 🔧 .github/               # CI/CD workflows
+├── 🐳 compose.yml            # Docker Compose configuration
+└── 📋 requirements*.txt      # Python dependencies
+```
 
-To list the pods, services, secret and cronjobs you can run the following command:
+## 🛠️ Development Workflow
+
+### Code Quality & Testing
 
 ```bash
-kubectl get pods -n optimsportbets
-kubectl get svc -n optimsportbets
-kubectl get secret -n optimsportbets
-kubectl get cronjobs -n optimsportbets
+# Run all code quality checks
+./dev.sh check
+
+# Individual commands
+./dev.sh format    # Format code with Black & isort
+./dev.sh lint      # Run flake8, mypy, bandit
+./dev.sh test      # Run pytest suite
 ```
 
-You can port-forward the services to access them locally:
+### Pre-commit Hooks
 
 ```bash
-kubectl port-forward svc/<name-of-the-service> <local-port>:<kube-port> -n optimsportbets
-# Example to have the frontend on localhost:8080 `http://localhost:8080`.
-kubectl port-forward svc/app-frontend-svc 8080:8104 -n optimsportbets
+# Install pre-commit hooks (included in setup)
+pre-commit install
+
+# Run hooks manually
+pre-commit run --all-files
 ```
+
+## 🎮 Usage Examples
+
+### Computing Optimal Betting Strategy
+
+```python
+import requests
+
+# Get predictions for upcoming matches
+response = requests.get(
+    "http://localhost:8203/compute/predictions",
+    params={
+        "datetime_first_match": "2024-01-15 00:00:00",
+        "n_matches": 10,
+        "bookmakers": "betclic,unibet_eu",
+        "bankroll": 1.0,
+        "method": "SLSQP",
+        "utility_fn": "Kelly"
+    }
+)
+
+predictions = response.json()
+```
+
+### Data Ingestion
+
+```python
+# Ingest latest match results
+response = requests.get(
+    "http://localhost:8200/fbref",
+    params={"get_current_season_only": True}
+)
+
+# Ingest latest odds
+response = requests.get("http://localhost:8200/the_odds_api/odds")
+```
+
+## 🚀 Deployment
+
+### Kubernetes (Production)
+
+1. **Setup infrastructure**
+   ```bash
+   # Azure (example)
+   az aks create --resource-group OptimSportBets --name optimsportbets
+   az aks get-credentials --resource-group OptimSportBets --name optimsportbets
+   ```
+
+2. **Deploy application**
+   ```bash
+   kubectl create namespace optimsportbets
+   kubectl apply -f k8s/helm-deploy/secrets/
+   helm install optimsportbets k8s/helm-deploy/optimsportbets/
+   ```
+
+3. **Build and push images**
+   ```bash
+   make build
+   make tag
+   make push
+   ```
+
+### Docker Compose (Staging)
+
+```bash
+export $(grep -v '^#' .env)
+export $(grep -v '^#' compose.env)
+docker-compose -f compose.yml up -d
+```
+
+## 📊 API Documentation
+
+Each service provides interactive API documentation:
+
+- **App Backend**: http://localhost:8203/docs
+- **Data Ingestion**: http://localhost:8200/docs
+- **ML Pipelines**: http://localhost:8201/docs
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Key configuration options:
+
+```bash
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_NAME=optimsportbets-db
+
+# API Keys
+THE_ODDS_API_KEY=your_api_key
+
+# Services
+APP_BACKEND_PORT=8203
+APP_FRONTEND_PORT=8204
+DATA_INGESTION_PORT=8200
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes and run tests: `./dev.sh check`
+4. Commit with conventional commits: `git commit -m "feat: add amazing feature"`
+5. Push to your branch: `git push origin feature/amazing-feature`
+6. Open a Pull Request
+
+### Development Guidelines
+
+- Follow PEP 8 style guide (enforced by Black)
+- Write tests for new features
+- Update documentation
+- Use type hints
+- Keep commits atomic and well-described
+
+## 📈 Performance & Monitoring
+
+### Health Checks
+
+All services provide health check endpoints:
+
+```bash
+curl http://localhost:8203/health
+curl http://localhost:8200/health
+```
+
+### Metrics
+
+Monitor application performance:
+- Response times
+- Database query performance
+- ML model inference time
+- Betting strategy performance
+
+## 🔒 Security
+
+- Secrets management via environment variables
+- CORS configuration
+- Input validation and sanitization
+- Security scanning with Bandit
+- Dependency vulnerability scanning
+
+## 📚 Documentation
+
+- [Architecture Overview](doc/architecture.md)
+- [API Reference](doc/api-reference.md)
+- [Deployment Guide](doc/deployment.md)
+- [Development Setup](doc/development.md)
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Database connection errors**
+   ```bash
+   # Check if PostgreSQL is running
+   sudo systemctl status postgresql
+   
+   # Verify connection
+   psql -h localhost -U postgres -d optimsportbets-db
+   ```
+
+2. **Port conflicts**
+   ```bash
+   # Check what's using the port
+   lsof -i :8203
+   
+   # Change ports in .env file
+   ```
+
+3. **API key issues**
+   ```bash
+   # Verify your API key is set
+   echo $THE_ODDS_API_KEY
+   ```
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Master's thesis work by Julien Delavande (SUPAERO)
+- Data sources: FBRef, SofaIFA, The Odds API
+- Built with FastAPI, Streamlit, PostgreSQL, and Kubernetes
+
+## 📞 Support
+
+- 📧 Email: julien.delavande@example.com
+- 🐛 Issues: [GitHub Issues](https://github.com/JulienDelavande/SoccerBetMLOptimizer/issues)
+- 📖 Wiki: [Project Wiki](https://github.com/JulienDelavande/SoccerBetMLOptimizer/wiki)
+
+---
+
+**⚠️ Disclaimer**: This software is for educational and research purposes. Please gamble responsibly and in accordance with local laws and regulations.
 
 
 
