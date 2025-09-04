@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.get_optim_results import get_optim_results
 from app.services.strategy_regular import strategy_regular
@@ -9,6 +9,12 @@ from app.services.fetch_past_performances_gains import fetch_past_performances_g
 import logging
 import os
 import time
+import sys
+sys.path.append('/home/runner/work/SoccerBetMLOptimizer/SoccerBetMLOptimizer')
+from shared.models import (
+    HealthResponse, PredictionRequest, PredictionResponse,
+    StandardResponse, ErrorResponse
+)
 from typing import Optional
 
 # Configure logging
@@ -19,10 +25,34 @@ logging.basicConfig(
 
 app = FastAPI(
     title="OptiBet App Backend",
-    description="API for computing predictions and optimization for soccer betting",
+    description="""
+    ## OptiBet App Backend API
+    
+    This service provides the main API for computing predictions and optimization for soccer betting.
+    
+    ### Features:
+    - **Compute Predictions**: Generate optimized betting predictions using ML models
+    - **Fetch Historical Data**: Retrieve past predictions and performance metrics
+    - **Strategy Analysis**: Analyze betting strategy performance over time
+    
+    ### Authentication:
+    No authentication required for public endpoints.
+    
+    ### Rate Limits:
+    - Standard endpoints: 100 requests/minute
+    - Compute endpoints: 10 requests/minute
+    """,
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    contact={
+        "name": "Julien Delavande",
+        "email": "julien.delavande@example.com",
+    },
+    license_info={
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT",
+    },
 )
 
 # Add CORS middleware
@@ -36,29 +66,80 @@ app.add_middleware(
 
 logger = logging.getLogger('app-backend')
 
-@app.get("/", tags=["General"])
+@app.get("/", 
+         response_model=StandardResponse,
+         tags=["General"],
+         summary="Root endpoint")
 def read_root():
-    return {"Info": "App backend for monitoring and display of data"}
+    """Get basic service information"""
+    return StandardResponse(
+        status="success",
+        message="App backend for monitoring and display of data",
+        data={"service": "app-backend", "version": "1.0.0"}
+    )
 
-@app.get("/health", tags=["Health"])
+@app.get("/health", 
+         response_model=HealthResponse,
+         tags=["Health"],
+         summary="Health check")
 def health_check():
-    """Health check endpoint for monitoring"""
-    return {
-        "status": "healthy",
-        "timestamp": time.time(),
-        "service": "app-backend",
-        "version": "1.0.0"
-    }
+    """Health check endpoint for monitoring and load balancers"""
+    return HealthResponse(
+        status="healthy",
+        timestamp=time.time(),
+        service="app-backend",
+        version="1.0.0"
+    )
 
-@app.get("/compute/predictions", tags=["Predictions"])
+@app.get("/compute/predictions", 
+         tags=["Predictions"],
+         summary="Compute optimized betting predictions",
+         description="""
+         Compute optimized betting predictions using machine learning models.
+         
+         This endpoint analyzes upcoming matches, applies ML models for outcome prediction,
+         and uses portfolio optimization to determine optimal betting fractions.
+         """)
 def get_optim_results_route(
-    datetime_first_match: Optional[str] = None,
-    n_matches: Optional[int] = None,
-    bookmakers: Optional[str] = None,
-    bankroll: Optional[float] = 1.0,
-    method: Optional[str] = 'SLSQP',
-    utility_fn: Optional[str] = 'Kelly',
-    same_day: Optional[bool] = False
+    datetime_first_match: Optional[str] = Query(
+        None, 
+        description="Starting datetime for match selection (YYYY-MM-DD HH:MM:SS)",
+        example="2024-01-15 00:00:00"
+    ),
+    n_matches: Optional[int] = Query(
+        None, 
+        ge=1, 
+        le=100, 
+        description="Maximum number of matches to analyze",
+        example=10
+    ),
+    bookmakers: Optional[str] = Query(
+        None, 
+        description="Comma-separated list of bookmaker keys",
+        example="betclic,unibet_eu,pinnacle"
+    ),
+    bankroll: Optional[float] = Query(
+        1.0, 
+        ge=0.01, 
+        le=1000000, 
+        description="Bankroll amount (normalized to 1.0 for fractions)",
+        example=1.0
+    ),
+    method: Optional[str] = Query(
+        'SLSQP', 
+        description="Optimization method (SLSQP, COBYLA, trust-constr)",
+        example="SLSQP"
+    ),
+    utility_fn: Optional[str] = Query(
+        'Kelly', 
+        description="Utility function for optimization",
+        example="Kelly"
+    ),
+    same_day: Optional[bool] = Query(
+        False, 
+        description="Only consider matches on the same day",
+        example=False
+    )
 ):
     try:
         df_optim_results, metrics, durations = get_optim_results(datetime_first_match=datetime_first_match, n_matches=n_matches, bookmakers=bookmakers, bankroll=bankroll, method=method, utility_fn=utility_fn, same_day=same_day)
@@ -93,8 +174,26 @@ def get_optim_results_route(
 #         logger.error(f"/compute_regular_strategy route failed: {str(e)}")
 #         raise HTTPException(status_code=500, detail=str(e))
     
-@app.get("/fetch/last_predictions")
-def fetch_last_predictions(optim_label = 'manual', datetime_optim_last = None):
+@app.get("/fetch/last_predictions",
+         tags=["Data Retrieval"],
+         summary="Fetch latest predictions",
+         description="""
+         Retrieve the most recent betting predictions for a given optimization label.
+         
+         Useful for getting the latest recommendations from automated strategies.
+         """)
+def fetch_last_predictions(
+    optim_label: str = Query(
+        'manual', 
+        description="Optimization label to filter predictions",
+        example="manual"
+    ), 
+    datetime_optim_last: Optional[str] = Query(
+        None,
+        description="Last optimization datetime filter",
+        example="2024-01-15 10:00:00"
+    )
+):
     if optim_label == 'test':
         return {
   "status": "success",
@@ -197,8 +296,31 @@ def fetch_last_predictions(optim_label = 'manual', datetime_optim_last = None):
         logger.error(f"/fetch_last_predictions route failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.get("/fetch/past_performances")
-def fetch_past_performances(optim_label = 'manual', datetime_first_match = None, datetime_last_match = None):
+@app.get("/fetch/past_performances",
+         tags=["Data Retrieval"],
+         summary="Fetch past betting performances",
+         description="""
+         Retrieve historical betting performance data for analysis.
+         
+         Includes actual match results, betting recommendations, and outcomes.
+         """)
+def fetch_past_performances(
+    optim_label: str = Query(
+        'manual', 
+        description="Optimization label to filter results",
+        example="manual"
+    ), 
+    datetime_first_match: Optional[str] = Query(
+        None,
+        description="Start date for performance period",
+        example="2024-01-01 00:00:00"
+    ), 
+    datetime_last_match: Optional[str] = Query(
+        None,
+        description="End date for performance period", 
+        example="2024-01-31 23:59:59"
+    )
+):
     if optim_label == 'test':
         return {
   "status": "success",
@@ -304,8 +426,38 @@ def fetch_past_performances(optim_label = 'manual', datetime_first_match = None,
         logger.error(f"/fetch_past_performances route failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.get("/fetch/past_performances_gains")
-def fetch_past_performances_gains(optim_label = 'manual', datetime_first_match = None, datetime_last_match = None, divisor=2):
+@app.get("/fetch/past_performances_gains",
+         tags=["Data Retrieval"],
+         summary="Fetch betting performance gains over time",
+         description="""
+         Retrieve cumulative gains/losses from betting strategy over time.
+         
+         Returns time series data showing portfolio performance evolution.
+         """)
+def fetch_past_performances_gains(
+    optim_label: str = Query(
+        'manual', 
+        description="Optimization label to filter results",
+        example="manual"
+    ), 
+    datetime_first_match: Optional[str] = Query(
+        None,
+        description="Start date for gain calculation",
+        example="2024-01-01 00:00:00"
+    ), 
+    datetime_last_match: Optional[str] = Query(
+        None,
+        description="End date for gain calculation",
+        example="2024-01-31 23:59:59"
+    ), 
+    divisor: int = Query(
+        2,
+        ge=1,
+        le=10,
+        description="Divisor for gain calculation (risk adjustment)",
+        example=2
+    )
+):
     if optim_label == 'test':
         return {
   "status": "success",
