@@ -1,4 +1,4 @@
-import soccerdata as sd
+import optibet_lib.soccerdata as sd
 from sqlalchemy import text
 import pandas as pd
 import argparse
@@ -89,9 +89,9 @@ def scrap_data_fbref(get_current_season_only=True, use_cache=True, leagues=None)
     """Recuperer les schedule et scores des matchs de fbref"""
     try:
         fbref = sd.FBref()
-        leagues = leagues or ["FIFA Club World Cup", "UEFA Champions League", "INT-World Cup", "INT-European Championships", "Big 5 European Leagues Combined"]
-        first_seasons = ["2425", "9091", "3031", "0001", "3031"]
-        skip_seasons = [None, ['3940', '4041', '4142', '4243', '4344', '4546'], ['4243', '4344', '4647'], None, ['3940', '4041', '4142', '4243', '4344', '4546']]  # Seasons to skip due to WWII
+        leagues = ["FIFA Club World Cup", "UEFA Champions League", "INT-World Cup", "INT-European Championships", "Big 5 European Leagues Combined"]
+        first_seasons = ["2526", "9091", "3031", "0001", "3031"]
+        skip_seasons = [None, ['3940', '4041', '4142', '4243', '4344', '4546'], ['4243', '4344', '4647'], None, ['3940', '4041', '4142', '4243', '4344', '4445', '4546']]  # Seasons to skip due to WWII
         steps = [1, 1, 4, 4, 1]  # Steps for each league to get the first season
         leagues_df = fbref.read_leagues()
 
@@ -160,6 +160,9 @@ if __name__ == "__main__":
     get_current_season_only = args.get_current_season_only
     use_cache = args.use_cache
     leagues = args.leagues
+    get_current_season_only = False
+    use_cache = True
+    leagues = None
+    cutoff_days = 60
 
-    insert_recent_fbref_matches(get_current_season_only=get_current_season_only, use_cache=use_cache, cutoff_days=args.cutoff_days, leagues=leagues)
-    
+    insert_recent_fbref_matches(get_current_season_only=get_current_season_only, use_cache=use_cache, cutoff_days=cutoff_days, leagues=leagues)

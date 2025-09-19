@@ -1,0 +1,98 @@
+containerRegistry:
+  registry: juliendelavande
+  imagePullSecrets:
+    name: cr-secret
+    enabled: false
+
+global:
+  envRef: global-config
+
+postgresqlGlobal:
+  fullnameOverride: postgresql-global  # Nom du service exposé
+  auth:
+    username: kube
+    database: optimsportbets-db
+    existingSecret: db-credentials-secrets # Utilisation du secret existant
+    secretKeys:
+      adminPasswordKey: admin-password  # Clé pour le mot de passe admin dans le secret
+      userPasswordKey: user-password         # Clé pour le mot de passe utilisateur dans le secret
+  service:
+    type: ClusterIP                       # Type de service (ClusterIP pour une exposition interne)
+    ports:
+      postgresql: "5432"                    # Port PostgreSQL
+  primary:
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "512Mi"
+      limits:
+        cpu: "2"
+        memory: "2Gi"
+
+services:
+  dataIngestion:
+    host: data-ingestion-svc
+    image: optim-sportbet-data-ingestion
+    tag: 0.2.0
+    port: "8100"
+    replica: 1
+    storage:
+      size: 5Gi
+      accessMode: ReadWriteOnce
+    apiKeys:
+      # Option 1 : L'utilisateur peut fournir un chemin de fichier contenant la clé API
+      existingSecret: api-keys-secrets  # Insérer le nom du secret contenant la clé API
+      secretKeys:
+        theOddsApiKey: theOddsApiKey
+      # Option 2 : L'utilisateur peut directement fournir la clé API dans `values.yaml`
+      theOddsApiKey: ""  # Insérer directement la clé API ici si `existingApiKeySecret` est vide
+
+  pipelines:
+    host: pipelines-svc
+    image: optim-sportbet-pipelines
+    tag: 0.2.0
+    port: "8101"
+    replica: 1
+
+  appBackend:
+    host: app-backend-svc
+    image: optim-sportbet-app-backend
+    tag: 0.2.0
+    port: "8103"
+    replica: 1
+
+  appFrontend:
+    host: app-frontend-svc
+    image: optim-sportbet-app-frontend
+    tag: 0.2.0
+    port: "8104"
+    replica: 1
+
+  cdn:
+    host: cdn-svc
+    image: nginx
+    tag: stable-alpine
+    port: "80"
+    replica: 1
+    storage:
+      size: 1Gi
+      accessMode: ReadWriteOnce
+
+ingress:
+  enabled: true
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: myresolver
+  hosts:
+    - host: optibet.delavande.fr
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: optibet-cert
+      hosts:
+        - optibet.delavande.fr
+
+  backendHost: optibet.api.delavande.fr
+  cdnHost: optibet.cdn.delavande.fr

@@ -79,7 +79,7 @@ def fetch_past_performances_gains_fn(optim_label='manual', datetime_first_match=
             print(f"{df_bankroll.columns}")
             if df_bankroll.empty:
                 logger.info(f"No data found for bankroll computation.")
-                raise ValueError("No bankroll data found for the given parameters.")
+                return pd.DataFrame()  # Return empty DataFrame if no data found
             logger.info(f"Bankroll data fetched successfully.")
 
     except Exception as e:

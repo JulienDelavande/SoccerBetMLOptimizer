@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cdn-nginx-conf
+  namespace: {{ .Release.Namespace }}
+data:
+  logos.conf: |
+    server {
+      listen {{ .Values.services.cdn.port }} default_server;
+      server_name {{ .Values.services.cdn.host }} _;
+
+      # Le PVC est monté sur /usr/share/nginx/html/logos
+      # On pose la racine sur /usr/share/nginx/html pour que $uri.* => /usr/share/nginx/html/<path>
+      root /usr/share/nginx/html;
+
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+      charset utf-8;
+
+      # Cache raisonnable pour les fichiers avec extension
+      location ~* \.(?:png|svg|webp|jpe?g|gif|ico)$ {
+        access_log off;
+        log_not_found off;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000, immutable";
+        try_files $uri =404;
+      }
+
+      # Résolution automatique d'extension pour /logos/teams/<name> et /logos/bookies/<name>
+      # NOTE: $uri vaut /logos/teams/Angers -> on essaie Angers.png, Angers.svg, etc.
+      location ~ ^/logos/(teams|bookies|leagues)/[^/]+$ {
+        access_log off;
+        log_not_found off;
+        try_files
+        {{- $exts := (default (list "png" "svg" "webp" "jpg" "jpeg") .Values.services.cdn.extensions) -}}
+        {{- range $ext := $exts }}
+          $uri.{{ $ext }}
+        {{- end }}
+          {{- if .Values.services.cdn.fallback }}
+          /logos/{{ .Values.services.cdn.fallback }}
+          {{- else }}
+          =404
+          {{- end }};
+      }
+
+      # (Optionnel) navigation dossier pour debug (à couper en prod)
+      location /logos/ {
+        autoindex off;
+        try_files $uri $uri/ =404;
+      }
+
+      # Healthcheck
+      location = /healthz {
+        return 200 "ok\n";
+        add_header Content-Type text/plain;
+      }
+    }

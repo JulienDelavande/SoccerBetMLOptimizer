@@ -1,12 +1,22 @@
 from fastapi import FastAPI, HTTPException
 from app.pipeline__RSF_PR_LR.infer__RSF_PR_LR import infer__RSF_PR_LR__pipeline
-#from app.pipeline__RSF_PS_LR.infer__RSF_PS_LR import infer__RSF_PS_LR__pipeline
 from app.pipeline__OF.find__OF import find__of
+from app.models.optimization_models import (
+    OptimizationRequest,
+    OptimizationResponse,
+)
+from app.models.prediction_models import (
+    InferenceRequest,
+    InferenceResponse,
+)
 import app._config
 import logging
-import datetime
 
-app = FastAPI()
+app = FastAPI(
+    title="Predict Score Logistic Regression API",
+    version="1.0.0",
+    description="Microservice for football match outcome prediction and betting optimization"
+)
 
 logger = logging.getLogger('pipelines')
 
@@ -14,37 +24,58 @@ logger = logging.getLogger('pipelines')
 def read_root():
     return {"Info": "Microservice for ml pipelines"}
 
-@app.get("/infer/RSF_PR_LR")
-def infer__RSF_PR_LR__pipeline_route(date_stop : str = None):
+@app.post(
+    "/predict",
+    response_model=InferenceResponse,
+    tags=["prediction"]
+)
+def predict(body: InferenceRequest):
     try:
-        #to date time
-        if date_stop:
-            date_stop = datetime.datetime.strptime(date_stop, "%Y-%m-%d %H:%M:%S")
-        train_test_metrics, df_infered, nb_matches_infered, first_match_name, last_match_name, datetime_inference = infer__RSF_PR_LR__pipeline(date_stop=date_stop)
+        metrics, _, nb, first_name, last_name, dt_inf = infer__RSF_PR_LR__pipeline(
+            datetime_stop=body.datetime_stop
+        )
+        return InferenceResponse(
+            status="success",
+            datetime_inference=dt_inf,
+            train_test_metrics=metrics,
+            nb_matches_inferred=nb,
+            first_match_name=first_name,
+            last_match_name=last_name,
+        )
+    except Exception as e:
+        logger.exception("Prediction failed")
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
-        logging.info(f"RSF_PR_LR pipeline completed")
-        return {"status": "success", "datetime_inference" : datetime_inference,
-                "train_test_metrics": train_test_metrics, "nb_matches_infered": nb_matches_infered,
-                "first_match_name": first_match_name, "last_match_name": last_match_name}
-    except Exception as e:
-        logging.error(f"RSF_PR_LR pipeline failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-    
-@app.get("/optim")
-def resolve_fik_route(datetime_first_match=None, model='RSF_PR_LR', n_matches = None, same_day = False, bookmakers = None, 
-                      bankroll = 1, method = 'SLSQP', utility_fn = 'Kelly', optim_label = 'manual'):
+@app.post(
+    "/optimize",
+    response_model=OptimizationResponse,
+    tags=["optimization"]
+)
+def optimize(body: OptimizationRequest):
     try:
-        if n_matches:
-            n_matches = int(n_matches)
-        if bookmakers:
-            bookmakers = bookmakers.split(',')
-        if bankroll:
-            bankroll = float(bankroll)
-        datetime_optim, df_results = find__of(datetime_first_match=datetime_first_match, model=model, n_matches=n_matches, same_day=same_day, bookmakers=bookmakers, 
-                                  bankroll=bankroll, method=method, utility_fn=utility_fn, optim_label=optim_label)
-        logging.info(f"Optimisation completed")
-        return {"status": "success", "datetime_optim": datetime_optim, 'optim_label':optim_label,
-                "df_results": df_results}
+        dt_opt, df_results = find__of(
+            datetime_first_match=body.datetime_first_match,
+            model="RSF_PR_LR",
+            n_matches=body.n_matches,
+            same_day=body.same_day,
+            bookmakers=body.bookmakers,
+            bankroll=body.bankroll,
+            method=body.method,
+            utility_fn=body.utility_fn,
+            optim_label=body.optim_label,
+            l=body.l,
+            divisor=body.divisor,
+        )
+        if hasattr(df_results, "to_dict"):
+            # Transform DataFrame to list of MatchOptimization-compatible dictionaries
+            df_results = df_results.to_dict(orient="records")
+
+        return OptimizationResponse(
+            status="success",
+            datetime_optim=dt_opt,
+            optim_label=body.optim_label,
+            matches=df_results,
+        )
     except Exception as e:
-        logging.error(f"Optimisation failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Optimization failed")
+        raise HTTPException(status_code=500, detail=str(e)) from e

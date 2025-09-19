@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.services.cdn.replica }}
+  selector:
+    matchLabels:
+      app: cdn
+  template:
+    metadata:
+      labels:
+        app: cdn
+      annotations:
+        configmap-hash: {{ .Values.configmapHash | default (include "cdn.configmapChecksum" .) }}
+    spec:
+      containers:
+      - name: cdn
+        image: "{{ .Values.services.cdn.image }}:{{ .Values.services.cdn.tag }}"
+        ports:
+        - containerPort: {{ .Values.services.cdn.port }}
+        volumeMounts:
+        - name: logos-storage
+          mountPath: /usr/share/nginx/html/logos
+        - name: nginx-conf
+          mountPath: /etc/nginx/conf.d/logos.conf
+          subPath: logos.conf
+      volumes:
+      - name: logos-storage
+        persistentVolumeClaim:
+          claimName: logos-pvc
+      - name: nginx-conf
+        configMap:
+          name: cdn-nginx-conf
+
+      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      imagePullSecrets:
+      - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+      {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.services.cdn.host }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.services.cdn.port }}
+    targetPort: {{ .Values.services.cdn.port }}
+  selector:
+    app: cdn

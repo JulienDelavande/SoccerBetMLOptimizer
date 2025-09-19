@@ -1,0 +1,27 @@
+[project]
+name = "notebooks"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "cloudscraper>=1.2.71",
+    "fastapi>=0.116.1",
+    "jupyter>=1.1.1",
+    "lxml>=5.2.2",
+    "notebook>=7.4.5",
+    "packaging>=24.0",
+    "pandas>=2.2.2",
+    "pipelines",
+    "psycopg2-binary>=2.9.10",
+    "python-dotenv>=1.0.1",
+    "rich>=13.7.1",
+    "selenium>=4.21.0",
+    "sqlalchemy>=2.0.30",
+    "undetected-chromedriver>=3.5.5",
+    "unidecode>=1.3.8",
+    "uvicorn>=0.35.0",
+]
+
+[tool.uv.sources]
+pipelines = { workspace = true }

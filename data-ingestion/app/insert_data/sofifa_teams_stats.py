@@ -1,4 +1,4 @@
-import soccerdata as sd
+import optibet_lib.soccerdata as sd
 from sqlalchemy import text
 import pandas as pd
 import logging
@@ -12,6 +12,9 @@ KEY_2 = 'update'
 DB_TN_TEMP_TABLE = 'temp_table_sofifa_teams_stats'
 logger = logging.getLogger("fbref_results")
 pd.set_option('display.max_columns', None)
+custom_team_names = ["SK Slavia Praha", "FK Bodø/Glimt", "Ajax", "PSV", "Sporting CP", "Union Saint-Gilloise", "Galatasaray SK",
+                        "Olympiacos FC", "FC København", "Qarabağ FK", "Pafos FC", "Kairat Almaty"]
+                     
 
 def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
     """Inserer les donnees des equipes de SoFIFA dans la table SOFIFA teams stats"""
@@ -25,10 +28,11 @@ def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
     logger.info(f"scrap_all: {scrap_all}")
     team_ratings = scrap_data_SOFIFA(teams='big 5', use_cache=use_cache, scrap_all=scrap_all, KEY_1=KEY_1, KEY_2=KEY_2)
     team_ratings_nat = scrap_data_SOFIFA(teams='international', use_cache=use_cache, scrap_all=scrap_all, KEY_1=KEY_1, KEY_2=KEY_2)
+    team_ratings_custom = scrap_data_SOFIFA(teams='custom', use_cache=use_cache, scrap_all=scrap_all, KEY_1=KEY_1, KEY_2=KEY_2, custom_team_names=custom_team_names)
 
 
     #### CONVERSION DES TYPES DE DONNEES ####
-    team_ratings = convert_data_types(team_ratings, team_ratings_nat)
+    team_ratings = convert_data_types(team_ratings, team_ratings_nat, team_ratings_custom)
 
 
     #### INSERTION DES DONNEES DANS LA BASE DE DONNEES ####
@@ -73,19 +77,35 @@ def insert_data_SOFIFA_teams_stats_table(use_cache=False, scrap_all=False):
     logger.info("Fin de l'insertion des donnees dans la table SOFIFA teams stats\n\n")
 
 
-def scrap_data_SOFIFA(teams='big 5', use_cache=False, scrap_all=False, KEY_1='team', KEY_2='update'):
+def scrap_data_SOFIFA(teams='big 5', use_cache=False, scrap_all=False, KEY_1='team', KEY_2='update', custom_team_names=[]):
     """Recuperer les donnees des equipes de SoFIFA"""
     try:
         logger.info(f"Chargement des donnees des equipes {teams} - latest")
-        so_fifa_latest = sd.SoFIFA(versions="latest", no_cache=not use_cache)
-        team_ratings = so_fifa_latest.read_team_ratings() if teams == 'big 5' else so_fifa_latest.read_team_ratings_nationals()
-        if scrap_all:
+        if not scrap_all:
+            so_fifa_latest = sd.SoFIFA(versions="latest", no_cache=not use_cache)
+            if teams == 'big 5':
+                team_ratings = so_fifa_latest.read_team_ratings()
+            elif teams == 'international':
+                team_ratings = so_fifa_latest.read_team_ratings_nationals()
+            elif teams == 'custom':
+                team_ratings = so_fifa_latest.read_team_ratings_by_name(custom_team_names)
+            else:
+                raise ValueError("Le parametre teams doit etre 'big 5' ou 'international'")
+        else:
             logger.info(f"Chargement des donnees des equipes {teams} - all")
-            sofifa_all = sd.SoFIFA(versions="all", no_cache=True)
-            team_ratings_all = sofifa_all.read_team_ratings() if teams == 'big 5' else sofifa_all.read_team_ratings_nationals()
-            team_ratings = pd.concat([team_ratings_all, team_ratings], ignore_index=True)
-            team_ratings = team_ratings.drop_duplicates(subset=[KEY_1, KEY_2], keep='last')
+            sofifa_all = sd.SoFIFA(versions="all", no_cache=not use_cache)
+            if teams == 'big 5':
+                team_ratings = sofifa_all.read_team_ratings()
+            elif teams == 'international':
+                team_ratings = sofifa_all.read_team_ratings_nationals()
+            elif teams == 'custom':
+                team_ratings = sofifa_all.read_team_ratings_by_name(custom_team_names)
+            else:
+                raise ValueError("Le parametre teams doit etre 'big 5' ou 'international'")
+        print(f"Nombre de lignes scrappees pour {teams}: {team_ratings.shape[0]}")
+        print(team_ratings.columns)
         team_ratings.reset_index(inplace=True)
+        team_ratings = team_ratings.drop_duplicates(subset=[KEY_1, KEY_2], keep='last')
         #logger.info(f'Head of sofifa scrapped data: \n{team_ratings.head()}')
         return team_ratings
     except Exception as e:
@@ -93,13 +113,16 @@ def scrap_data_SOFIFA(teams='big 5', use_cache=False, scrap_all=False, KEY_1='te
         raise
 
 
-def convert_data_types(team_ratings, team_ratings_nat):
+def convert_data_types(team_ratings, team_ratings_nat, team_ratings_custom):
     """Convertir les types de donnees"""
     logger.info("Conversion des types de donnees")
     try: 
         team_ratings_nat["league"] = "INT"
         team_ratings_nat.loc[team_ratings_nat["update"] == "World Cup 2022", "update"] = "Nov 20, 2022"
-        team_ratings = pd.concat([team_ratings, team_ratings_nat], ignore_index=True)
+        team_ratings_nat.loc[team_ratings_nat["update"] == "UEFA Euro 2024", "update"] = "Jun 14, 2024"
+
+        team_ratings_custom["league"] = "OTHER"
+        team_ratings = pd.concat([team_ratings, team_ratings_nat, team_ratings_custom], ignore_index=True)
 
         # Convertir les types de donnees
         team_ratings['update'] = pd.to_datetime(team_ratings['update'])
@@ -136,6 +159,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     use_cache = args.use_cache
     scrap_all = args.scrap_all
+    use_cache = True
+    scrap_all = True
 
     insert_data_SOFIFA_teams_stats_table(use_cache=use_cache, scrap_all=scrap_all)
     

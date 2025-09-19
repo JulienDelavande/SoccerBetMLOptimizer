@@ -1,0 +1,28 @@
+[project]
+name = "data-ingestion"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "cloudscraper>=1.2.71",
+    "fastapi>=0.116.1",
+    "logger>=1.4",
+    "lxml>=5.2.2",
+    "matplotlib>=3.8.4",
+    "packaging>=24.0",
+    "pandas>=2.2.2",
+    "psycopg2-binary>=2.9.10",
+    "pydantic>=2.7.4",
+    "python-dotenv>=1.0.1",
+    "rich>=13.7.1",
+    "selenium>=4.21.0",
+    "sqlalchemy>=2.0.30",
+    "undetected-chromedriver>=3.5.5",
+    "unidecode>=1.3.8",
+    "uvicorn>=0.35.0",
+    "optibet-lib",
+]
+
+[tool.uv.sources]
+optibet-lib = { workspace = true }

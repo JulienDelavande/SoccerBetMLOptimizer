@@ -7,7 +7,6 @@ import logging.config
 import sys
 from pathlib import Path
 from rich.logging import RichHandler
-from logger.postgressqlhandler import PostgreSQLHandler
 
 
 
@@ -87,14 +86,6 @@ logging_config = {
             "formatter": "detailed",
             "level": logging.ERROR,
         },
-        "postgresql": {
-            "()": PostgreSQLHandler,
-            "engine": engine,
-            "service": "pipelines",
-            "module": "main_module",
-            "formatter": "detailed",
-            "level": logging.DEBUG,
-        },
         "rich": {
             "class": "rich.logging.RichHandler",
             "formatter": "minimal",
@@ -104,7 +95,7 @@ logging_config = {
     },
     "loggers": {
         "root": {
-            "handlers": ["rich", "info", "error", "postgresql"],
+            "handlers": ["rich", "info", "error"],
             "level": LOGLEVEL,
             "propagate": True,
 },

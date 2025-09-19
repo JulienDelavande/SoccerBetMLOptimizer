@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: optimize-auto-regular-same-day-cronjob
+  namespace: optimsportbets
+spec:
+  schedule: "55 11 * * *"  # Exécution tous les jours à midi moins 5
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+          - name: optimize-auto-regular-same-day
+            image: curlimages/curl:7.85.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                echo "==> Baseline"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "same_day": true, "utility_fn": "Kelly", "optim_label": "auto_same_day_kelly"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "same_day": true, "utility_fn": "Linear", "optim_label": "auto_same_day_linear_l10"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "same_day": true, "utility_fn": "Log", "optim_label": "auto_same_day_log"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "same_day": true, "utility_fn": "Exp", "optim_label": "auto_same_day_exp"}'
+
+                echo "==> Bookmakers FR"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "same_day": true, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Kelly", "optim_label": "auto_same_day_kelly_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "same_day": true, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Linear", "optim_label": "auto_same_day_linear_l10_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "same_day": true, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Log", "optim_label": "auto_same_day_log_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "same_day": true, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Exp", "optim_label": "auto_same_day_exp_fr"}'
+
+                echo "Finished all optimizations"
+            envFrom:
+              - configMapRef:
+                  name: global-config
+          restartPolicy: OnFailure

@@ -2,8 +2,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 
-from train_test.general import train_test
-from train_test.split import train_test_split_expanding_windows
+from optibet_lib.train_test.general import train_test
+from optibet_lib.train_test.split import train_test_split_expanding_windows
 import pandas as pd
 
 def test_model_and_infer(fbref_results_df__sofifa_merged__data_formated__signals_added__train, fbref_results_df__sofifa_merged__data_formated__signals_added__infer):

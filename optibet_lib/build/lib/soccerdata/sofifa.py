@@ -87,6 +87,7 @@ class SoFIFA(BaseRequestsReader):
             self.versions = self.read_versions().loc[versions]
         else:
             raise ValueError(f"Invalid value for versions: {versions}")
+        self.test = 'TEST'
 
     def read_leagues(self) -> pd.DataFrame:
         """Retrieve selected leagues from the datasource.
@@ -371,7 +372,7 @@ class SoFIFA(BaseRequestsReader):
                         **version.to_dict(),
                     }
                 )
-
+        logger.info(f"columns scrapped: {teams[0].keys()}")
         # return data frame
         df = (
             pd.DataFrame(teams)

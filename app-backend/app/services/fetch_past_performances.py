@@ -1,15 +1,10 @@
 import datetime
 from sqlalchemy import text
 import pandas as pd
-import requests
-import time
 import numpy as np
 
-from optim.functions.player_gain_expected_value import player_gain_expected_value
-from optim.functions.player_gain_variance import player_gain_variance
 
-
-from app._config import DB_TN_OPTIM_RESULTS, PIPELINES_PROTOCOL, PIPELINES_HOST, PIPELINES_PORT, PIPELINES_ENDPOINT_OPTIMIZATION
+from app._config import PIPELINES_PROTOCOL, PIPELINES_HOST, PIPELINES_PORT, PIPELINES_ENDPOINT_OPTIMIZATION
 from app._config import engine
 
 import logging
@@ -62,7 +57,7 @@ def fetch_past_performances_fn(optim_label = 'manual', datetime_first_match = No
             })
             if df_merged_predictions_results.empty:
                 logger.info(f"No past performances found for optim_label: {optim_label}, datetime_first_match: {datetime_first_match}, datetime_last_match: {datetime_last_match}")
-                raise ValueError("No past performances found for the given parameters.")
+                return pd.DataFrame()  # Return empty DataFrame if no data found
             logger.info(f"Past performances fetched successfully for optim_label: {optim_label}, datetime_first_match: {datetime_first_match}, datetime_last_match: {datetime_last_match}")
             df_merged_predictions_results = df_merged_predictions_results.replace([np.inf, -np.inf], np.nan)
             df_merged_predictions_results = df_merged_predictions_results.fillna(value="")

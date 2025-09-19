@@ -1,8 +1,7 @@
 *\venv*
 
 *.ipynb_checkpoints
-secrets.env
-old.env
+.env.secrets
 
 __pycache__/
 
@@ -25,3 +24,6 @@ mlruns/
 db/database_backup.sql
 db/*.dump
 db/*.dbml
+db/*.sql
+
+assets/logos/*

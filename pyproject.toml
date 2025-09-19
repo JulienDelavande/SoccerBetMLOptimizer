@@ -1,0 +1,22 @@
+[project]
+name = "soccerbetmloptimizer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "optibet-lib",
+]
+
+[tool.uv.workspace]
+members = [
+    "data-ingestion",
+    "optibet_lib",
+    "db",
+    "pipelines",
+    "app-backend",
+    "notebooks",
+]
+
+[tool.uv.sources]
+optibet-lib = { workspace = true }

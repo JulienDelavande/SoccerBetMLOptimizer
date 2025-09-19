@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: optimize-auto-regular-10next-matchs-cronjob
+  namespace: optimsportbets
+spec:
+  schedule: "55 11 * * *"  # Exécution tous les jours à 11h55
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+          - name: optimize-auto-regular-10next-matchs
+            image: curlimages/curl:7.85.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                echo "Optimizing -- Strategy: auto_regular-10next-matchs"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "utility_fn": "Kelly", "n_matches": 10, "optim_label": "auto_next10_kelly"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "utility_fn": "Linear", "n_matches": 10, "optim_label": "auto_next10_linear_l10"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "utility_fn": "Log", "n_matches": 10, "optim_label": "auto_next10_log"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "utility_fn": "Exp", "n_matches": 10, "optim_label": "auto_next10_exp"}'
+
+                echo "Optimized bankroll to invest"
+            envFrom:
+              - configMapRef:
+                  name: global-config
+          restartPolicy: OnFailure

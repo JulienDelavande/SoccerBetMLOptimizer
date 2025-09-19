@@ -1,12 +1,6 @@
 import datetime
 from sqlalchemy import text
 import pandas as pd
-import requests
-import time
-
-from optim.functions.player_gain_expected_value import player_gain_expected_value
-from optim.functions.player_gain_variance import player_gain_variance
-
 
 from app._config import DB_TN_OPTIM_RESULTS, PIPELINES_PROTOCOL, PIPELINES_HOST, PIPELINES_PORT, PIPELINES_ENDPOINT_OPTIMIZATION
 from app._config import engine

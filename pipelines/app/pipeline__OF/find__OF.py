@@ -1,68 +1,26 @@
 
 import logging
 import time
-import json
 import datetime
 
 import pandas as pd
 from sqlalchemy import text
 
-from app._config import DB_TN_MODELS_RESULTS, DB_TN_ODDS, DB_TN_OPTIM_RESULTS
+from app._config import DB_TN_OPTIM_RESULTS
 from app._config import engine
 
-from optim.functions.player_utility_kelly_criteria import player_utility_kelly_criteria
-from optim.functions.player_expected_utility_log import player_expected_utility_log
-from optim.functions.player_expected_utility_exp_ce import player_expected_utility_exp_ce
-from optim.functions.player_utility_linear import player_utility_linear
-from optim.resolve.resolve_fik import resolve_fik
+from optibet_lib.optim.functions.player_utility_kelly_criteria import player_utility_kelly_criteria
+from optibet_lib.optim.functions.player_expected_utility_log import player_expected_utility_log
+from optibet_lib.optim.functions.player_expected_utility_exp_ce import player_expected_utility_exp_ce
+from optibet_lib.optim.functions.player_utility_linear import player_utility_linear
+from optibet_lib.optim.resolve.resolve_fik import resolve_fik
 
 
 logger = logging.getLogger("OF")
 
-query_models_results = f"""
-SELECT * FROM {DB_TN_MODELS_RESULTS}
-WHERE date_match > :date_match
-   OR (date_match = :date_match AND time_match >= :time_match)
-  AND model = :model
-"""
-query_odds = f"SELECT * FROM {DB_TN_ODDS} WHERE commence_time >= :commence_time"
-
-mapping_dict = {
-    '1. FC Heidenheim': 'Heidenheim',
-    'AC Milan': 'Milan',
-    'AS Monaco': 'Monaco',
-    'AS Roma': 'Roma',
-    'Atalanta BC': 'Atalanta',
-    'Athletic Bilbao': 'Athletic Club',
-    'Bayer Leverkusen': 'Leverkusen',
-    'Borussia Dortmund': 'Dortmund',
-    'Borussia Monchengladbach': 'Gladbach',
-    'Brighton and Hove Albion': 'Brighton',
-    'CA Osasuna': 'Osasuna',
-    'Eintracht Frankfurt': 'Eint Frankfurt',
-    'FC St. Pauli': 'St. Pauli',
-    'FSV Mainz 05': 'Mainz 05',
-    'Inter Milan': 'Inter',
-    'Manchester United': 'Manchester Utd',
-    'Newcastle United': 'Newcastle Utd',
-    'Nottingham Forest': "Nott'ham Forest",
-    'Paris Saint Germain': 'Paris S-G',
-    'RC Lens': 'Lens',
-    'SC Freiburg': 'Freiburg',
-    'Saint Etienne': 'Saint-Étienne',
-    'TSG Hoffenheim': 'Hoffenheim',
-    'Tottenham Hotspur': 'Tottenham',
-    'VfB Stuttgart': 'Stuttgart',
-    'VfL Bochum': 'Bochum',
-    'VfL Wolfsburg': 'Wolfsburg',
-    'West Ham United': 'West Ham',
-    'Wolverhampton Wanderers': 'Wolves'
-}
-
-
 def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_matches : int = None, same_day: bool = False,
              bookmakers : list[str] =  None, bankroll : float = 1, method='SLSQP', 
-             utility_fn='Kelly', optim_label='manual', l=10) -> datetime.datetime:
+             utility_fn='Kelly', optim_label='manual', l=10, divisor: float = 2.0) -> datetime.datetime:
     """
     Find the optimal fraction to invest for each match based on the model results and the odds.
     Parameters
@@ -99,109 +57,54 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
 
     logging.info(f"--- Starting the OF pipeline")
     # Retrieve data from the database
-    start_data_retrieval = time.time()
-    try:
-        logging.info(f"datetime_first_match: {datetime_first_match}")
-        logging.info(f"model: {model}")
-        logging.info(f"n_matches: {n_matches}")
-        logging.info(f"bookmakers: {bookmakers}")
-        logging.info(f"bankroll: {bankroll}")
-        logging.info(f"method: {method}")
-        datetime_first_match = datetime.datetime.strptime(datetime_first_match, "%Y-%m-%d %H:%M:%S") if datetime_first_match else datetime.datetime.now()
-        date_first_match = datetime_first_match.date()
-        time_first_match = datetime_first_match.time()
-
-        logging.info(f"Retrieving data from the database, table {DB_TN_MODELS_RESULTS}")
-        with engine.connect() as connection:
-            logging.info("Database connection established")
-            logging.info(f"DB_HOST: {engine.url.host}")
-            logging.info(f"DB_PORT: {engine.url.port}")
-            logging.info(f"DB_NAME: {engine.url.database}")
-
-            df_models_results = pd.read_sql(text(query_models_results), connection, params={"date_match": date_first_match, "time_match": time_first_match, "model": model})
-            df_odds = pd.read_sql(text(query_odds), connection, params={"commence_time": datetime_first_match})
-            logger.info(f"Data retrieved in {time.time() - start_data_retrieval:.2f} seconds with {len(df_models_results)} models results and {len(df_odds)} odds entries")
-    except Exception as e:
-        logger.error(f"Error while retrieving data from the database: {e}")
-        raise
-    
-    # Process the data
     start_processing = time.time()
-    logging.info(f"Processing the data")
     try:
-        # Filter the odds data to keep only the last odds before last_odds_datetime for each outcome
-        last_odds_datetime = datetime_first_match
-        df_odds__last_odds = df_odds[df_odds['bookmaker_last_update'] <= last_odds_datetime]
-        df_odds__last_odds = df_odds.sort_values(by=['commence_time', 'match_id', 'bookmaker_key', 'bookmaker_last_update'], ascending=False)
-        df_odds__last_odds = df_odds__last_odds.drop_duplicates(subset=['match_id', 'bookmaker_key', 'outcome_name'], keep='first')
+        if datetime_first_match is None:
+            datetime_first_match = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
-        # Put on the same line the odds for each outcome for each match and each bookmaker
-        df_odds__last_odds__home = df_odds__last_odds[df_odds__last_odds['outcome_name'] == df_odds__last_odds['home_team']]
-        df_odds__last_odds__away = df_odds__last_odds[df_odds__last_odds['outcome_name'] == df_odds__last_odds['away_team']]
-        df_odds__last_odds__draw = df_odds__last_odds[df_odds__last_odds['outcome_name'] == 'Draw']
-        df_odds__last_odds__home = df_odds__last_odds__home.rename(columns={'outcome_price': 'odds_home'})
-        df_odds__last_odds__away = df_odds__last_odds__away.rename(columns={'outcome_price': 'odds_away'})
-        df_odds__last_odds__draw = df_odds__last_odds__draw.rename(columns={'outcome_price': 'odds_draw'})
-        df_odds__last_odds__home['odds_home_datetime'] = df_odds__last_odds__home['bookmaker_last_update']
-        df_odds__last_odds__draw['odds_draw_datetime'] = df_odds__last_odds__draw['bookmaker_last_update']
-        df_odds__last_odds__away['odds_away_datetime'] = df_odds__last_odds__away['bookmaker_last_update']
-        df_odds__last_odds__draw = df_odds__last_odds__draw[['match_id', 'bookmaker_key', 'odds_draw', 'odds_draw_datetime']]
-        df_odds__last_odds__away = df_odds__last_odds__away[['match_id', 'bookmaker_key', 'odds_away', 'odds_away_datetime']]
-        df_odds__last_odds__home_draw = pd.merge(df_odds__last_odds__home, df_odds__last_odds__draw, on=['match_id', 'bookmaker_key'], how='inner')
-        df_odds__last_odds__home_draw_away = pd.merge(df_odds__last_odds__home_draw, df_odds__last_odds__away, on=['match_id', 'bookmaker_key'], how='inner')
-        # keep only the bookmakers in the list
-        if bookmakers:
-            df_odds__last_odds__home_draw_away = df_odds__last_odds__home_draw_away[df_odds__last_odds__home_draw_away['bookmaker_key'].isin(bookmakers)]
-
-        # Keep only the highest odds for each outcome
-        max_odds_df = df_odds__last_odds__home_draw_away.groupby('match_id').agg({
-            'odds_home': 'max',
-            'odds_draw': 'max',
-            'odds_away': 'max'
-        }).reset_index()
-        max_odds_df['bookmaker_home'] = max_odds_df.apply(lambda x: df_odds__last_odds__home_draw_away[(df_odds__last_odds__home_draw_away['match_id'] == x['match_id']) & (df_odds__last_odds__home_draw_away['odds_home'] == x['odds_home'])]['bookmaker_title'].values[0], axis=1)
-        max_odds_df['bookmaker_draw'] = max_odds_df.apply(lambda x: df_odds__last_odds__home_draw_away[(df_odds__last_odds__home_draw_away['match_id'] == x['match_id']) & (df_odds__last_odds__home_draw_away['odds_draw'] == x['odds_draw'])]['bookmaker_title'].values[0], axis=1)
-        max_odds_df['bookmaker_away'] = max_odds_df.apply(lambda x: df_odds__last_odds__home_draw_away[(df_odds__last_odds__home_draw_away['match_id'] == x['match_id']) & (df_odds__last_odds__home_draw_away['odds_away'] == x['odds_away'])]['bookmaker_title'].values[0], axis=1)
-        df_odds__last_odds__home_draw_away__no_bookie_col = df_odds__last_odds__home_draw_away.drop(columns=['bookmaker_title', 'bookmaker_key', 'bookmaker_last_update', 'market_key', 'market_last_update', 'outcome_name', 'odds_home', 'odds_draw', 'odds_away'])
-        max_odds_df_all = max_odds_df.merge(df_odds__last_odds__home_draw_away__no_bookie_col, on='match_id', how='outer')
-        max_odds_df_all = max_odds_df_all.drop_duplicates(subset=['match_id'], keep='first')
-
-        # Keep only the odds for the big 5 leagues
-        sports = ['soccer_fifa_club_world_cup', 'soccer_france_ligue_one', 'soccer_spain_la_liga', 'soccer_italy_serie_a', 'soccer_germany_bundesliga', 'soccer_epl']
-        max_odds_df_all_big5 = max_odds_df_all[max_odds_df_all['sport_key'].isin(sports)]
-        max_odds_df_all_mapped = max_odds_df_all_big5.replace({'home_team': mapping_dict, 'away_team': mapping_dict})
-
-        # Keep only the last inferred results for each game
-        df_models_results_last_infered = df_models_results.sort_values(by=['datetime_inference'], ascending=False).drop_duplicates(subset=['game'], keep='first')
-        max_odds_df_all_mapped['date_match'] = max_odds_df_all_mapped['commence_time'].dt.date
-
-        # Merge the models results with the odds
-        print(f"Number of matches before merging models results and odds: {len(df_models_results_last_infered)}")
-        print(f"Number of matches in odds: {len(max_odds_df_all_mapped)}")
-        print(f"df_models_results_last_infered: \n{df_models_results_last_infered}")
-        print(f"max_odds_df_all_mapped: \n{max_odds_df_all_mapped.columns}")
-        print(f"max_odds_df_all_mapped: \n{max_odds_df_all_mapped[['odds_home', 'odds_draw', 'odds_away', 'commence_time', 'home_team', 'away_team']].sort_values(by=['commence_time'], ascending=True)}")
-        df_models_results_joined = df_models_results_last_infered.merge(max_odds_df_all_mapped, left_on=['home_team', 'away_team', 'date_match'], right_on=['home_team', 'away_team', 'date_match'], how='inner')
-        print(f"Number of matches after merging models results and odds: {len(df_models_results_joined)}")
+        df_models_results_joined = load_data_for_optimization(
+            datetime_first_match=datetime_first_match,
+            model=model,
+            sports_filter=None,
+            bookmakers=bookmakers,
+            same_day=same_day
+        )
+        if df_models_results_joined.empty:
+            logging.warning("No data available for optimization after loading")
+            return datetime.datetime.now(), pd.DataFrame()
 
         # Sort by date start
         df_models_results_joined = df_models_results_joined.sort_values(by=['date_match', 'time_match'], ascending=True)
 
-        # Keep only the matches of the same day
-        if same_day:
-            today = pd.Timestamp.today().date()
-            df_models_results_joined = df_models_results_joined[
-                df_models_results_joined['date_match'].dt.date == today
-            ]
+        # Note: Le filtrage same_day est maintenant géré dans load_data_for_optimization
 
-        
+        # if no match found
+        if df_models_results_joined.empty:
+            logger.warning(f"No matches found for optimization with parameters: model={model}, datetime_first_match={datetime_first_match}, same_day={same_day}, bookmakers={bookmakers}")
+            return datetime.datetime.now(), pd.DataFrame()
+
         # Keep only the n_matches first matches
         if n_matches:
             df_models_results_joined = df_models_results_joined.head(n_matches)
+            logger.info(f"Limited to first {n_matches} matches")
+        
+        logger.info(f"Number of matches to optimize: {df_models_results_joined.shape[0]}")
+
+        # Vérification des colonnes nécessaires
+        required_cols = ['odds_home', 'odds_draw', 'odds_away', 'prob_home_win', 'prob_draw', 'prob_away_win']
+        missing_cols = [col for col in required_cols if col not in df_models_results_joined.columns]
+        if missing_cols:
+            logger.error(f"Missing required columns: {missing_cols}")
+            raise ValueError(f"Missing required columns: {missing_cols}")
 
         # Compute the numpy arrays of odds (o) and probabilities (r)
         o = df_models_results_joined[['odds_home', 'odds_draw', 'odds_away']].to_numpy()
         r = df_models_results_joined[['prob_home_win', 'prob_draw', 'prob_away_win']].to_numpy()
+        
+        # Vérification des valeurs nulles ou invalides
+        if pd.isna(o).any() or pd.isna(r).any():
+            logger.error("Found NaN values in odds or probabilities")
+            raise ValueError("Found NaN values in odds or probabilities")
 
         logger.info(f"Data processed in {time.time() - start_processing:.2f} seconds")
 
@@ -219,7 +122,7 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
             obectif_kelly_fn = lambda f, o, r: player_utility_kelly_criteria(f, o, r, bankroll)
             result_kelly = resolve_fik(o, r, obectif_kelly_fn, logger=logger, method=method)
             result_kelly[result_kelly < 1e-10] = 0
-            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_kelly
+            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_kelly / divisor
             df_models_results_joined['utility_fn'] = utility_fn
             datetime_optim = datetime.datetime.now()
             df_models_results_joined['datetime_optim'] = datetime_optim
@@ -230,7 +133,7 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
             obectif_log_fn = lambda  f, o, t : - player_expected_utility_log(f, o, t, B=bankroll)
             result_log = resolve_fik(o, r, obectif_log_fn, logger=logger, method=method)
             result_log[result_log < 1e-10] = 0
-            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_log
+            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_log / divisor
             df_models_results_joined['utility_fn'] = utility_fn
             datetime_optim = datetime.datetime.now()
             df_models_results_joined['datetime_optim'] = datetime_optim
@@ -241,7 +144,7 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
             obectif_exp_fn = lambda  f, o, t : - player_expected_utility_exp_ce(f, o, t, B=bankroll)
             result_exp = resolve_fik(o, r, obectif_exp_fn, logger=logger, method=method)
             result_exp[result_exp < 1e-10] = 0
-            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_exp
+            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_exp / divisor
             df_models_results_joined['utility_fn'] = utility_fn
             datetime_optim = datetime.datetime.now()
             df_models_results_joined['datetime_optim'] = datetime_optim
@@ -252,7 +155,7 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
             obectif_linear_fn = lambda  f, o, t : player_utility_linear(f, o, t, B=bankroll, l=l)
             result_linear = resolve_fik(o, r, obectif_linear_fn, logger=logger, method=method)
             result_linear[result_linear < 1e-10] = 0
-            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_linear
+            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_linear / divisor
             df_models_results_joined['utility_fn'] = utility_fn
             datetime_optim = datetime.datetime.now()
             df_models_results_joined['datetime_optim'] = datetime_optim
@@ -273,16 +176,193 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
                 'match_id', 'sport_key', 'game', 'date_match', 'time_match', 'home_team', 'away_team', 
                 'model','datetime_inference', 'prob_home_win', 'prob_draw', 'prob_away_win',
                 'odds_home', 'odds_draw', 'odds_away', 
-                'bookmaker_home', 'bookmaker_draw', 'bookmaker_away', 'f_home', 'f_draw', 'f_away', 'datetime_optim', 'utility_fn',
+                'bookmaker_home', 'bookmaker_draw', 'bookmaker_away', 'bookmaker_home_key', 'bookmaker_draw_key', 'bookmaker_away_key',
+                'f_home', 'f_draw', 'f_away', 'datetime_optim', 'utility_fn',
                  'odds_home_datetime', 'odds_draw_datetime', 'odds_away_datetime', 'optim_label']]
             df_models_results_joined_cols.to_sql(DB_TN_OPTIM_RESULTS, conn, if_exists='append', index=False)
         logger.info(f"Data exported in {time.time() - start_export:.2f} seconds")
     except Exception as e:
         logger.error(f"Error while exporting the data: {e}")
         raise
+
+    logging.info(f"--- OF pipeline completed in {time.time() - start_processing:.2f} seconds ---")
     
     return datetime_optim, df_models_results_joined_cols
+
+def load_data_for_optimization(datetime_first_match: datetime.datetime,
+                               model: str,
+                               sports_filter: list[str],
+                               bookmakers: list[str] = None, same_day: bool = False) -> pd.DataFrame:
+    with engine.connect() as conn:
+
+        conn.execute(text("REFRESH MATERIALIZED VIEW mv_models_results_last_inferred;"))
+        conn.execute(text("REFRESH MATERIALIZED VIEW mv_soccer_odds_normalized;"))
+        conn.execute(text("REFRESH MATERIALIZED VIEW mv_soccer_odds_last_normalized;"))
+        conn.execute(text("REFRESH MATERIALIZED VIEW mv_models_results_last_inferred;"))
+
+        if same_day:
+            datetime_first_match = datetime_first_match.replace(hour=0, minute=0, second=0, microsecond=0)
+            logging.info(f"Filtering matches for the same day: {datetime_first_match.date()}")
+            datetime_last_match = datetime_first_match + pd.Timedelta(days=1)
+            logging.info(f"Filtering matches until: {datetime_last_match}")
+            
+            # Query pour les résultats du modèle - jour même uniquement
+            df_models_results = pd.read_sql(
+                text("""
+                    SELECT *
+                    FROM mv_models_results_last_inferred
+                    WHERE model = :model
+                      AND date_match = :date_match
+                """),
+                conn,
+                params={
+                    "model": model,
+                    "date_match": datetime_first_match.date()
+                }
+            )
+
+            # Query pour les cotes - jour même uniquement
+            df_odds = pd.read_sql(
+                text("""
+                    SELECT *
+                    FROM mv_soccer_odds_last_normalized
+                    WHERE commence_time >= :datetime_first_match
+                      AND commence_time < :datetime_last_match
+                """),
+                conn,
+                params={
+                    "datetime_first_match": datetime_first_match,
+                    "datetime_last_match": datetime_last_match
+                }
+            )
+        else:
+            datetime_last_match = None
+            
+            # Query pour les résultats du modèle - à partir de la date donnée
+            df_models_results = pd.read_sql(
+                text("""
+                    SELECT *
+                    FROM mv_models_results_last_inferred
+                    WHERE model = :model
+                      AND date_match >= :date_match
+                """),
+                conn,
+                params={
+                    "model": model,
+                    "date_match": datetime_first_match.date()
+                }
+            )
+
+            # Query pour les cotes - à partir de la datetime donnée
+            df_odds = pd.read_sql(
+                text("""
+                    SELECT *
+                    FROM mv_soccer_odds_last_normalized
+                    WHERE commence_time >= :datetime_first_match
+                """),
+                conn,
+                params={"datetime_first_match": datetime_first_match}
+            )
     
+    # Check si les datasets de base sont vides
+    if df_models_results.empty:
+        logging.warning(f"No model results found for model '{model}' and date >= {datetime_first_match.date()}")
+        return pd.DataFrame()
+    
+    if df_odds.empty:
+        logging.warning(f"No odds found for commence_time >= {datetime_first_match}")
+        return pd.DataFrame()
+    
+    logging.info(f"Found {len(df_models_results)} model results and {len(df_odds)} odds records")
+
+    if bookmakers:
+        df_odds = df_odds[df_odds['bookmaker_key'].isin(bookmakers)]
+        logging.info(f"After bookmaker filtering: {len(df_odds)} odds records")
+
+    if sports_filter:
+        df_odds = df_odds[df_odds['sport_key'].isin(sports_filter)]
+        logging.info(f"After sports filtering: {len(df_odds)} odds records")
+    
+    # Check si df_odds est vide après les filtres
+    if df_odds.empty:
+        logging.warning("No odds remaining after applying bookmaker and/or sports filters")
+        return pd.DataFrame()
+
+    # Pivot home/draw/away
+    df_home = df_odds[df_odds['outcome_name'] == df_odds['home_team']].copy()
+    df_draw = df_odds[df_odds['outcome_name'] == 'Draw'].copy()
+    df_away = df_odds[df_odds['outcome_name'] == df_odds['away_team']].copy()
+
+    # Check si les DataFrames pivotés sont vides
+    if df_home.empty or df_draw.empty or df_away.empty:
+        logging.warning(f"Missing outcome data after pivot: home={len(df_home)}, draw={len(df_draw)}, away={len(df_away)}")
+        return pd.DataFrame()
+
+    df_home = df_home.rename(columns={'outcome_price': 'odds_home', 'bookmaker_title': 'bookmaker_home', 'bookmaker_last_update': 'odds_home_datetime'})
+    df_draw = df_draw.rename(columns={'outcome_price': 'odds_draw', 'bookmaker_title': 'bookmaker_draw', 'bookmaker_last_update': 'odds_draw_datetime'})
+    df_away = df_away.rename(columns={'outcome_price': 'odds_away', 'bookmaker_title': 'bookmaker_away', 'bookmaker_last_update': 'odds_away_datetime'})
+    df_home['bookmaker_home_key'] = df_home['bookmaker_key']
+    df_draw['bookmaker_draw_key'] = df_draw['bookmaker_key']
+    df_away['bookmaker_away_key'] = df_away['bookmaker_key']
+
+    df_home = df_home[['match_id', 'bookmaker_key', 'odds_home', 'odds_home_datetime', 'bookmaker_home', 'bookmaker_home_key']]
+    df_draw = df_draw[['match_id', 'bookmaker_key', 'odds_draw', 'odds_draw_datetime', 'bookmaker_draw', 'bookmaker_draw_key']]
+    df_away = df_away[['match_id', 'bookmaker_key', 'odds_away', 'odds_away_datetime', 'bookmaker_away', 'bookmaker_away_key']]
+
+    df_pivot = df_home.merge(df_draw, on=['match_id', 'bookmaker_key']).merge(df_away, on=['match_id', 'bookmaker_key'])
+    
+    # Check si le pivot est vide
+    if df_pivot.empty:
+        logging.warning("No matches found with complete home/draw/away odds")
+        return pd.DataFrame()
+    
+    logging.info(f"Found {len(df_pivot)} complete odds combinations")
+
+    def get_best(df, col):
+        return df.loc[df[col].idxmax()]
+
+    best_odds = df_pivot.groupby('match_id').apply(lambda g: pd.Series({
+        'odds_home': g['odds_home'].max(),
+        'odds_draw': g['odds_draw'].max(),
+        'odds_away': g['odds_away'].max(),
+        'bookmaker_home': get_best(g, 'odds_home')['bookmaker_home'],
+        'bookmaker_draw': get_best(g, 'odds_draw')['bookmaker_draw'],
+        'bookmaker_away': get_best(g, 'odds_away')['bookmaker_away'],
+        'bookmaker_home_key': get_best(g, 'odds_home')['bookmaker_home_key'],
+        'bookmaker_draw_key': get_best(g, 'odds_draw')['bookmaker_draw_key'],
+        'bookmaker_away_key': get_best(g, 'odds_away')['bookmaker_away_key'],
+        'odds_home_datetime': get_best(g, 'odds_home')['odds_home_datetime'],
+        'odds_draw_datetime': get_best(g, 'odds_draw')['odds_draw_datetime'],
+        'odds_away_datetime': get_best(g, 'odds_away')['odds_away_datetime'],
+    })).reset_index()
+    
+    # Check si best_odds est vide
+    if best_odds.empty:
+        logging.warning("No best odds could be computed")
+        return pd.DataFrame()
+
+    df_match_info = df_odds.drop_duplicates(subset='match_id')[
+        ['match_id', 'home_team_canonical', 'away_team_canonical', 'commence_time', 'sport_key']
+    ]
+    df_odds_final = best_odds.merge(df_match_info, on='match_id', how='left')
+    df_odds_final['date_match'] = df_odds_final['commence_time'].dt.date
+
+    df_final = df_models_results.merge(
+        df_odds_final,
+        left_on=['home_team', 'away_team', 'date_match'],
+        right_on=['home_team_canonical', 'away_team_canonical', 'date_match'],
+        how='inner'
+    )
+    
+    # Check final
+    if df_final.empty:
+        logging.warning("No matches found after joining model results with odds data")
+        return pd.DataFrame()
+    
+    logging.info(f"Final dataset contains {len(df_final)} matches ready for optimization")
+
+    return df_final
+
 
 if __name__ == '__main__':
     bookmaker_keys = [
@@ -314,10 +394,11 @@ if __name__ == '__main__':
     "betclic"
         ]
     
-    n_matches = 10
+    n_matches = 100
     logging.info("-- Starting the OF pipeline --")
-    datetime_first_match = '2025-07-05 17:00:00'
+    datetime_first_match = '2025-09-16 00:00:00'
+    datetime_first_match = pd.to_datetime(datetime_first_match)
     model =  'RSF_PR_LR'
-    find__of(datetime_first_match=datetime_first_match, model=model, n_matches=n_matches, bookmakers=bookmaker_keys)
+    find__of(datetime_first_match=datetime_first_match, model=model, n_matches=n_matches, bookmakers=bookmaker_keys, same_day=False)
     logging.info("-- Pipeline completed --")
     print("Pipeline completed")

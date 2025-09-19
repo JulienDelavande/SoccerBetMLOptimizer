@@ -1,3 +1,15 @@
+# migrate
+uv run alembic revision --autogenerate -m "msg"
+
+# upgrade
+uv run alembic upgrade head
+
+# downgrade
+uv run alembic downgrade -1
+
+# see current version
+uv run alembic current
+
 # Print all tables in the database
 \dt
 
