@@ -27,3 +27,6 @@ db/*.dbml
 db/*.sql
 
 assets/logos/*
+
+.portforward_pid
+.DS_Store

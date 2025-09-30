@@ -20,7 +20,7 @@ spec:
 
                 curl -X POST "${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_SOFIFA_TEAMS_STATS}" \
                   -H "accept: application/json" -H "Content-Type: application/json" \
-                  -d '{"use_cache": true, "scrap_all": true, "run_in_background": false}'
+                  -d '{"use_cache": false, "scrap_all": false, "run_in_background": false}'
 
                 echo "Ingested SoFIFA team stats data"
             envFrom:

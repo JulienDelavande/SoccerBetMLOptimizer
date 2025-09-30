@@ -210,7 +210,7 @@ class ErrorResponse(APIResponse):
     
     class Config:
         """Pydantic configuration."""
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "status": "error",
                 "message": "Invalid request parameters",
@@ -222,3 +222,10 @@ class ErrorResponse(APIResponse):
                 }
             }
         }
+
+
+class BotStrategy(BaseModel):
+    """Model for bot strategy with key and display name."""
+    
+    key: str = Field(description="Strategy key/identifier")
+    name: str = Field(description="Human-readable strategy name")

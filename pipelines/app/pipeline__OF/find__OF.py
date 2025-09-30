@@ -13,6 +13,7 @@ from optibet_lib.optim.functions.player_utility_kelly_criteria import player_uti
 from optibet_lib.optim.functions.player_expected_utility_log import player_expected_utility_log
 from optibet_lib.optim.functions.player_expected_utility_exp_ce import player_expected_utility_exp_ce
 from optibet_lib.optim.functions.player_utility_linear import player_utility_linear
+from optibet_lib.optim.functions.player_utility_crra_power import player_utility_crra_power
 from optibet_lib.optim.resolve.resolve_fik import resolve_fik
 
 
@@ -130,7 +131,7 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
             
         # Log
         if utility_fn == 'Log':
-            obectif_log_fn = lambda  f, o, t : - player_expected_utility_log(f, o, t, B=bankroll)
+            obectif_log_fn = lambda  f, o, t : player_expected_utility_log(f, o, t, B=bankroll)
             result_log = resolve_fik(o, r, obectif_log_fn, logger=logger, method=method)
             result_log[result_log < 1e-10] = 0
             df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_log / divisor
@@ -141,7 +142,7 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
             
         # Exponential
         if utility_fn == 'Exp':
-            obectif_exp_fn = lambda  f, o, t : - player_expected_utility_exp_ce(f, o, t, B=bankroll)
+            obectif_exp_fn = lambda  f, o, t : player_expected_utility_exp_ce(f, o, t, B=bankroll, alpha=l)
             result_exp = resolve_fik(o, r, obectif_exp_fn, logger=logger, method=method)
             result_exp[result_exp < 1e-10] = 0
             df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_exp / divisor
@@ -160,6 +161,16 @@ def find__of(datetime_first_match: str = None, model: str = 'RSF_PR_LR', n_match
             datetime_optim = datetime.datetime.now()
             df_models_results_joined['datetime_optim'] = datetime_optim
             logger.info(f"Linear computed in {time.time() - start_invest:.2f} seconds")
+
+        if utility_fn == 'CRRA':
+            obectif_crra_fn = lambda f, o, t: player_utility_crra_power(f, o, t, B=bankroll, gamma=l)
+            result_crra = resolve_fik(o, r, obectif_crra_fn, logger=logger, method=method)
+            result_crra[result_crra < 1e-10] = 0
+            df_models_results_joined[['f_home', 'f_draw', 'f_away']] = result_crra / divisor
+            df_models_results_joined['utility_fn'] = utility_fn
+            datetime_optim = datetime.datetime.now()
+            df_models_results_joined['datetime_optim'] = datetime_optim
+            logger.info(f"CRRA computed in {time.time() - start_invest:.2f} seconds")
             
     except Exception as e:
         logger.error(f"Error while computing the bankroll fraction to invest: {e}")
@@ -278,6 +289,10 @@ def load_data_for_optimization(datetime_first_match: datetime.datetime,
     if bookmakers:
         df_odds = df_odds[df_odds['bookmaker_key'].isin(bookmakers)]
         logging.info(f"After bookmaker filtering: {len(df_odds)} odds records")
+
+    # remove matchbook
+    df_odds = df_odds[df_odds['bookmaker_key'] != 'matchbook']
+    logging.info(f"After removing 'matchbook': {len(df_odds)} odds records")
 
     if sports_filter:
         df_odds = df_odds[df_odds['sport_key'].isin(sports_filter)]

@@ -80,7 +80,7 @@ push:
 deploy:
 	kubectl create namespace $(NAMESPACE) || true
 	helm upgrade --install optimsportbets ./k8s/optimsportbets --namespace $(NAMESPACE) --set containerRegistry.registry=$(CONTAINER_REGISTRY) --set services.dataIngestion.tag=$(TAG) \
-		--set services.pipelines.tag=$(TAG) --set services.appBackend.tag=$(TAG) --set services.appFrontend.tag=$(TAG)
+		--set services.pipelines.tag=$(TAG) --set services.appBackend.tag=$(TAG) --set services.appFrontend.tag=0.2.28
 	kubectl apply -n $(NAMESPACE) -f ./k8s/cron-jobs
 
 to-prod:

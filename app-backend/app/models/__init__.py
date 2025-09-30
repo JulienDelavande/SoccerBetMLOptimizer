@@ -7,6 +7,7 @@ from .requests import (
     OptimizationRequest,
     PerformanceRequest,
     PerformanceGainsRequest,
+    BotStrategyEnum,
 )
 
 from .responses import (
@@ -22,6 +23,7 @@ from .responses import (
     PerformanceGainsResponse,
     HealthCheckResponse,
     ErrorResponse,
+    BotStrategy,
 )
 
 __all__ = [
@@ -29,6 +31,7 @@ __all__ = [
     "BookmakerEnum",
     "OptimMethodEnum", 
     "UtilityFunctionEnum",
+    "BotStrategyEnum",
     
     # Request models
     "OptimizationRequest",
@@ -48,4 +51,5 @@ __all__ = [
     "PerformanceGainsResponse",
     "HealthCheckResponse",
     "ErrorResponse",
+    "BotStrategy",
 ]

@@ -37,4 +37,4 @@ def player_expected_utility_exp_ce(f, o, r, B=1, alpha=1):
     # Calculate the Certainty Equivalent
     certainty_equivalent = B * (1 - F_total) - (1 / alpha) * sum_log_terms
     
-    return certainty_equivalent
+    return -certainty_equivalent

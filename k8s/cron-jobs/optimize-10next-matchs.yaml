@@ -34,6 +34,263 @@ spec:
                   -H "accept: application/json" -H "Content-Type: application/json" \
                   -d '{"bankroll": 1, "method": "SLSQP", "utility_fn": "Exp", "n_matches": 10, "optim_label": "auto_next10_exp"}'
 
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "utility_fn": "CRRA", "n_matches": 10, "optim_label": "auto_next10_crra_g05"}'
+
+
+                echo "==> Bookmakers FR"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Kelly", "optim_label": "auto_next10_kelly_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Linear", "optim_label": "auto_next10_linear_l10_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Log", "optim_label": "auto_next10_log_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Exp", "optim_label": "auto_next10_exp_fr"}'
+
+
+                echo "==> 1xBet"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Kelly", "optim_label": "auto_next10_kelly_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Linear", "optim_label": "auto_next10_linear_l10_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Log", "optim_label": "auto_next10_log_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Exp", "optim_label": "auto_next10_exp_1xbet"}'
+
+
+                echo "==> CRRA risk aversions"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "CRRA", "l": 0.2, "optim_label": "auto_next10_crra_g02"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "CRRA", "l": 0.4, "optim_label": "auto_next10_crra_g04"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "CRRA", "l": 0.6, "optim_label": "auto_next10_crra_g06"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "CRRA", "l": 0.8, "optim_label": "auto_next10_crra_g08"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "CRRA", "l": 1.0, "optim_label": "auto_next10_crra_g1"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "CRRA", "l": 2.0, "optim_label": "auto_next10_crra_g2"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "CRRA", "l": 5.0, "optim_label": "auto_next10_crra_g5"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "CRRA", "l": 10.0, "optim_label": "auto_next10_crra_g10"}'
+
+
+                echo "==> Linear risk aversions"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Linear", "l": 1, "optim_label": "auto_next10_linear_l1"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Linear", "l": 2, "optim_label": "auto_next10_linear_l2"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Linear", "l": 4, "optim_label": "auto_next10_linear_l4"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Linear", "l": 6, "optim_label": "auto_next10_linear_l6"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Linear", "l": 8, "optim_label": "auto_next10_linear_l8"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Linear", "l": 15, "optim_label": "auto_next10_linear_l15"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Linear", "l": 20, "optim_label": "auto_next10_linear_l20"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Linear", "l": 50, "optim_label": "auto_next10_linear_l50"}'
+
+
+                echo "==> Exp risk aversions"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Exp", "l": 0.2, "optim_label": "auto_next10_exp_a02"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Exp", "l": 0.4, "optim_label": "auto_next10_exp_a04"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Exp", "l": 0.6, "optim_label": "auto_next10_exp_a06"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Exp", "l": 0.8, "optim_label": "auto_next10_exp_a08"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Exp", "l": 2, "optim_label": "auto_next10_exp_a2"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Exp", "l": 5, "optim_label": "auto_next10_exp_a5"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "utility_fn": "Exp", "l": 10, "optim_label": "auto_next10_exp_a10"}'
+
+
+                echo "==> CRRA risk aversions - FR bookmakers"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "CRRA", "l": 0.2, "optim_label": "auto_next10_crra_g02_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "CRRA", "l": 0.5, "optim_label": "auto_next10_crra_g05_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "CRRA", "l": 0.8, "optim_label": "auto_next10_crra_g08_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "CRRA", "l": 1.0, "optim_label": "auto_next10_crra_g1_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "CRRA", "l": 2.0, "optim_label": "auto_next10_crra_g2_fr"}'
+
+
+                echo "==> CRRA risk aversions - 1xBet"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "CRRA", "l": 0.2, "optim_label": "auto_next10_crra_g02_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "CRRA", "l": 0.5, "optim_label": "auto_next10_crra_g05_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "CRRA", "l": 0.8, "optim_label": "auto_next10_crra_g08_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "CRRA", "l": 1.0, "optim_label": "auto_next10_crra_g1_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "CRRA", "l": 2.0, "optim_label": "auto_next10_crra_g2_1xbet"}'
+
+
+                echo "==> Linear risk aversions - FR bookmakers"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Linear", "l": 2, "optim_label": "auto_next10_linear_l2_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Linear", "l": 5, "optim_label": "auto_next10_linear_l5_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Linear", "l": 20, "optim_label": "auto_next10_linear_l20_fr"}'
+
+
+                echo "==> Linear risk aversions - 1xBet"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Linear", "l": 2, "optim_label": "auto_next10_linear_l2_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Linear", "l": 5, "optim_label": "auto_next10_linear_l5_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Linear", "l": 20, "optim_label": "auto_next10_linear_l20_1xbet"}'
+
+
+                echo "==> Exp risk aversions - FR bookmakers"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Exp", "l": 0.5, "optim_label": "auto_next10_exp_a05_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Exp", "l": 1.0, "optim_label": "auto_next10_exp_a1_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Exp", "l": 2, "optim_label": "auto_next10_exp_a2_fr"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["betclic_fr", "unibet_fr", "winamax_fr", "parionssport_fr", "onexbet", "betsson"], "utility_fn": "Exp", "l": 5, "optim_label": "auto_next10_exp_a5_fr"}'
+
+
+                echo "==> Exp risk aversions - 1xBet"
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Exp", "l": 0.5, "optim_label": "auto_next10_exp_a05_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Exp", "l": 1.0, "optim_label": "auto_next10_exp_a1_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Exp", "l": 2, "optim_label": "auto_next10_exp_a2_1xbet"}'
+
+                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_OPTIMIZATION}" \
+                  -H "accept: application/json" -H "Content-Type: application/json" \
+                  -d '{"bankroll": 1, "method": "SLSQP", "n_matches": 10, "bookmakers": ["onexbet"], "utility_fn": "Exp", "l": 5, "optim_label": "auto_next10_exp_a5_1xbet"}'
+
                 echo "Optimized bankroll to invest"
             envFrom:
               - configMapRef:

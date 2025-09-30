@@ -22,7 +22,7 @@ spec:
                   -H "accept: application/json" -H "Content-Type: application/json" \
                   -d '{
                         "get_current_season_only": true,
-                        "use_cache": true,
+                        "use_cache": false,
                         "cutoff_days": 7,
                         "run_in_background": false
                       }'

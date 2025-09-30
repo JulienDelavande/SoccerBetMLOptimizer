@@ -45,4 +45,4 @@ def player_expected_utility_log(f, o, r, B=1, epsilon=1e-8):
     # Final expected log utility (including current bankroll log)
     total_expected_log_utility = np.log(B) + expected_log_utility
     
-    return total_expected_log_utility
+    return -total_expected_log_utility

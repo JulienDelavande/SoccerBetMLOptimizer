@@ -11,6 +11,7 @@ from typing import List, Annotated
 import datetime
 
 from fastapi import FastAPI, HTTPException, status, Body, Query
+from fastapi.middleware.cors import CORSMiddleware
 import httpx
 
 from app._config import PIPELINES_PROTOCOL, PIPELINES_HOST, PIPELINES_PORT, PIPELINES_ENDPOINT_OPTIMIZATION
@@ -22,7 +23,9 @@ from app.models import (
     PerformanceGainsRequest,
     PerformanceGainsResponse,
     HealthCheckResponse,
-    BookmakerEnum
+    BookmakerEnum,
+    BotStrategyEnum,
+    BotStrategy
 )
 from app.utils import (
     timing_decorator,
@@ -39,6 +42,14 @@ app = FastAPI(
     title="Soccer Bet ML Optimizer API",
     version="1.0.0",
     description="A comprehensive API for soccer betting optimization using machine learning algorithms."
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8081", "https://optibet.delavande.fr"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app_start_time = time.time()
@@ -134,7 +145,7 @@ async def fetch_performance(
         )
         
         # Use utility function to format performance data
-        matches, metrics, period_info = format_performance_data(results_df, request.bankroll, request.divisor)
+        matches, metrics, period_info = format_performance_data(results_df, request.bankroll, request.divisor, request.bet_precision)
 
         # Add user-provided period info
         period_info.update({
@@ -214,6 +225,23 @@ async def fetch_performance_gains(
 async def list_bookmakers() -> List[str]:
     """Get list of all supported bookmakers."""
     return [bookmaker.value for bookmaker in BookmakerEnum]
+
+@app.get(
+    "/bot_strategies",
+    response_model=List[BotStrategy],
+    tags=["utils"],
+    summary="List Bot Strategies",
+    description="Get list of all available bot strategies with keys and display names"
+)
+async def list_bot_strategies() -> List[BotStrategy]:
+    """Get list of all available bot strategies with keys and display names."""
+    return [
+        BotStrategy(
+            key=strategy.key,
+            name=strategy.display_name
+        )
+        for strategy in BotStrategyEnum
+    ]
 
 
 if __name__ == "__main__":

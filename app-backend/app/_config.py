@@ -47,7 +47,6 @@ for var in ENV_VARS_REQUIRED:
 
 # database connection
 DB_URL = f'{DB_TYPE}+{DB_PILOT}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-print(f'DB_URL = {DB_URL}')
 engine = create_engine(DB_URL)
 
 # logger

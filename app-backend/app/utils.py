@@ -51,13 +51,15 @@ def dataframe_to_dict_safe(df: pd.DataFrame) -> List[Dict[str, Any]]:
         return []
 
 
-def format_performance_data(results_df: pd.DataFrame, bankroll: float = 100.0, divisor: float = 2.0) -> tuple[list, dict, dict]:
+def format_performance_data(results_df: pd.DataFrame, bankroll: float = 100.0, divisor: float = 2.0, bet_precision: float = 0.01) -> tuple[list, dict, dict]:
     """
     Format performance data from DataFrame into structured matches, metrics, and period info.
     
     Args:
         results_df: DataFrame containing performance data
         bankroll: Bankroll amount used for stake calculations
+        divisor: Divisor for fraction calculations
+        bet_precision: Precision for rounding bet amounts (power of 10)
         
     Returns:
         tuple: (matches_list, metrics_dict, period_info_dict)
@@ -76,9 +78,14 @@ def format_performance_data(results_df: pd.DataFrame, bankroll: float = 100.0, d
     
     for _, row in results_df.iterrows():
         # Calculate stakes based on fractions
-        stake_home = (row.get('f_home', 0) or 0) * bankroll / divisor
-        stake_draw = (row.get('f_draw', 0) or 0) * bankroll / divisor
-        stake_away = (row.get('f_away', 0) or 0) * bankroll / divisor
+        stake_home_raw = (row.get('f_home', 0) or 0) * bankroll / divisor
+        stake_draw_raw = (row.get('f_draw', 0) or 0) * bankroll / divisor
+        stake_away_raw = (row.get('f_away', 0) or 0) * bankroll / divisor
+        
+        # Round stakes to specified precision
+        stake_home = round(stake_home_raw / bet_precision) * bet_precision
+        stake_draw = round(stake_draw_raw / bet_precision) * bet_precision
+        stake_away = round(stake_away_raw / bet_precision) * bet_precision
         match_total_stake = stake_home + stake_draw + stake_away
         
         # Determine actual result

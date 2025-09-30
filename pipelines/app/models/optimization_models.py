@@ -28,7 +28,7 @@ class BookmakerEnum(str, Enum):
     LIVESCOREBET = "livescorebet"
     LIVESCOREBET_EU = "livescorebet_eu"
     MARATHONBET = "marathonbet"
-    MATCHBOOK = "matchbook"
+    # MATCHBOOK = "matchbook"
     MYBOOKIEAG = "mybookieag"
     NORDICBET = "nordicbet"
     ONEXBET = "onexbet"
@@ -64,6 +64,7 @@ class UtilityFunctionEnum(str, Enum):
     LINEAR = "Linear"
     EXP = "Exp"
     LOG = "Log"
+    CRRA = "CRRA"
 
 
 class OptimizationRequest(BaseModel):
@@ -107,15 +108,13 @@ class OptimizationRequest(BaseModel):
         max_length=50,
         description="Label for the optimization run"
     )
-    l: int = Field(
+    l: float = Field(
         10,
-        ge=1,
-        le=100,
         description="Parameter l for utility function Linear (only used if utility_fn is Linear, variance constraint)"
     )
     divisor: float = Field(
         2.0,
-        ge=1.0,
+        ge=0,
         description="Divisor for utility function adjustments"
     )
 

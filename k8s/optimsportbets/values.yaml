@@ -84,15 +84,7 @@ ingress:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.tls.certresolver: myresolver
-  hosts:
-    - host: optibet.delavande.fr
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - secretName: optibet-cert
-      hosts:
-        - optibet.delavande.fr
 
+  frontendHost: optibet.delavande.fr
   backendHost: optibet.api.delavande.fr
   cdnHost: optibet.cdn.delavande.fr
