@@ -18,6 +18,13 @@ spec:
         image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.dataIngestion.image }}:{{ .Values.services.dataIngestion.tag }}"
         ports:
         - containerPort: {{ .Values.services.dataIngestion.port }}
+        resources:
+          requests:
+            cpu: {{ .Values.services.dataIngestion.resources.requests.cpu | quote }}
+            memory: {{ .Values.services.dataIngestion.resources.requests.memory | quote }}
+          limits:
+            cpu: {{ .Values.services.dataIngestion.resources.limits.cpu | quote }}
+            memory: {{ .Values.services.dataIngestion.resources.limits.memory | quote }}
         env:
         {{ include "inject_db_password" . | nindent 10 }}
         {{ include "inject_api_key" . | nindent 10 }} 

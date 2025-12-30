@@ -36,6 +36,13 @@ services:
     tag: 0.2.0
     port: "8100"
     replica: 1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "1"
+        memory: "512Mi"
     storage:
       size: 5Gi
       accessMode: ReadWriteOnce
