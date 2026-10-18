@@ -90,8 +90,10 @@ ingress:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.tls.certresolver: myresolver
 
   frontendHost: optibet.delavande.fr
+  # Backend and CDN are only reached in-cluster; keep them off the internet.
+  exposeBackend: false
   backendHost: optibet.api.delavande.fr
+  exposeCdn: false
   cdnHost: optibet.cdn.delavande.fr
