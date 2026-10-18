@@ -1,36 +1,11 @@
 import pandas as pd
-from optibet_lib.feature_eng.team_stats import goal_stats, elo_scores, glicko2_scores, trueskill_scores
+from optibet_lib.feature_eng.team_stats import goal_stats, elo_scores, glicko2_scores, trueskill_scores, form_stats
 
 def add_signals(fbref_df_date_filtered_concat_no_nan, 
                 home_team_id_col='home_team', away_team_id_col='away_team',
                 home_team_goal_col='home_g', away_team_goal_col='away_g',
                 datetime_stop=None, datetime_col='datetime', 
-                X_cat=['home_league',
-                    'home_build_up_speed',
-                    'home_build_up_dribbling',
-                    'home_build_up_passing',
-                    'home_build_up_positioning',
-                    'home_chance_creation_crossing',
-                    'home_chance_creation_passing',
-                    'home_chance_creation_shooting',
-                    'home_chance_creation_positioning',
-                    'home_defence_aggression',
-                    'home_defence_pressure',
-                    'home_defence_team_width',
-                    'home_defence_defender_line',
-                    'away_league',
-                    'away_build_up_speed',
-                    'away_build_up_dribbling',
-                    'away_build_up_passing',
-                    'away_build_up_positioning',
-                    'away_chance_creation_crossing',
-                    'away_chance_creation_passing',
-                    'away_chance_creation_shooting',
-                    'away_chance_creation_positioning',
-                    'away_defence_aggression',
-                    'away_defence_pressure',
-                    'away_defence_team_width',
-                    'away_defence_defender_line',]
+                X_cat=(),
                 ):
     """
     Add the signals to the dataset.
@@ -62,15 +37,25 @@ def add_signals(fbref_df_date_filtered_concat_no_nan,
         The dataset with the signals.
     """
     
+    # Ratings are sequential: process matches in chronological order (the SQL view has none).
+    fbref_df_date_filtered_concat_no_nan = fbref_df_date_filtered_concat_no_nan.sort_values(datetime_col, kind='stable').copy()
+
     elo_scores(fbref_df_date_filtered_concat_no_nan, home_team_id_col=home_team_id_col, away_team_id_col=away_team_id_col, 
                home_team_goal_col=home_team_goal_col, away_team_goal_col=away_team_goal_col, datetime_stop=datetime_stop, datetime_col=datetime_col)
+    fbref_df_date_filtered_concat_no_nan['elo_diff_before'] = (
+        fbref_df_date_filtered_concat_no_nan['elo_home_before'] - fbref_df_date_filtered_concat_no_nan['elo_away_before']
+    )
     goal_stats(fbref_df_date_filtered_concat_no_nan, home_team_id_col=home_team_id_col, away_team_id_col=away_team_id_col, 
                home_team_goal_col=home_team_goal_col, away_team_goal_col=away_team_goal_col, datetime_stop=datetime_stop, datetime_col=datetime_col)
     glicko2_scores(fbref_df_date_filtered_concat_no_nan, home_team_id_col=home_team_id_col, away_team_id_col=away_team_id_col, 
                    home_team_goal_col=home_team_goal_col, away_team_goal_col=away_team_goal_col, datetime_stop=datetime_stop, datetime_col=datetime_col)
     trueskill_scores(fbref_df_date_filtered_concat_no_nan, home_team_id_col=home_team_id_col, away_team_id_col=away_team_id_col, 
                      home_team_goal_col=home_team_goal_col, away_team_goal_col=away_team_goal_col, datetime_stop=datetime_stop, datetime_col=datetime_col)
-    df_cat_onehot = pd.get_dummies(fbref_df_date_filtered_concat_no_nan[X_cat], drop_first=True)
+    form_stats(fbref_df_date_filtered_concat_no_nan, home_team_id_col=home_team_id_col, away_team_id_col=away_team_id_col,
+               home_team_goal_col=home_team_goal_col, away_team_goal_col=away_team_goal_col, datetime_stop=datetime_stop, datetime_col=datetime_col)
+    if not X_cat:
+        return fbref_df_date_filtered_concat_no_nan
+    df_cat_onehot = pd.get_dummies(fbref_df_date_filtered_concat_no_nan[list(X_cat)], drop_first=True)
     df_all = pd.concat([fbref_df_date_filtered_concat_no_nan, df_cat_onehot], axis=1)
     
     return df_all

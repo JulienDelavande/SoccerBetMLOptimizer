@@ -67,25 +67,10 @@ def insert_recent_fbref_matches(
 
     cutoff_date = datetime.date.today() - datetime.timedelta(days=cutoff_days)
 
-    # Suppression des anciennes données une seule fois au début
-    try:
-        with engine.begin() as conn:
-            logger.info(
-                f"Suppression des anciens matchs dans la table {DB_TN_FBREF_RESULTS} pour les dates ≥ {cutoff_date}"
-            )
-            conn.execute(
-                text(f"""
-                DELETE FROM {DB_TN_FBREF_RESULTS}
-                WHERE date >= :cutoff
-            """),
-                {"cutoff": cutoff_date},
-            )
-        logger.info(
-            f"Anciennes données supprimées avec succès pour les dates ≥ {cutoff_date}"
-        )
-    except Exception as e:
-        logger.error(f"Erreur lors de la suppression des anciennes données: {e}")
-        raise
+    # Nothing is deleted before scraping: when FBref is unreachable the existing
+    # recent results and upcoming fixtures must survive (they feed inference).
+    # Rows are upserted, then stale recent rows (rescheduled/cancelled fixtures)
+    # are removed only if every league was scraped successfully.
 
     # Récupérer les infos des ligues une seule fois
     try:
@@ -99,6 +84,8 @@ def insert_recent_fbref_matches(
 
     total_inserted = 0
     last_df = None  # Pour retourner le dernier DataFrame (compatibilité)
+    scraped_games = set()
+    failed_leagues = []
 
     # Traiter chaque ligue séparément pour économiser la mémoire
     for config in LEAGUES_CONFIG:
@@ -117,7 +104,10 @@ def insert_recent_fbref_matches(
                 use_cache=use_cache,
             )
 
-            if df is None or df.empty:
+            if df is None:
+                failed_leagues.append(league)
+                continue
+            if df.empty:
                 logger.info(f"Aucune donnée pour {league}, passage à la suivante")
                 continue
 
@@ -127,6 +117,7 @@ def insert_recent_fbref_matches(
             # 3. Insérer dans la DB
             inserted = insert_dataframe_to_db(df)
             total_inserted += inserted
+            scraped_games.update(df["game"].dropna())
 
             last_df = df
 
@@ -137,7 +128,15 @@ def insert_recent_fbref_matches(
 
         except Exception as e:
             logger.error(f"Erreur lors du traitement de {league}: {e}")
+            failed_leagues.append(league)
             continue
+
+    if failed_leagues:
+        logger.warning(
+            f"Ligues en échec, aucune suppression des matchs récents: {failed_leagues}"
+        )
+    elif scraped_games:
+        delete_stale_recent_matches(cutoff_date, scraped_games)
 
     logger.info(
         f"=== Fin de l'insertion: {total_inserted} lignes insérées au total ==="
@@ -210,13 +209,14 @@ def insert_dataframe_to_db(df):
             df.to_sql(DB_TN_TEMP_TABLE, con=conn, index=False, if_exists="replace")
 
             columns = ", ".join(df.columns)
+            updates = ", ".join(f"{c} = EXCLUDED.{c}" for c in df.columns if c != KEY_1)
             insert_query = f"""
                 WITH inserted_rows AS (
                     INSERT INTO {DB_TN_FBREF_RESULTS} ({columns})
                     SELECT {columns}
                     FROM {DB_TN_TEMP_TABLE}
                     WHERE game IS NOT NULL AND date IS NOT NULL
-                    ON CONFLICT ({KEY_1}) DO NOTHING
+                    ON CONFLICT ({KEY_1}) DO UPDATE SET {updates}
                     RETURNING {KEY_1}
                 )
                 SELECT COUNT(*) AS inserted_rows_count FROM inserted_rows;
@@ -225,7 +225,7 @@ def insert_dataframe_to_db(df):
             result = conn.execute(text(insert_query))
             inserted_rows = result.scalar()
             logger.info(
-                f"{inserted_rows} nouvelles lignes insérées dans {DB_TN_FBREF_RESULTS}"
+                f"{inserted_rows} lignes insérées ou mises à jour dans {DB_TN_FBREF_RESULTS}"
             )
             conn.execute(text(f"DROP TABLE {DB_TN_TEMP_TABLE}"))
 
@@ -234,6 +234,19 @@ def insert_dataframe_to_db(df):
     except Exception as e:
         logger.error(f"Erreur lors de l'insertion des donnees: {e}")
         raise
+
+
+def delete_stale_recent_matches(cutoff_date, scraped_games):
+    """Delete recent rows FBref no longer lists (rescheduled or cancelled fixtures)."""
+    with engine.begin() as conn:
+        result = conn.execute(
+            text(f"""
+                DELETE FROM {DB_TN_FBREF_RESULTS}
+                WHERE date >= :cutoff AND NOT ({KEY_1} = ANY(:games))
+            """),
+            {"cutoff": cutoff_date, "games": list(scraped_games)},
+        )
+    logger.info(f"{result.rowcount} matchs récents obsolètes supprimés (date ≥ {cutoff_date})")
 
 
 def convert_data_types_fbref(fbref_df):

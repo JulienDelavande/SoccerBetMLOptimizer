@@ -9,7 +9,7 @@ import numpy as np
 
 from .utils.test_model_and_infer import test_model_and_infer
 from .utils.insert_results_to_db import insert_results_to_db
-from optibet_lib.feature_eng.format_df import merge_sofifa_fbref_results, format_sofifa_fbref_data, add_signals
+from optibet_lib.feature_eng.format_df import format_sofifa_fbref_data, add_signals
 from app._config import DB_TN_FBREF_RESULTS, DB_TN_SOFIFA_TEAMS_STATS, DB_TN_MODELS_RESULTS
 from app._config import engine
 
@@ -51,14 +51,13 @@ def infer__RSF_PR_LR__pipeline(datetime_stop=None):
             logger.info(f"DB_PORT: {engine.url.port}")
             logger.info(f"DB_NAME: {engine.url.database}")
 
-            # Refresh materialized view to get the latest data
-            connection.execute(text("REFRESH MATERIALIZED VIEW mv_sofifa_stats_norm;"))
-            connection.execute(text("REFRESH MATERIALIZED VIEW mv_sofifa_stats_filtered;"))
+            # Refresh materialized views to get the latest FBref results and fixtures.
+            # SoFIFA is no longer used (blocked since 2025-11): team strength comes from
+            # Elo/Glicko-2/TrueSkill/form computed on FBref results.
             connection.execute(text("REFRESH MATERIALIZED VIEW mv_fbref_matches_norm;"))
             connection.execute(text("REFRESH MATERIALIZED VIEW mv_fbref_matches_norm_2006;"))
-            connection.execute(text("REFRESH MATERIALIZED VIEW mv_fbref_matches_filtered;"))
 
-            query_mv_matchs_enriched = text(f"SELECT * FROM v_matches_enrichis;")
+            query_mv_matchs_enriched = text("SELECT * FROM v_matches_fbref;")
             fbref_results_df__sofifa_merged = pd.read_sql(query_mv_matchs_enriched, connection)
             logger.info(f"Data retrieved from database successfully in {time.time() - start_data_retrieval} seconds")
     except Exception as e:
@@ -88,6 +87,10 @@ def infer__RSF_PR_LR__pipeline(datetime_stop=None):
     except Exception as e:
         logger.error(f"Error during data processing: {e}")
         raise
+
+    if fbref_results_df__sofifa_merged__data_formated__signals_added__infer.empty:
+        logger.warning(f"No upcoming match after {datetime_stop} (FBref fixtures missing?), nothing to infer")
+        return [], pd.DataFrame(), 0, None, None, datetime.datetime.now()
 
     #### Train and test the model and infer the results ####
     start_train_test_inference = time.time()
