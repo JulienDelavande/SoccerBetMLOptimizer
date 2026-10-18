@@ -1,4 +1,5 @@
 import io
+import os
 import json
 import pprint
 import random
@@ -295,6 +296,34 @@ class BaseReader(ABC):
             seasons = [seasons]
         self._season_ids = [season_code(s) for s in seasons]
 
+FLARESOLVERR_TIMEOUT_MS = 60_000
+
+
+def _flaresolverr_session(flaresolverr_url: str, solve_url: str) -> requests.Session:
+    """Return a plain requests session carrying the Cloudflare clearance cookies.
+
+    FlareSolverr runs a real browser once to pass the challenge. The clearance
+    cookie is bound to the user agent and the egress IP, so the session reuses
+    both and must run from the same egress as FlareSolverr.
+    """
+    response = requests.post(
+        flaresolverr_url.rstrip("/") + "/v1",
+        json={"cmd": "request.get", "url": solve_url, "maxTimeout": FLARESOLVERR_TIMEOUT_MS},
+        timeout=FLARESOLVERR_TIMEOUT_MS / 1000 + 30,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    if payload.get("status") != "ok":
+        raise ConnectionError(f"FlareSolverr could not clear {solve_url}: {payload.get('message')}")
+    solution = payload["solution"]
+    session = requests.Session()
+    session.headers["User-Agent"] = solution["userAgent"]
+    for cookie in solution["cookies"]:
+        session.cookies.set(
+            cookie["name"], cookie["value"], domain=cookie.get("domain"), path=cookie.get("path", "/")
+        )
+    return session
+
 
 class BaseRequestsReader(BaseReader):
     """Base class for readers that use the Python requests module."""
@@ -320,10 +349,18 @@ class BaseRequestsReader(BaseReader):
 
         self._session = self._init_session()
 
+    # Page a FlareSolverr instance opens to clear the site's Cloudflare challenge.
+    # None means the reader does not need it.
+    cloudflare_solve_url: Optional[str] = None
+
     def _init_session(self) -> requests.Session:
-        session = cloudscraper.create_scraper(
-            browser={'browser': 'chrome', 'platform': 'linux', 'mobile': False}
-        )
+        flaresolverr_url = os.environ.get("FLARESOLVERR_URL")
+        if flaresolverr_url and self.cloudflare_solve_url:
+            session = _flaresolverr_session(flaresolverr_url, self.cloudflare_solve_url)
+        else:
+            session = cloudscraper.create_scraper(
+                browser={'browser': 'chrome', 'platform': 'linux', 'mobile': False}
+            )
         session.proxies.update(self.proxy())
         return session
 
