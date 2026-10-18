@@ -60,14 +60,15 @@ def trueskill_scores(df, datetime_stop=None,
         home_team = row[home_team_id_col]
         away_team = row[away_team_id_col]
 
+        # Ajouter les scores TrueSkill avant le match (aussi pour les matchs futurs,
+        # sinon l'inférence voit des 0 que l'entraînement n'a jamais vus)
+        df.at[index, trueskill_home_before_col] = convert_rating(ratings[home_team])
+        df.at[index, trueskill_away_before_col] = convert_rating(ratings[away_team])
+
         is_match_played = (not pd.isna(row[home_team_goal_col]) and not pd.isna(row[away_team_goal_col]))
         is_date_passed = (datetime_stop is not None and row[datetime_col] > datetime_stop)
         if not is_match_played or is_date_passed:
             continue
-        
-        # Ajouter les scores TrueSkill avant le match
-        df.at[index, trueskill_home_before_col] = convert_rating(ratings[home_team])
-        df.at[index, trueskill_away_before_col] = convert_rating(ratings[away_team])
         
         # Mettre à jour les scores TrueSkill
         if row[home_team_goal_col] > row[away_team_goal_col]:

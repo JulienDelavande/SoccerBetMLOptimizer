@@ -72,6 +72,8 @@ class FBref(BaseRequestsReader):
         Time in seconds to wait between requests to avoid rate limiting.
     """
 
+    cloudflare_solve_url = "https://fbref.com/en/"
+
     def __init__(
         self,
         leagues: Optional[Union[str, List[str]]] = None,

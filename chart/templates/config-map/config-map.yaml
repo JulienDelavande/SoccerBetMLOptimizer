@@ -17,6 +17,8 @@ data:
 
   ## Other
   SOCCERDATA_DIR : lib/soccerdata
+  # FBref sits behind a Cloudflare challenge: the FBref reader clears it through FlareSolverr.
+  FLARESOLVERR_URL : "{{ .Values.flaresolverrUrl }}"
   THE_ODDS_API_BASE_URL : https://api.the-odds-api.com/v4/sports
   THE_ODDS_API_SPORTS : soccer_fifa_club_world_cup,soccer_france_ligue_one,soccer_spain_la_liga,soccer_italy_serie_a,soccer_germany_bundesliga,soccer_epl,soccer_uefa_champs_league
   THE_ODDS_API_REGIONS : eu,uk

@@ -97,3 +97,6 @@ ingress:
   backendHost: optibet.api.delavande.fr
   exposeCdn: false
   cdnHost: optibet.cdn.delavande.fr
+
+# FlareSolverr endpoint used by the FBref reader (empty disables it).
+flaresolverrUrl: http://flaresolverr.media.svc.cluster.local:8191
