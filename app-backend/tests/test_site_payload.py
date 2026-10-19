@@ -13,6 +13,7 @@ def bet(game, day, side, price, stake, score=None, league="ESP-La Liga", notes=N
     fair = fair or 1 / price * 1.04
     probs = {"home": (fair, 0.25, 0.75 - fair), "draw": (0.4, fair, 0.6 - fair), "away": (0.75 - fair, 0.25, fair)}[side]
     row = {"match_id": f"m{game}", "game": f"g{game}", "sport_key": None, "league": league,
+           "datetime_optim": f"{day} 10:05:00",
            "date_match": day, "time_match": time, "home_team": f"H{game}", "away_team": f"A{game}",
            "prob_home_win": probs[0], "prob_draw": probs[1], "prob_away_win": probs[2], "notes": notes,
            "home_g": None if score is None else score[0], "away_g": None if score is None else score[1]}
@@ -86,15 +87,28 @@ def test_payload_kpis_and_breakdowns():
     assert p["monthly"][0]["return"] == pytest.approx(1.05 * 0.95 - 1)
     assert [x["name"] for x in p["by_odds"]] == ["2.00 – 2.49", "≥ 3.00"]
     assert {x["name"] for x in p["by_league"]} == {"LaLiga", "Bundesliga"}
-    assert len(p["today"]) == 1 and p["today"][0]["home"] == "H4"
-    assert [h["home"] for h in p["history"]] == ["H3", "H2", "H1"]  # newest first
+    assert [b["home"] for b in p["bets"]] == ["H1", "H2", "H3", "H4"]  # by recommendation time
+    assert [b["status"] for b in p["bets"]] == ["won", "lost", "won", "upcoming"]
+    assert p["bets"][0]["league_key"] == "soccer_spain_la_liga" and p["bets"][1]["league_key"] == "soccer_germany_bundesliga"
+    assert not p["bets"][0]["published"]  # replayed before LIVE_SINCE
+    assert p["bets"][3]["published"]
 
 
 def test_empty_payload():
     p = build_payload(pd.DataFrame(), pd.DataFrame(), NOW)
-    assert p["kpis"] is None and p["today"] == []
+    assert p["kpis"] is None and p["bets"] == []
 
 
 def test_only_open_bets_has_no_kpis():
     p = build_payload(frame(bet(1, "2026-10-25", "home", 2.2, 0.01)), pd.DataFrame(columns=["match_id", "side", "price"]), NOW)
-    assert p["kpis"] is None and len(p["today"]) == 1
+    assert p["kpis"] is None and len(p["bets"]) == 1
+
+
+def test_bookmaker_link_attached_to_the_bet_book():
+    links = pd.DataFrame({"match_id": ["m1", "m1"], "bookmaker_key": ["onexbet", "williamhill"],
+                          "bookmaker_link": ["https://1xbet.example/m1", "https://wh.example/m1"]})
+    p = build_payload(frame(bet(1, "2026-10-25", "home", 2.2, 0.01)), pd.DataFrame(columns=["match_id", "side", "price"]),
+                      NOW, links)
+    assert p["bets"][0]["link"] == "https://1xbet.example/m1"
+    p = build_payload(frame(bet(1, "2026-10-25", "home", 2.2, 0.01)), pd.DataFrame(columns=["match_id", "side", "price"]), NOW)
+    assert p["bets"][0]["link"] is None

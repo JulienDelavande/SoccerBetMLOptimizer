@@ -8,7 +8,7 @@ from app.insert_data.utils import json_to_pandas_the_odds_api_get_odds
 
 
 sports = THE_ODDS_API_SPORTS.split(',')
-urls = [f'{THE_ODDS_API_BASE_URL}/{sport}/odds/?apiKey={THE_ODDS_API_KEY}&regions={THE_ODDS_API_REGIONS}&markets={THE_ODDS_API_MARKETS}' for sport in sports]
+urls = [f'{THE_ODDS_API_BASE_URL}/{sport}/odds/?apiKey={THE_ODDS_API_KEY}&regions={THE_ODDS_API_REGIONS}&markets={THE_ODDS_API_MARKETS}&includeLinks=true' for sport in sports]
 
 ### Variables ###
 DB_TN_ODDS_TEMP = 'temp_table_odds_the_odds_api'  
@@ -19,10 +19,10 @@ insert_query = f"""
 WITH inserted_rows AS (
     INSERT INTO {DB_TN_ODDS} (match_id, sport_key, sport_title, commence_time, home_team, away_team,
         bookmaker_key, bookmaker_title, bookmaker_last_update, market_key,
-        market_last_update, outcome_name, outcome_price)
+        market_last_update, outcome_name, outcome_price, bookmaker_link)
     SELECT match_id, sport_key, sport_title, commence_time, home_team, away_team,
         bookmaker_key, bookmaker_title, bookmaker_last_update, market_key,
-        market_last_update, outcome_name, outcome_price
+        market_last_update, outcome_name, outcome_price, bookmaker_link
     FROM {DB_TN_ODDS_TEMP}
     ON CONFLICT (match_id, bookmaker_key, market_key, outcome_name, market_last_update) DO NOTHING
     RETURNING match_id

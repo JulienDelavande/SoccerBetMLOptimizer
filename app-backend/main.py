@@ -35,7 +35,7 @@ from app.utils import (
 
 from app.services.fetch_past_performances import fetch_past_performances_fn
 from app.services.fetch_past_performances_gains import fetch_past_performances_gains_fn
-from app.services.site import site_payload
+from app.services.site import match_detail, site_payload
 
 logger = logging.getLogger("app-backend")
 
@@ -227,6 +227,23 @@ def fetch_site(optim_label: str = "value_pinnacle_1xbet") -> dict:
     except Exception as e:
         logger.exception("Failed to build site payload")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to build site data: {e}")
+
+
+@app.get(
+    "/site/match/{match_id}",
+    tags=["site"],
+    summary="Public site match detail",
+    description="Pinnacle line movement, bookmaker prices at bet time, form and head-to-head of a recommended bet",
+)
+def fetch_site_match(match_id: str, optim_label: str = "value_pinnacle_1xbet") -> dict:
+    try:
+        detail = match_detail(optim_label, match_id)
+    except Exception as e:
+        logger.exception("Failed to build match detail")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to build match detail: {e}")
+    if detail is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unknown bet")
+    return detail
 
 
 # Additional utility endpoints

@@ -56,3 +56,12 @@ export const drawdown = (eq: EquityPoint[]) => {
 
 export const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
+const parisDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit" });
+/** YYYY-MM-DD of a (naive UTC) timestamp in Paris time: the day a bet was recommended. */
+export const dayKey = (s: string) => parisDay.format(utc(s));
+export const todayKey = () => parisDay.format(new Date());
+const longDay = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+export const fmtDayKey = (k: string) => longDay.format(new Date(`${k}T12:00:00Z`));
+const stamp = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
+export const fmtStamp = (s: string) => stamp.format(utc(s)).replace(" ", " à ");

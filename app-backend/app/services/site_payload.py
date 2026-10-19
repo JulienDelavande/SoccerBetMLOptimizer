@@ -22,6 +22,15 @@ LEAGUES = {
     "soccer_uefa_champs_league": "Champions League",
 }
 VOID_NOTES = ("Extra Time", "Cancelled", "Abandoned", "Awarded")
+# The Odds API sport keys double as league logo names on the CDN (/logos/leagues/<key>).
+LEAGUE_KEYS = {
+    "ENG-Premier League": "soccer_epl", "ESP-La Liga": "soccer_spain_la_liga", "ITA-Serie A": "soccer_italy_serie_a",
+    "GER-Bundesliga": "soccer_germany_bundesliga", "FRA-Ligue 1": "soccer_france_ligue_one",
+    "UEFA Champions League": "soccer_uefa_champs_league",
+}
+# Recommendations stored from this date on were published live by the daily job; earlier
+# ones were replayed on the odds recorded at the time (research/backfill_value_bets.py).
+LIVE_SINCE = datetime.datetime(2026, 10, 19)
 
 
 def _none_if_nan(v):
@@ -40,7 +49,8 @@ def closing_fair(closing: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(devig(wide.to_numpy(float)), index=wide.index, columns=list(SIDES))
 
 
-def bet_table(bets: pd.DataFrame, closing: pd.DataFrame, now: datetime.datetime) -> pd.DataFrame:
+def bet_table(bets: pd.DataFrame, closing: pd.DataFrame, now: datetime.datetime,
+              links: pd.DataFrame | None = None) -> pd.DataFrame:
     """One row per recommended bet with side, price, stake, status and result."""
     if bets.empty:
         return pd.DataFrame()
@@ -55,11 +65,15 @@ def bet_table(bets: pd.DataFrame, closing: pd.DataFrame, now: datetime.datetime)
         "kickoff": pd.to_datetime(bets["date_match"].astype(str) + " " + bets["time_match"].astype(str)),
         "home": bets["home_team"].to_numpy(), "away": bets["away_team"].to_numpy(),
         "league": [LEAGUES.get(l) or LEAGUES.get(k) or (l or k or "") for l, k in zip(bets["league"], bets["sport_key"])],
+        "league_key": [k or LEAGUE_KEYS.get(l) for l, k in zip(bets["league"], bets["sport_key"])],
+        "odds_at": pd.to_datetime(bets["datetime_optim"]).to_numpy(),
         "side": [SIDES[i] for i in side_idx], "price": price, "fair_price": 1 / fair,
         "edge": fair * price - 1, "stake": stakes[rows, side_idx], "book": book,
         "home_g": bets["home_g"].to_numpy(), "away_g": bets["away_g"].to_numpy(),
         "notes": bets["notes"].fillna("").to_numpy(),
     })
+    link = {} if links is None or links.empty else links.set_index(["match_id", "bookmaker_key"])["bookmaker_link"].to_dict()
+    t["link"] = [link.get((m, b)) for m, b in zip(t["match_id"], t["book"])]
     fair_close = closing_fair(closing)
     p_close = [fair_close.at[m, s] if m in fair_close.index else np.nan for m, s in zip(t["match_id"], t["side"])]
     t["clv"] = t["price"] * np.array(p_close, dtype=float) - 1
@@ -94,25 +108,26 @@ def group_stats(settled: pd.DataFrame, key: pd.Series) -> list[dict]:
     return out
 
 
-def build_payload(bets: pd.DataFrame, closing: pd.DataFrame, now: datetime.datetime) -> dict:
-    t = bet_table(bets, closing, now)
+def build_payload(bets: pd.DataFrame, closing: pd.DataFrame, now: datetime.datetime,
+                  links: pd.DataFrame | None = None) -> dict:
+    t = bet_table(bets, closing, now, links)
     payload = {"generated_at": now.isoformat(timespec="seconds"), "start_bankroll": START_BANKROLL,
-               "today": [], "history": [], "equity": [], "kpis": None, "monthly": [], "by_league": [], "by_odds": [],
-               "clv_series": []}
+               "live_since": LIVE_SINCE.isoformat(), "bets": [], "equity": [], "kpis": None, "monthly": [],
+               "by_league": [], "by_odds": [], "clv_series": []}
     if t.empty:
         return payload
 
     def record(r):
-        return {"kickoff": r.kickoff.isoformat(), "home": r.home, "away": r.away, "league": r.league, "side": r.side,
+        return {"id": r.match_id, "kickoff": r.kickoff.isoformat(), "odds_at": r.odds_at.isoformat(timespec="seconds"),
+                "published": bool(r.odds_at >= LIVE_SINCE), "home": r.home, "away": r.away, "league": r.league,
+                "league_key": r.league_key, "link": r.link, "side": r.side,
                 "price": round(float(r.price), 2), "fair_price": round(float(r.fair_price), 3),
                 "edge": float(r.edge), "stake": float(r.stake), "book": r.book, "status": r.status,
                 "score": None if pd.isna(r.home_g) else f"{int(r.home_g)}-{int(r.away_g)}",
                 "gain": float(r.gain), "clv": _none_if_nan(float(r.clv))}
 
-    open_bets = t[t["status"].isin(["upcoming", "pending"])]
-    payload["today"] = [record(r) for r in open_bets.itertuples()]
+    payload["bets"] = [record(r) for r in t.sort_values(["odds_at", "kickoff"]).itertuples()]
     settled = t[t["status"].isin(["won", "lost"])]
-    payload["history"] = [record(r) for r in t[t["status"].isin(["won", "lost", "void"])].iloc[::-1].itertuples()]
     if settled.empty:
         return payload
 

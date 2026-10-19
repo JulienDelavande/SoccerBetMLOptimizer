@@ -51,7 +51,9 @@ def json_to_pandas_the_odds_api_get_odds(data):
                         'market_key': market['key'],
                         'market_last_update': market['last_update'],
                         'outcome_name': outcome['name'],
-                        'outcome_price': outcome['price']
+                        'outcome_price': outcome['price'],
+                        # Event page on the bookmaker site (includeLinks=true), when the bookmaker exposes one.
+                        'bookmaker_link': bookmaker.get('link'),
                     })
 
     df = pd.DataFrame(flattened_data)

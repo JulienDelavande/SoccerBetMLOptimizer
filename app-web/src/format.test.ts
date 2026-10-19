@@ -39,3 +39,11 @@ describe("format", () => {
     expect(dd.map((d) => d.dd)).toEqual([0, 0, -0.25]);
   });
 });
+
+import { dayKey } from "./format";
+describe("dayKey", () => {
+  it("uses Paris time for the recommendation day", () => {
+    expect(dayKey("2026-10-19T21:30:00")).toBe("2026-10-19"); // 23:30 in Paris
+    expect(dayKey("2026-10-19T22:30:00")).toBe("2026-10-20"); // 00:30 in Paris
+  });
+});

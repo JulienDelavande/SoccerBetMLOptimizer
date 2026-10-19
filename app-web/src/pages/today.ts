@@ -1,13 +1,15 @@
 import { attachEquityHover, equityChart } from "../charts";
-import { betLabel, bookName, esc, eur, fmtDay, fmtTime, odds, pct, sliceEquity, splitAmount, stakeFor } from "../format";
+import { dayKey, eur, fmtDayKey, fmtStamp, odds, pct, sliceEquity, splitAmount, stakeFor, todayKey } from "../format";
 import type { Bet, SiteData } from "../types";
-import { kpiStrip } from "./shared";
+import { BANKROLL_KEY, betsTable, bindRows, kpiStrip, savedBankroll } from "./shared";
 
 const RANGES: [string, number | null][] = [["1M", 31], ["3M", 92], ["1A", 366], ["TOUT", null]];
-const BANKROLL_KEY = "bankroll";
 
-export function renderToday(app: HTMLElement, data: SiteData) {
+/** Home: track record on top, then the bets recommended on one day (default: the latest). */
+export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
   const k = data.kpis;
+  const days = [...new Set(data.bets.map((b) => dayKey(b.odds_at)))].sort();
+  const current = day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : days[days.length - 1] ?? todayKey();
   const [int, dec] = splitAmount(k?.bankroll ?? data.start_bankroll);
   app.innerHTML = `
     <section class="hero">
@@ -30,10 +32,16 @@ export function renderToday(app: HTMLElement, data: SiteData) {
       ["ROI / pari", pct(k.roi), `cote moy. ${odds(k.avg_price)}`, k.roi >= 0 ? "" : "down"],
       ["Drawdown max", pct(k.max_drawdown), new Date(k.max_drawdown_day).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }), "down"],
     ]) : ""}
-    <section class="sec">
+    <section class="sec" id="day">
       <div class="sec-head">
-        <h2>Paris à jouer</h2>
+        <h2>Paris du jour</h2>
         <label class="bankroll">Ma bankroll <input id="bk" type="number" min="1" step="10" inputmode="decimal" /> €</label>
+      </div>
+      <div class="daynav">
+        <button id="prev" aria-label="Jour précédent">←</button>
+        <label class="daypick"><span id="dayname"></span><input id="daydate" type="date" /></label>
+        <button id="next" aria-label="Jour suivant">→</button>
+        <span class="k" id="dayinfo"></span>
       </div>
       <div id="bets"></div>
     </section>`;
@@ -52,35 +60,43 @@ export function renderToday(app: HTMLElement, data: SiteData) {
   drawEq(3);
 
   const input = app.querySelector<HTMLInputElement>("#bk")!;
-  input.value = localStorage.getItem(BANKROLL_KEY) ?? "1000";
+  input.value = String(savedBankroll());
+  const prev = days.filter((d) => d < current).pop(), next = days.find((d) => d > current);
+  const go = (d?: string) => { if (d) location.hash = `#/jour/${d}`; };
+  app.querySelector<HTMLButtonElement>("#prev")!.disabled = !prev;
+  app.querySelector<HTMLButtonElement>("#next")!.disabled = !next;
+  app.querySelector("#prev")!.addEventListener("click", () => go(prev));
+  app.querySelector("#next")!.addEventListener("click", () => go(next));
+  const picker = app.querySelector<HTMLInputElement>("#daydate")!;
+  picker.value = current; picker.min = days[0] ?? ""; picker.max = todayKey();
+  picker.addEventListener("change", () => go(picker.value));
+  app.querySelector("#dayname")!.textContent = fmtDayKey(current);
+
+  const bets = data.bets.filter((b) => dayKey(b.odds_at) === current).sort((a, b) => a.kickoff.localeCompare(b.kickoff));
+  app.querySelector("#dayinfo")!.innerHTML = dayInfo(bets);
   const drawBets = () => {
     const bankroll = Math.max(0, Number(input.value) || 0);
     localStorage.setItem(BANKROLL_KEY, String(bankroll));
-    app.querySelector("#bets")!.innerHTML = betsTable(data.today, bankroll);
+    const box = app.querySelector<HTMLElement>("#bets")!;
+    box.innerHTML = bets.length === 0
+      ? `<div class="empty">Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).</div>`
+      : betsTable(bets, bankroll, { date: "day" }) + total(bets, bankroll);
+    bindRows(box);
   };
   input.addEventListener("input", drawBets);
   drawBets();
+  if (day) app.querySelector("#day")!.scrollIntoView();
 }
 
-function betsTable(bets: Bet[], bankroll: number) {
-  if (bets.length === 0)
-    return `<div class="empty">Aucun pari de valeur pour l'instant. Nouvelle analyse chaque jour à 14 h 05 (heure de Paris).</div>`;
-  const total = bets.reduce((s, b) => s + stakeFor(b.stake, bankroll), 0);
-  let lastDay = "";
-  const rows = bets.map((b) => {
-    const d = fmtDay(b.kickoff), head = d !== lastDay ? `<tr class="day"><td colspan="8">${d}</td></tr>` : "";
-    lastDay = d;
-    return `${head}<tr class="${b.status === "pending" ? "live" : ""}">
-      <td class="mono">${b.status === "pending" ? "EN COURS" : fmtTime(b.kickoff)}</td>
-      <td class="match">${esc(b.home)} – ${esc(b.away)}<small>${esc(b.league)}</small><span class="pick-s">${esc(betLabel(b))}</span></td>
-      <td class="hide-xs">${esc(betLabel(b))}</td>
-      <td class="mono hide-s">${esc(bookName(b.book)).toUpperCase()}</td>
-      <td class="r mono">${odds(b.price)}</td>
-      <td class="r mono hide-s">${odds(b.fair_price)}</td>
-      <td class="r mono edge hide-xs">${pct(b.edge)}</td>
-      <td class="r"><span class="stake">${eur(stakeFor(b.stake, bankroll))}</span></td></tr>`;
-  }).join("");
-  return `<table class="tbl bets"><thead><tr><th>Heure</th><th>Match</th><th class="hide-xs">Pari</th><th class="hide-s">Book</th><th class="r">Cote</th><th class="r hide-s">Juste prix</th><th class="r hide-xs">Avantage</th><th class="r">Mise</th></tr></thead>
-    <tbody>${rows}</tbody></table>
-    <div class="total"><span>${bets.length} pari${bets.length > 1 ? "s" : ""} · total engagé</span><b>${eur(total)} · ${pct(total / (bankroll || 1)).replace("+", "")}</b></div>`;
+function dayInfo(bets: Bet[]) {
+  if (bets.length === 0) return "";
+  const first = bets.reduce((a, b) => (a.odds_at < b.odds_at ? a : b));
+  return first.published
+    ? `<span class="pub">✓ Publié le ${fmtStamp(first.odds_at)}, avant les coups d'envoi</span>`
+    : `Cotes relevées le ${fmtStamp(first.odds_at)}`;
 }
+
+const total = (bets: Bet[], bankroll: number) => {
+  const sum = bets.reduce((s, b) => s + stakeFor(b.stake, bankroll), 0);
+  return `<div class="total"><span>${bets.length} pari${bets.length > 1 ? "s" : ""} · total engagé</span><b>${eur(sum)} · ${pct(sum / (bankroll || 1)).replace("+", "")}</b></div>`;
+};
