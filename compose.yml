@@ -37,12 +37,12 @@ services:
     ports:
       - "${APP_BACKEND_PORT_BRIDGE:-8102}:80"
     
-  # app-frontend:
+  # app-web:
   #   <<: *osportbet-common
   #   build:
-  #      context: ./app-frontend
+  #      context: ./app-web
   #      dockerfile: Dockerfile
-  #   image: optim-sportbet-app-frontend:${TAG}
+  #   image: optim-sportbet-app-web:${TAG}
   #   ports:
   #     - "${APP_FRONTEND_PORT_BRIDGE:-8004}:${APP_FRONTEND_PORT:-80}"
     

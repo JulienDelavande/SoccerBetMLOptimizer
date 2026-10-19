@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-web
+  namespace: {{ .Release.namespace }}
+spec:
+  replicas: {{ .Values.services.appWeb.replica }}
+  selector:
+    matchLabels:
+      app: app-web
+  template:
+    metadata:
+      labels:
+        app: app-web
+    spec:
+      containers:
+      - name: app-web
+        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.appWeb.image }}:{{ .Values.services.appWeb.tag }}"
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet: { path: /, port: 80 }
+        resources:
+          requests: { cpu: 10m, memory: 16Mi }
+          limits: { memory: 64Mi }
+
+      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      imagePullSecrets:
+      - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+      {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.services.appWeb.host }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.services.appWeb.port }}
+    targetPort: 80
+  selector:
+    app: app-web

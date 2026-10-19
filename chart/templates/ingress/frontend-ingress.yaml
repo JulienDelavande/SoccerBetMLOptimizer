@@ -17,9 +17,9 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.services.appFrontend.host }}
+                name: {{ .Values.services.appWeb.host }}
                 port:
-                  number: {{ .Values.services.appFrontend.port }}
+                  number: {{ .Values.services.appWeb.port }}
   tls:
     - hosts:
         - {{ .Values.ingress.frontendHost | quote }}

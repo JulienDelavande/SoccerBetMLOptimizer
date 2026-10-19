@@ -35,6 +35,7 @@ from app.utils import (
 
 from app.services.fetch_past_performances import fetch_past_performances_fn
 from app.services.fetch_past_performances_gains import fetch_past_performances_gains_fn
+from app.services.site import site_payload
 
 logger = logging.getLogger("app-backend")
 
@@ -212,6 +213,20 @@ async def fetch_performance_gains(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to calculate performance gains: {str(e)}"
         )
+
+
+@app.get(
+    "/site",
+    tags=["site"],
+    summary="Public site data",
+    description="Value bets of the day, settled history, bankroll curve and track-record statistics",
+)
+def fetch_site(optim_label: str = "value_pinnacle_1xbet") -> dict:
+    try:
+        return site_payload(optim_label)
+    except Exception as e:
+        logger.exception("Failed to build site payload")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to build site data: {e}")
 
 
 # Additional utility endpoints

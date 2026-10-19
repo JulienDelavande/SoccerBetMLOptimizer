@@ -63,19 +63,19 @@ build:
 	docker buildx build --platform linux/amd64 --load -t $(IMAGE_PREFIX)-data-ingestion:$(TAG) -f ./data-ingestion/Dockerfile .
 	docker buildx build --platform linux/amd64 --load -t $(IMAGE_PREFIX)-pipelines:$(TAG) -f ./pipelines/Dockerfile .
 	docker buildx build --platform linux/amd64 --load -t $(IMAGE_PREFIX)-app-backend:$(TAG) -f ./app-backend/Dockerfile .
-#	docker buildx build --platform linux/amd64 --load -t $(IMAGE_PREFIX)-app-frontend:$(TAG) -f ./app-frontend/Dockerfile .
+#	docker buildx build --platform linux/amd64 --load -t $(IMAGE_PREFIX)-app-web:$(TAG) -f ./app-web/Dockerfile .
 
 tag:
 	docker tag $(IMAGE_PREFIX)-data-ingestion:$(TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(TAG)
 	docker tag $(IMAGE_PREFIX)-pipelines:$(TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(TAG)
 	docker tag $(IMAGE_PREFIX)-app-backend:$(TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(TAG)
-#   docker tag $(IMAGE_PREFIX)-app-frontend:$(TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(TAG)
+#   docker tag $(IMAGE_PREFIX)-app-web:$(TAG) $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-web:$(TAG)
 
 push:
 	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-data-ingestion:$(TAG)
 	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-pipelines:$(TAG)
 	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-backend:$(TAG)
-#	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-frontend:$(TAG)
+#	docker push $(CONTAINER_REGISTRY)/$(IMAGE_PREFIX)-app-web:$(TAG)
 
 deploy:
 	kubectl create namespace $(NAMESPACE) || true

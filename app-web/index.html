@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OptiBet · paris de valeur football</title>
+  <meta name="description" content="Paris de valeur sur le football : les bookmakers en retard sur Pinnacle, chaque jour, avec l'historique complet." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23c6ff3d'/><path d='M2 12h3V8h3V5h3V2h3' stroke='%23000' stroke-width='2' fill='none'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script>
+    document.documentElement.dataset.theme = new URLSearchParams(location.search).get("theme") || localStorage.getItem("theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  </script>
+</head>
+<body>
+  <div class="shell">
+    <header class="bar">
+      <a class="logo" href="#/">OPTIBET</a>
+      <nav class="menu">
+        <a href="#/" data-route="/">Aujourd'hui</a>
+        <a href="#/performance" data-route="/performance">Performance</a>
+        <a href="#/historique" data-route="/historique">Historique</a>
+        <a href="#/methode" data-route="/methode">Méthode</a>
+      </nav>
+      <div class="stamp" id="stamp">● CHARGEMENT…</div>
+      <button class="theme" id="theme" aria-label="Changer de thème"></button>
+    </header>
+    <main id="app"></main>
+    <footer class="foot">
+      <span>OptiBet · paris de valeur, pas de conseil financier. Jouer comporte des risques.</span>
+      <span>18+ · Joueurs Info Service 09 74 75 13 13</span>
+    </footer>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

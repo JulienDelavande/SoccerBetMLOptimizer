@@ -22,6 +22,9 @@ jobs:
       - name: data-ingestion tests
         working-directory: data-ingestion
         run: uv run --package data-ingestion --with pytest pytest -q tests
+      - name: app-backend tests
+        working-directory: app-backend
+        run: uv run --package app-backend --with pytest pytest -q
 
   build-images:
     needs: test
@@ -37,9 +40,9 @@ jobs:
           - image: optim-sportbet-app-backend
             context: .
             dockerfile: ./app-backend/Dockerfile
-          - image: optim-sportbet-app-frontend
-            context: ./app-frontend
-            dockerfile: ./app-frontend/Dockerfile
+          - image: optim-sportbet-app-web
+            context: ./app-web
+            dockerfile: ./app-web/Dockerfile
           - image: optim-sportbet-data-ingestion
             context: .
             dockerfile: ./data-ingestion/Dockerfile

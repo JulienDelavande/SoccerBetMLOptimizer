@@ -46,8 +46,6 @@ data:
   # App-frontend
   ## API
   APP_FRONTEND_PROTOCOL : http
-  APP_FRONTEND_URL : "{{ .Values.services.appFrontend.host }}"
-  APP_FRONTEND_PORT : "{{ .Values.services.appFrontend.port }}"
 
   # DATABASE
   ## API

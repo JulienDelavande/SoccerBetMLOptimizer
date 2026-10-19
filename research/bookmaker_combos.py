@@ -19,7 +19,7 @@ FR_LICENSED = {"winamax_fr", "betclic_fr", "unibet_fr", "parionssport_fr", "pmu_
 SPLIT = pd.Timestamp("2025-07-01")
 
 
-def long_table(data):
+def long_table(data, with_fair=False):
     snaps = pd.read_parquet(f"{data}/snapshots.parquet")
     matches = pd.read_parquet(f"{data}/matches.parquet")
     settle = matches[matches["FTR"].notna() & ~matches["extra_time"]].set_index("game")["FTR"].astype(int)
@@ -39,7 +39,7 @@ def long_table(data):
     soft = soft[(pd.to_datetime(soft["game"].map(pin_upd)) - pd.to_datetime(upd)) <= pd.Timedelta(hours=6)]
     rows = []
     for s in bs.SIDES:
-        t = soft[["game", "commence_time", "bookmaker_key", f"price_{s}"]].rename(columns={f"price_{s}": "price"})
+        t = soft[["game", "commence_time", "datetime_insert", "bookmaker_key", f"price_{s}"]].rename(columns={f"price_{s}": "price"})
         rows.append(t.assign(side=s))
     L = pd.concat(rows)
     idx = L["side"].map({s: i for i, s in enumerate(bs.SIDES)}).to_numpy()
@@ -48,17 +48,28 @@ def long_table(data):
     L["ev"] = L["p"] * L["price"] - 1
     L["won"] = L["side"].map(bs.SIDE_TO_FTR).to_numpy() == settle.reindex(L["game"]).to_numpy()
     L["day"] = pd.to_datetime(L["commence_time"]).dt.normalize()
-    return L[(L["ev"] > 0.02) & (L["price"] <= 3.5)]
+    L = L[(L["ev"] > 0.02) & (L["price"] <= 3.5)]
+    return (L, fair) if with_fair else L
+
+
+def pick_bets(L, books):
+    """Best value bet per game among `books`, in kickoff-day order."""
+    c = L[L["bookmaker_key"].isin(books)].sort_values("ev", ascending=False).drop_duplicates("game")
+    return c.sort_values("day", kind="stable").reset_index(drop=True)
+
+
+def stakes(c, kelly=0.5, max_stake=0.05, max_day=0.30):
+    """Fractional Kelly per bet, capped per bet and scaled down when a day's total exceeds max_day."""
+    f = np.clip(kelly * c["ev"].to_numpy() / (c["price"].to_numpy() - 1), 0, max_stake)
+    tot = pd.Series(f).groupby(c["day"].to_numpy()).transform("sum").to_numpy()
+    return np.where(tot > max_day, f * max_day / tot, f)
 
 
 def evaluate(L, books, kelly=0.5, max_stake=0.05, max_day=0.30):
-    c = L[L["bookmaker_key"].isin(books)].sort_values("ev", ascending=False).drop_duplicates("game")
-    c = c.sort_values("day", kind="stable").reset_index(drop=True)
+    c = pick_bets(L, books)
     if c.empty:
         return None
-    f = np.clip(kelly * c["ev"].to_numpy() / (c["price"].to_numpy() - 1), 0, max_stake)
-    tot = pd.Series(f).groupby(c["day"].to_numpy()).transform("sum").to_numpy()
-    f = np.where(tot > max_day, f * max_day / tot, f)
+    f = stakes(c, kelly, max_stake, max_day)
     clv = c["p_true"].to_numpy() * c["price"].to_numpy() - 1
     out = {}
     for name, mask in (("train", c["day"] < SPLIT), ("test", c["day"] >= SPLIT)):
