@@ -32,7 +32,7 @@ function route(data: SiteData) {
     renderMatch(app, match[1], () => { if (navigated) history.back(); else location.hash = (document.querySelector<HTMLAnchorElement>("#back")!.getAttribute("href") ?? "#/"); });
     return;
   }
-  if (day) renderToday(app, data, day[1]);
+  if (day || key === "/") renderToday(app, data, day?.[1]);
   else { routes[key](app, data); window.scrollTo(0, 0); }
 }
 

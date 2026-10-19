@@ -9,7 +9,7 @@ const RANGES: [string, number | null][] = [["1M", 31], ["3M", 92], ["1A", 366], 
 export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
   const k = data.kpis;
   const days = [...new Set(data.bets.map((b) => dayKey(b.odds_at)))].sort();
-  const current = day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : days[days.length - 1] ?? todayKey();
+  const selected = day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : days[days.length - 1] ?? todayKey();
   const [int, dec] = splitAmount(k?.bankroll ?? data.start_bankroll);
   app.innerHTML = `
     <section class="hero">
@@ -62,32 +62,44 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
 
   const input = app.querySelector<HTMLInputElement>("#bk")!;
   input.value = String(savedBankroll());
-  const prev = days.filter((d) => d < current).pop(), next = days.find((d) => d > current);
-  const go = (d?: string) => { if (d) location.hash = `#/jour/${d}`; };
-  app.querySelector<HTMLButtonElement>("#prev")!.disabled = !prev;
-  app.querySelector<HTMLButtonElement>("#next")!.disabled = !next;
-  app.querySelector("#prev")!.addEventListener("click", () => go(prev));
-  app.querySelector("#next")!.addEventListener("click", () => go(next));
+  let current = selected;
+  // Changing day only redraws the day section and rewrites the URL in place: no re-render, no scroll.
+  const show = (d: string | undefined) => {
+    if (!d) return;
+    current = d;
+    history.replaceState(null, "", `#/jour/${d}`);
+    drawDay();
+  };
+  app.querySelector("#prev")!.addEventListener("click", () => show(days.filter((d) => d < current).pop()));
+  app.querySelector("#next")!.addEventListener("click", () => show(days.find((d) => d > current)));
   const picker = app.querySelector<HTMLInputElement>("#daydate")!;
-  picker.value = current; picker.min = days[0] ?? ""; picker.max = todayKey();
-  picker.addEventListener("change", () => go(picker.value));
-  app.querySelector("#dayname")!.textContent = fmtDayKey(current);
+  picker.min = days[0] ?? ""; picker.max = todayKey();
+  picker.addEventListener("change", () => show(picker.value || undefined));
+  input.addEventListener("input", () => drawDay());
 
-  const bets = data.bets.filter((b) => dayKey(b.odds_at) === current).sort((a, b) => a.kickoff.localeCompare(b.kickoff));
-  app.querySelector("#dayinfo")!.innerHTML = dayInfo(bets);
-  const drawBets = () => {
+  function drawDay() {
     const bankroll = Math.max(0, Number(input.value) || 0);
     localStorage.setItem(BANKROLL_KEY, String(bankroll));
-    const box = app.querySelector<HTMLElement>("#bets")!;
+    app.querySelector<HTMLButtonElement>("#prev")!.disabled = !days.some((d) => d < current);
+    app.querySelector<HTMLButtonElement>("#next")!.disabled = !days.some((d) => d > current);
+    picker.value = current;
+    app.querySelector("#dayname")!.textContent = fmtDayKey(current);
+    const bets = data.bets.filter((b) => dayKey(b.odds_at) === current).sort((a, b) => a.kickoff.localeCompare(b.kickoff));
+    app.querySelector("#dayinfo")!.innerHTML = dayInfo(bets);
     app.querySelector("#daysum")!.innerHTML = bets.length ? daySummary(bets, bankroll) : "";
+    const box = app.querySelector<HTMLElement>("#bets")!;
     box.innerHTML = bets.length === 0
       ? `<div class="empty">Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).</div>`
       : betsTable(bets, bankroll, { date: "day" });
     bindRows(box);
-  };
-  input.addEventListener("input", drawBets);
-  drawBets();
-  if (day) app.querySelector("#day")!.scrollIntoView();
+  }
+  drawDay();
+
+  // Coming back from a match page: restore where the visitor was; a shared day link lands on the bets.
+  const saved = sessionStorage.getItem(`scroll:${location.hash || "#/"}`);
+  if (saved !== null) { window.scrollTo(0, Number(saved)); sessionStorage.removeItem(`scroll:${location.hash || "#/"}`); }
+  else if (day) app.querySelector("#day")!.scrollIntoView();
+  else window.scrollTo(0, 0);
 }
 
 function dayInfo(bets: Bet[]) {

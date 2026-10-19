@@ -43,6 +43,7 @@ export function betsTable(bets: Bet[], bankroll: number, opts: { date: "day" | "
 export function bindRows(root: HTMLElement) {
   root.querySelectorAll<HTMLTableRowElement>("tr.click").forEach((tr) => tr.addEventListener("click", (e) => {
     if ((e.target as HTMLElement).closest("[data-stop]")) return;
+    sessionStorage.setItem(`scroll:${location.hash || "#/"}`, String(window.scrollY));
     location.hash = `#/match/${tr.dataset.id}`;
   }));
 }
