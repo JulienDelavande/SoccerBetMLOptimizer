@@ -1,5 +1,5 @@
 import pandas as pd
-from optibet_lib.feature_eng.team_stats import goal_stats, elo_scores, glicko2_scores, trueskill_scores, form_stats
+from optibet_lib.feature_eng.team_stats import goal_stats, elo_scores, glicko2_scores, trueskill_scores, form_stats, rest_days, xg_form
 
 def add_signals(fbref_df_date_filtered_concat_no_nan, 
                 home_team_id_col='home_team', away_team_id_col='away_team',
@@ -53,6 +53,10 @@ def add_signals(fbref_df_date_filtered_concat_no_nan,
                      home_team_goal_col=home_team_goal_col, away_team_goal_col=away_team_goal_col, datetime_stop=datetime_stop, datetime_col=datetime_col)
     form_stats(fbref_df_date_filtered_concat_no_nan, home_team_id_col=home_team_id_col, away_team_id_col=away_team_id_col,
                home_team_goal_col=home_team_goal_col, away_team_goal_col=away_team_goal_col, datetime_stop=datetime_stop, datetime_col=datetime_col)
+    rest_days(fbref_df_date_filtered_concat_no_nan, home_team_id_col=home_team_id_col, away_team_id_col=away_team_id_col,
+              home_team_goal_col=home_team_goal_col, away_team_goal_col=away_team_goal_col, datetime_col=datetime_col)
+    if {'home_xg', 'away_xg'}.issubset(fbref_df_date_filtered_concat_no_nan.columns):
+        xg_form(fbref_df_date_filtered_concat_no_nan, home_team_id_col=home_team_id_col, away_team_id_col=away_team_id_col)
     if not X_cat:
         return fbref_df_date_filtered_concat_no_nan
     df_cat_onehot = pd.get_dummies(fbref_df_date_filtered_concat_no_nan[list(X_cat)], drop_first=True)

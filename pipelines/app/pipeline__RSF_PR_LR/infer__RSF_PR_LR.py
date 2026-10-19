@@ -45,7 +45,8 @@ def infer__RSF_PR_LR__pipeline(datetime_stop=None):
     #### Connection to the database and retrieve data ####
     start_data_retrieval = time.time()
     try:
-        with engine.connect() as connection:
+        # begin(): REFRESH MATERIALIZED VIEW must be committed, connect() rolls it back.
+        with engine.begin() as connection:
             logger.info("Database connection established")
             logger.info(f"DB_HOST: {engine.url.host}")
             logger.info(f"DB_PORT: {engine.url.port}")
@@ -72,6 +73,11 @@ def infer__RSF_PR_LR__pipeline(datetime_stop=None):
             logger.warning("No data retrieved from the database, exiting the pipeline")
             return pd.DataFrame(), pd.DataFrame(), 0, None, None, datetime.datetime.now()
         
+        # 1X2 settles after 90 minutes but FBref scores include extra time: treat those
+        # results as unknown (no training label, no rating update).
+        notes = fbref_results_df__sofifa_merged['notes'].fillna('').str.lower()
+        extra_time = notes.str.contains('extra time') | notes.str.contains('penalt')
+        fbref_results_df__sofifa_merged.loc[extra_time, ['home_g', 'away_g', 'score']] = None
         fbref_results_df__sofifa_merged['home_team'] = fbref_results_df__sofifa_merged['home_team_canonical_name']
         fbref_results_df__sofifa_merged['away_team'] = fbref_results_df__sofifa_merged['away_team_canonical_name']
         fbref_results_df__sofifa_merged__data_formated = format_sofifa_fbref_data(fbref_results_df__sofifa_merged, datetime_stop=datetime_stop)

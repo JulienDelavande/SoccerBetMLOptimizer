@@ -60,3 +60,20 @@ def json_to_pandas_the_odds_api_get_odds(data):
     df['bookmaker_last_update'] = pd.to_datetime(df['bookmaker_last_update'])
     df['market_last_update'] = pd.to_datetime(df['market_last_update'])
     return df
+
+import re
+
+# FBref scores: "2–1", "10–0", shoot-outs "(4) 1–1 (3)" (penalties around the score).
+_SCORE_RE = re.compile(r"^\s*(?:\((\d+)\)\s*)?(\d+)\s*[–-]\s*(\d+)(?:\s*\((\d+)\))?\s*$")
+
+
+def parse_score(score):
+    """Return (home_goals, away_goals, home_shootout, away_shootout); None for missing parts."""
+    if score is None or (isinstance(score, float) and pd.isna(score)):
+        return None, None, None, None
+    m = _SCORE_RE.match(str(score))
+    if not m:
+        return None, None, None, None
+    hs, hg, ag, as_ = m.groups()
+    to_int = lambda v: int(v) if v is not None else None
+    return to_int(hg), to_int(ag), to_int(hs), to_int(as_)

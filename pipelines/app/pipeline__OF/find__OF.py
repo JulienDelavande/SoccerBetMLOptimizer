@@ -204,7 +204,8 @@ def load_data_for_optimization(datetime_first_match: datetime.datetime,
                                model: str,
                                sports_filter: list[str],
                                bookmakers: list[str] = None, same_day: bool = False) -> pd.DataFrame:
-    with engine.connect() as conn:
+    # begin(): REFRESH MATERIALIZED VIEW must be committed, connect() rolls it back.
+    with engine.begin() as conn:
 
         conn.execute(text("REFRESH MATERIALIZED VIEW mv_models_results_last_inferred;"))
         conn.execute(text("REFRESH MATERIALIZED VIEW mv_soccer_odds_normalized;"))
@@ -239,9 +240,11 @@ def load_data_for_optimization(datetime_first_match: datetime.datetime,
                     FROM mv_soccer_odds_last_normalized
                     WHERE commence_time >= :datetime_first_match
                       AND commence_time < :datetime_last_match
+                      AND commence_time > :not_before
                 """),
                 conn,
                 params={
+                    "not_before": datetime.datetime.utcnow() + datetime.timedelta(minutes=15),
                     "datetime_first_match": datetime_first_match,
                     "datetime_last_match": datetime_last_match
                 }
@@ -270,9 +273,11 @@ def load_data_for_optimization(datetime_first_match: datetime.datetime,
                     SELECT *
                     FROM mv_soccer_odds_last_normalized
                     WHERE commence_time >= :datetime_first_match
+                      AND commence_time > :not_before
                 """),
                 conn,
-                params={"datetime_first_match": datetime_first_match}
+                params={"datetime_first_match": datetime_first_match,
+                        "not_before": datetime.datetime.utcnow() + datetime.timedelta(minutes=15)}
             )
     
     # Check si les datasets de base sont vides

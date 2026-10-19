@@ -9,7 +9,7 @@ import pandas as pd
 from sqlalchemy import text
 
 from app._config import DB_TN_FBREF_RESULTS, engine
-from app.insert_data.utils import get_all_seasons_string
+from app.insert_data.utils import get_all_seasons_string, parse_score
 
 #### VARIABLES ####
 KEY_1 = "game"
@@ -74,7 +74,9 @@ def insert_recent_fbref_matches(
 
     # Récupérer les infos des ligues une seule fois
     try:
-        fbref_reader = sd.FBref()
+        # The leagues page gives each league's last season: a stale cached copy pins
+        # ingestion to a finished season (no upcoming fixtures), so honour use_cache.
+        fbref_reader = sd.FBref(no_cache=not use_cache)
         leagues_df = fbref_reader.read_leagues()
         del fbref_reader
         gc.collect()
@@ -260,22 +262,11 @@ def convert_data_types_fbref(fbref_df):
         fbref_df["index"] = fbref_df["game"].apply(
             lambda x: int(hashlib.sha256(x.encode()).hexdigest()[:6], 16)
         )
-        fbref_df["home_g"] = fbref_df["score"].apply(
-            lambda x: x.split("–")[0][-1] if not pd.isna(x) else x
-        )
-        fbref_df["away_g"] = fbref_df["score"].apply(
-            lambda x: x.split("–")[1][0] if not pd.isna(x) else x
-        )
-        fbref_df["home_sat"] = fbref_df["score"].apply(
-            lambda x: x.split("–")[0].split("(")[1][0]
-            if not pd.isna(x) and "(" in x
-            else pd.NA
-        )
-        fbref_df["away_sat"] = fbref_df["score"].apply(
-            lambda x: x.split("–")[1].split("(")[1][0]
-            if not pd.isna(x) and "(" in x
-            else pd.NA
-        )
+        parsed = fbref_df["score"].apply(parse_score)
+        fbref_df["home_g"] = parsed.str[0]
+        fbref_df["away_g"] = parsed.str[1]
+        fbref_df["home_sat"] = parsed.str[2]
+        fbref_df["away_sat"] = parsed.str[3]
         fbref_df["home_g"] = pd.to_numeric(fbref_df["home_g"], errors="coerce")
         fbref_df["away_g"] = pd.to_numeric(fbref_df["away_g"], errors="coerce")
         fbref_df["home_sat"] = pd.to_numeric(fbref_df["home_sat"], errors="coerce")

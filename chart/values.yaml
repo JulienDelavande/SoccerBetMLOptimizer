@@ -100,3 +100,21 @@ ingress:
 
 # FlareSolverr endpoint used by the FBref reader (empty disables it).
 flaresolverrUrl: http://flaresolverr.media.svc.cluster.local:8191
+
+# Value bets against Pinnacle's fair line (research/backtest_sync.py). Runs after the odds ingestion.
+valueBets:
+  schedule: "5 12 * * *"
+  request:
+    books: ["onexbet"]
+    min_edge: 0.02
+    max_price: 3.5
+    kelly_fraction: 0.5  # half Kelly: backtest x1.63, max drawdown 11% (quarter: x1.29, 5.7%)
+    max_stake: 0.05
+    max_total: 0.30
+    blend_weight: 0.1
+    optim_label: value_pinnacle_1xbet
+
+# Model-only optimizers (optimize-*.yaml). Off: the backtest shows model-only edges lose money
+# against the market, and the Log/CRRA utilities are wrong (see PR description).
+legacyOptimizers:
+  enabled: false
