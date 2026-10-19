@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from app.pipeline__RSF_PR_LR.infer__RSF_PR_LR import infer__RSF_PR_LR__pipeline
 from app.pipeline__OF.find__OF import find__of
+from app.pipeline__VB.value_bets import find_value_bets
 from app.models.optimization_models import (
     OptimizationRequest,
     OptimizationResponse,
 )
+from app.models.value_bets_models import ValueBetsRequest, ValueBetsResponse
 from app.models.prediction_models import (
     InferenceRequest,
     InferenceResponse,
@@ -78,4 +80,19 @@ def optimize(body: OptimizationRequest):
         )
     except Exception as e:
         logger.exception("Optimization failed")
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+@app.post(
+    "/value_bets",
+    response_model=ValueBetsResponse,
+    tags=["optimization"]
+)
+def value_bets(body: ValueBetsRequest):
+    try:
+        dt_opt, rows = find_value_bets(**body.model_dump())
+        return ValueBetsResponse(status="success", datetime_optim=dt_opt, optim_label=body.optim_label,
+                                 n_bets=len(rows), bets=rows.to_dict(orient="records") if len(rows) else [])
+    except Exception as e:
+        logger.exception("Value bets failed")
         raise HTTPException(status_code=500, detail=str(e)) from e

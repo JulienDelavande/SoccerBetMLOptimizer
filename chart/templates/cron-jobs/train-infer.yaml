@@ -18,8 +18,8 @@ spec:
               - |
                 echo  "Training and inferring match results"
 
-                echo "curl -X POST ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_INFERENCE} -H 'Content-Type: application/json' -d '{}'"
-                curl -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_INFERENCE}" \
+                echo "curl -fsS -X POST ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_INFERENCE} -H 'Content-Type: application/json' -d '{}'"
+                curl -fsS -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_INFERENCE}" \
                   -H "accept: application/json" \
                   -H "Content-Type: application/json" \
                   -d '{}'
