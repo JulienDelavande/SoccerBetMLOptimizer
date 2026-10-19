@@ -68,10 +68,11 @@ services:
     port: "8103"
     replica: 1
 
-  appFrontend:
-    host: app-frontend-svc
-    image: optim-sportbet-app-frontend
-    tag: 0.2.0
+  # Public site (static, nginx); proxies /api/ to app-backend-svc.
+  appWeb:
+    host: app-web-svc
+    image: optim-sportbet-app-web
+    tag: latest
     port: "8104"
     replica: 1
 

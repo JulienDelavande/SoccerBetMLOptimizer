@@ -288,7 +288,7 @@ You can port-forward the services to access them locally:
 ```bash
 kubectl port-forward svc/<name-of-the-service> <local-port>:<kube-port> -n optimsportbets
 # Example to have the frontend on localhost:8080 `http://localhost:8080`.
-kubectl port-forward svc/app-frontend-svc 8080:8104 -n optimsportbets
+kubectl port-forward svc/app-web-svc 8080:8104 -n optimsportbets
 ```
 
 
