@@ -82,6 +82,9 @@ def kelly_stakes(p, price, fraction: float, max_stake: float, max_total: float) 
 
 
 SHARP_BOOK = "pinnacle"
+# Betting exchanges: prices are as sharp as Pinnacle and stakes are not reliably matched,
+# so they are never treated as a soft book to bet against.
+EXCHANGES = frozenset({"betfair_ex_eu", "betfair_ex_uk", "betfair_sb_uk", "matchbook", "smarkets"})
 
 
 def _prices_wide(odds: pd.DataFrame) -> pd.DataFrame:
@@ -117,7 +120,11 @@ def compute_value_bets(odds, model, books, min_edge, max_price, kelly_fraction, 
         p_fair[:] = blend_with_model(p_fair.to_numpy(), p_model, blend_weight)
 
     sharp_updated = sharp[[f"updated_{s}" for s in SIDES]].max(axis=1)
-    soft = wide[wide["book"].isin(books) & (wide["book"] != SHARP_BOOK) & wide["match_id"].isin(p_fair.index)]
+    # Empty `books` means every soft book in the data (exchanges and the sharp book excluded):
+    # the edge grows with the number of books compared (research/, 14-season validation).
+    soft_books = set(books) if books else (set(wide["book"]) - {SHARP_BOOK} - set(EXCHANGES))
+    soft = wide[wide["book"].isin(soft_books) & (wide["book"] != SHARP_BOOK)
+                & ~wide["book"].isin(EXCHANGES) & wide["match_id"].isin(p_fair.index)]
     soft_updated = soft[[f"updated_{s}" for s in SIDES]].min(axis=1)
     lag = pd.to_datetime(soft["match_id"].map(sharp_updated)) - pd.to_datetime(soft_updated)
     soft = soft[lag <= pd.Timedelta(hours=fresh_hours)]

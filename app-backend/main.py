@@ -237,7 +237,7 @@ async def fetch_performance_gains(
     summary="Public site data",
     description="Value bets of the day, settled history, bankroll curve and track-record statistics",
 )
-def fetch_site(optim_label: str = "value_pinnacle_1xbet") -> dict:
+def fetch_site(optim_label: str = "value_pinnacle") -> dict:
     try:
         return site_payload(optim_label)
     except Exception as e:
@@ -251,7 +251,7 @@ def fetch_site(optim_label: str = "value_pinnacle_1xbet") -> dict:
     summary="Public site match detail",
     description="Pinnacle line movement, bookmaker prices at bet time, form and head-to-head of a recommended bet",
 )
-def fetch_site_match(match_id: str, optim_label: str = "value_pinnacle_1xbet") -> dict:
+def fetch_site_match(match_id: str, optim_label: str = "value_pinnacle") -> dict:
     try:
         detail = match_detail(optim_label, match_id)
     except Exception as e:

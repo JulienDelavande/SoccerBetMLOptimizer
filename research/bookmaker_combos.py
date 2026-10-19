@@ -53,8 +53,9 @@ def long_table(data, with_fair=False):
 
 
 def pick_bets(L, books):
-    """Best value bet per game among `books`, in kickoff-day order."""
-    c = L[L["bookmaker_key"].isin(books)].sort_values("ev", ascending=False).drop_duplicates("game")
+    """Best value bet per game among `books` (empty = every soft book in L), in kickoff-day order."""
+    pool = L if not books else L[L["bookmaker_key"].isin(books)]
+    c = pool.sort_values("ev", ascending=False).drop_duplicates("game")
     return c.sort_values("day", kind="stable").reset_index(drop=True)
 
 
