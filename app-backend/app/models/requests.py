@@ -229,7 +229,7 @@ class BotStrategyEnum(Enum):
     """Enumeration for bot strategies with key and display name."""
     # Value bets against Pinnacle's fair line (pipelines /value_bets, daily CronJob). The only
     # strategy still scheduled: the model-only ones below are kept for their history.
-    VALUE_PINNACLE_1XBET = ("value_pinnacle_1xbet", "Value bets vs Pinnacle (1xBet)")
+    VALUE_PINNACLE = ("value_pinnacle", "Value bets vs Pinnacle (best price, all books)")
 
     # Same Day strategies
     AUTO_SAME_DAY_KELLY = ("auto_same_day_kelly", "Same Day Kelly")

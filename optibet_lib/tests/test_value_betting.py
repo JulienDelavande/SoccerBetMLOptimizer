@@ -105,3 +105,18 @@ def test_compute_value_bets_skips_already_recommended_and_blends_model():
     blended = compute_value_bets(odds, model, **{**PARAMS, "blend_weight": 0.5})
     # A pessimistic model lowers the home probability, so the edge shrinks (or disappears).
     assert blended.empty or blended.iloc[0]["edge"] < base.iloc[0]["edge"]
+
+
+def test_empty_books_uses_all_soft_books_but_excludes_exchanges():
+    from optibet_lib.betting import compute_value_bets
+    odds = _odds([
+        ("m1", "pinnacle", 2.00, 3.60, 4.00, "2026-10-19 11:00"),       # fair home ~0.488
+        ("m1", "williamhill", 2.20, 3.40, 3.70, "2026-10-19 10:30"),    # value at a book not in the default list
+        ("m2", "pinnacle", 2.00, 3.60, 4.00, "2026-10-19 11:00"),
+        ("m2", "betfair_ex_eu", 2.60, 3.40, 3.70, "2026-10-19 10:30"),  # big value but it's an exchange
+    ])
+    # Default config (1xbet only) finds nothing here.
+    assert compute_value_bets(odds, None, **{**PARAMS, "books": ["onexbet"]}).empty
+    # Empty list = every soft book: William Hill is picked, the exchange is ignored.
+    bets = compute_value_bets(odds, None, **{**PARAMS, "books": []})
+    assert bets["match_id"].tolist() == ["m1"] and bets.iloc[0]["book"] == "williamhill"

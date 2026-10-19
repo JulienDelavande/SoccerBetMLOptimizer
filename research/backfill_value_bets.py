@@ -23,7 +23,9 @@ SPORT_KEYS = {"ENG-Premier League": "soccer_epl", "ESP-La Liga": "soccer_spain_l
 def build_rows(data, books, label, until, kelly=0.5, max_stake=0.05, max_day=0.30):
     L, fair = long_table(data, with_fair=True)
     c = pick_bets(L, books)
-    c = c[pd.to_datetime(c["commence_time"]) < until].reset_index(drop=True)
+    c = c[pd.to_datetime(c["commence_time"]) < until]
+    # One row per match_id: a few fixtures appear under two game strings (name/date variants).
+    c = c.drop_duplicates("game").reset_index(drop=True)
     c["stake"] = stakes(c, kelly, max_stake, max_day)
     snaps = pd.read_parquet(f"{data}/snapshots.parquet")
     ids = snaps.drop_duplicates("game").set_index("game")
@@ -46,14 +48,14 @@ def build_rows(data, books, label, until, kelly=0.5, max_stake=0.05, max_day=0.3
         rows[f"bookmaker_{s}_key"] = np.where(chosen, c["bookmaker_key"], None)
         rows[f"bookmaker_{s}"] = rows[f"bookmaker_{s}_key"]
         rows[f"f_{s}"] = np.where(chosen, c["stake"], 0.0)
-    return rows
+    return rows.drop_duplicates(subset=["match_id", "model", "datetime_inference", "datetime_optim"])
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="/work/data")
-    ap.add_argument("--books", nargs="+", default=["onexbet"])
-    ap.add_argument("--label", default="value_pinnacle_1xbet")
+    ap.add_argument("--books", nargs="*", default=[], help="empty = every soft book (recommended)")
+    ap.add_argument("--label", default="value_pinnacle")
     ap.add_argument("--until", default="2026-10-19", help="live recommendations start here")
     ap.add_argument("--write", action="store_true")
     args = ap.parse_args()
