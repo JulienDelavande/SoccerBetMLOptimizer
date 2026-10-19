@@ -87,3 +87,25 @@ def test_form_window_and_values():
     assert df["home_form_ppg"].tolist() == [0, 3, 2, 0.5]   # last two before match 4: draw, loss
     assert df["home_form_gd"].tolist() == [0, 1, 0.5, -0.5]
     assert df["away_form_ppg"].tolist() == [0, 0, 0, 0]
+
+
+def test_rest_days_and_xg_form_use_only_past_matches():
+    from optibet_lib.feature_eng.team_stats import rest_days, xg_form
+    df = pd.DataFrame({
+        "home_team": ["A", "B", "A", "A"],
+        "away_team": ["B", "C", "C", "B"],
+        "home_g": [1, 2, 0, np.nan],
+        "away_g": [0, 2, 1, np.nan],
+        "home_xg": [1.5, 1.0, 0.5, np.nan],
+        "away_xg": [0.5, 2.0, 1.5, np.nan],
+        "datetime": pd.to_datetime(["2025-01-01", "2025-01-04", "2025-01-08", "2025-01-12"]),
+    })
+    rest_days(df)
+    xg_form(df, window=2)
+    assert np.isnan(df.loc[0, "home_rest_days"]) and np.isnan(df.loc[0, "away_rest_days"])
+    assert df.loc[2, "home_rest_days"] == 7 and df.loc[2, "away_rest_days"] == 4   # A since 01-01, C since 01-04
+    assert df.loc[3, "away_rest_days"] == 8                                        # B since 01-04
+    assert np.isnan(df.loc[0, "home_xg_for"])
+    assert df.loc[2, "home_xg_for"] == pytest.approx(1.5)                           # A's only previous match
+    assert df.loc[3, "home_xg_for"] == pytest.approx((1.5 + 0.5) / 2)               # A: 1.5 then 0.5
+    assert df.loc[3, "home_xg_against"] == pytest.approx((0.5 + 1.5) / 2)
