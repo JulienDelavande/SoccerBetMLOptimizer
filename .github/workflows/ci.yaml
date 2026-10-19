@@ -10,7 +10,21 @@ env:
   OWNER: juliendelavande
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Sync environment
+        run: uv sync --package data-ingestion --python 3.10
+      - name: optibet_lib and db tests
+        run: uv run --package data-ingestion --with pytest --with scikit-learn --with trueskill pytest -q optibet_lib/tests db/tests
+      - name: data-ingestion tests
+        working-directory: data-ingestion
+        run: uv run --package data-ingestion --with pytest pytest -q tests
+
   build-images:
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read
