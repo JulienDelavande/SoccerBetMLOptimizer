@@ -92,7 +92,7 @@ kubectl config set-context --current --namespace=optimsportbets
 kubectl apply -f ./k8s/helm-deploy/secrets/
 helm install optimsportbets ./k8s/helm-deploy/optimsportbets/ -f ./k8s/helm-deploy/optimsportbets/values.yaml --namespace optimsportbets
 kubectl apply -R -f ./k8s/helm-deploy/cron-jobs
-kubectl port-forward svc/postgresql-global 8110:5432 --namespace optimsportbets
+kubectl port-forward svc/optibet-db-rw 8110:5432 --namespace optimsportbets
 psql -h localhost -p 8110 -U kube -d optimsportbets-db -f database_backup.sql
 kubectl port-forward svc/app-frontend-svc 8104:8104 --namespace optimsportbets
 
@@ -103,7 +103,7 @@ kubectl config use-context optimsportbets # Azure
 kubectl config set-context --current --namespace=optimsportbets
 
 # Backup and restore database
-kubectl port-forward svc/postgresql-global 8110:5432 --namespace optimsportbets
+kubectl port-forward svc/optibet-db-rw 8110:5432 --namespace optimsportbets
 pg_dump -h localhost -p 8110 -U kube -d optimsportbets-db -v -f database_backup.sql
 # User: kube
 # password:

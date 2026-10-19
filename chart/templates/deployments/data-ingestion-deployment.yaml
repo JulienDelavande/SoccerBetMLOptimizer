@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: data-ingestion
-        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.dataIngestion.image }}:{{ .Values.services.dataIngestion.tag }}"
+        image: "{{ .Values.image.registry }}/{{ .Values.services.dataIngestion.image }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: {{ .Values.services.dataIngestion.port }}
         resources:
@@ -39,9 +39,9 @@ spec:
         persistentVolumeClaim:
           claimName: soccerdata-pvc
 
-      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      {{- if .Values.image.imagePullSecrets.enabled }}
       imagePullSecrets:
-        - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+        - name: {{ .Values.image.imagePullSecrets.name }}
       {{- end }}
 
 ---

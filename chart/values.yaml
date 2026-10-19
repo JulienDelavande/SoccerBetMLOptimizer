@@ -1,5 +1,7 @@
-containerRegistry:
-  registry: juliendelavande
+# All application images are built by CI with the same tag (git sha or main-<timestamp>-<sha>).
+image:
+  registry: ghcr.io/juliendelavande
+  tag: latest
   imagePullSecrets:
     name: cr-secret
     enabled: false
@@ -7,33 +9,19 @@ containerRegistry:
 global:
   envRef: global-config
 
-postgresqlGlobal:
-  fullnameOverride: postgresql-global  # Nom du service exposé
-  auth:
-    username: kube
-    database: optimsportbets-db
-    existingSecret: db-credentials-secrets # Utilisation du secret existant
-    secretKeys:
-      adminPasswordKey: admin-password  # Clé pour le mot de passe admin dans le secret
-      userPasswordKey: user-password         # Clé pour le mot de passe utilisateur dans le secret
-  service:
-    type: ClusterIP                       # Type de service (ClusterIP pour une exposition interne)
-    ports:
-      postgresql: "5432"                    # Port PostgreSQL
-  primary:
-    resources:
-      requests:
-        cpu: "500m"
-        memory: "512Mi"
-      limits:
-        cpu: "2"
-        memory: "2Gi"
+# External PostgreSQL (CloudNativePG cluster "optibet-db" in homelab-infra).
+database:
+  host: optibet-db-rw
+  port: "5432"
+  name: optimsportbets-db
+  user: kube
+  existingSecret: optibet-db-app
+  passwordKey: password
 
 services:
   dataIngestion:
     host: data-ingestion-svc
     image: optim-sportbet-data-ingestion
-    tag: 0.2.0
     port: "8100"
     replica: 1
     resources:
@@ -57,14 +45,12 @@ services:
   pipelines:
     host: pipelines-svc
     image: optim-sportbet-pipelines
-    tag: 0.2.0
     port: "8101"
     replica: 1
 
   appBackend:
     host: app-backend-svc
     image: optim-sportbet-app-backend
-    tag: 0.2.0
     port: "8103"
     replica: 1
 
@@ -72,7 +58,6 @@ services:
   appWeb:
     host: app-web-svc
     image: optim-sportbet-app-web
-    tag: latest
     port: "8104"
     replica: 1
 

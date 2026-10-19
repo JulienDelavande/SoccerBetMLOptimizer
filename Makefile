@@ -19,7 +19,7 @@ endif
 DUMP_FILE = ./db/data_only_dump.sql
 VIEWS_DIR = ./db/views
 PG_PORT_FORWARD = 5433
-PG_SERVICE = postgresql-global
+PG_SERVICE = optibet-db-rw
 PG_NAMESPACE = $(NAMESPACE)
 
 

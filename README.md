@@ -166,17 +166,9 @@ metadata:
 data:
     .dockerconfigjson: <base64-encoded-.dockerconfigjson> # Get the credentials of the ACR registry by running the command az acr login --name <registry-name> and encode it in base64, the dockerconfigjson is the output of the command az acr login --name <registry-name> encoded in base64
 ```
-- db-credentials-secrets.yaml
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-    name: db-credentials-secrets
-    namespace: optimsportbets
-data:
-    admin-password: <base64-encoded-admin-password> # the admin password of the postgres database encoded in base64 - you can choose the password you want
-    user-password: <base64-encoded-user-password> # the user password of the postgres database encoded in base64 - you can choose the password you want
-```
+- The database is not part of this chart: it is a CloudNativePG cluster (`optibet-db`) declared in
+  the `homelab-infra` repository, which also deploys this chart with Flux. Its credentials live in the
+  `optibet-db-app` basic-auth secret (`username` / `password`), read by the apps as `DB_PASSWORD`.
 
 Make sure the secrets are correctly configured with the right credentials.
 
@@ -252,7 +244,7 @@ cd ..
 kubectl config set-context --current --namespace=optimsportbets
 
 # If change in the database schema:
-kubectl port-forward svc/postgresql-global 5432:5432 -n optimsportbets
+kubectl port-forward svc/optibet-db-rw 5432:5432 -n optimsportbets
 # Change the var in the .env to fit the forwarded port for the db user=kube, rest is same as the local one
 cd db/
 python apply_migrations.py
