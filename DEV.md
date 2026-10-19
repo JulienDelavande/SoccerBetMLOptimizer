@@ -12,7 +12,7 @@ You will need psql (PostgreSQL client) and preferably pgAdmin to see the databas
 set -a
 source prod.env
 set +a
-kubectl port-forward -n optimsportbets pod/postgresql-global-0 $DB_PORT:5432
+kubectl port-forward -n optimsportbets svc/optibet-db-rw $DB_PORT:5432
 cd db
 pg_dump -h localhost -U $DB_USER -p $DB_PORT -d optimsportbets-db -F c -b -v -f optimsportbets-db.dump
 pg_dump --schema-only --no-owner --no-privileges -h localhost -U $DB_USER -p $DB_PORT -d optimsportbets-db > schema_before.sql

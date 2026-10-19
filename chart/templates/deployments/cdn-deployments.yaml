@@ -34,9 +34,9 @@ spec:
         configMap:
           name: cdn-nginx-conf
 
-      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      {{- if .Values.image.imagePullSecrets.enabled }}
       imagePullSecrets:
-      - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+      - name: {{ .Values.image.imagePullSecrets.name }}
       {{- end }}
 
 ---

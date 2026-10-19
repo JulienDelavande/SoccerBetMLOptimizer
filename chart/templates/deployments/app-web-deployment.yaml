@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: app-web
-        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.appWeb.image }}:{{ .Values.services.appWeb.tag }}"
+        image: "{{ .Values.image.registry }}/{{ .Values.services.appWeb.image }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: 80
         readinessProbe:
@@ -24,9 +24,9 @@ spec:
           requests: { cpu: 10m, memory: 16Mi }
           limits: { memory: 64Mi }
 
-      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      {{- if .Values.image.imagePullSecrets.enabled }}
       imagePullSecrets:
-      - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+      - name: {{ .Values.image.imagePullSecrets.name }}
       {{- end }}
 
 ---

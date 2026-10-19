@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: pipelines
-        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.pipelines.image }}:{{ .Values.services.pipelines.tag }}"
+        image: "{{ .Values.image.registry }}/{{ .Values.services.pipelines.image }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: {{ .Values.services.pipelines.port }}
         env:
@@ -24,9 +24,9 @@ spec:
         - configMapRef:
             name: global-config
 
-      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      {{- if .Values.image.imagePullSecrets.enabled }}
       imagePullSecrets:
-        - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+        - name: {{ .Values.image.imagePullSecrets.name }}
       {{- end }}
 
 ---

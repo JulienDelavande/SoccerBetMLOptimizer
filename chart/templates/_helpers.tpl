@@ -1,22 +1,13 @@
 {{/*
-Helper function to inject DB_PASSWORD from either a direct value or a secret.
+DB_PASSWORD from the database secret (CloudNativePG basic-auth secret).
 Usage: {{ include "inject_db_password" . }}
 */}}
 {{- define "inject_db_password" -}}
 - name: DB_PASSWORD
-  {{- if .Values.postgresqlGlobal.auth.password }}
-  # Option 1: If the password is provided directly in values.yaml
-  value: {{ .Values.postgresqlGlobal.auth.password | quote }}
-  {{- else if .Values.postgresqlGlobal.auth.existingSecret }}
-  # Option 2: If no password is provided, use the secret
   valueFrom:
     secretKeyRef:
-      name: {{ .Values.postgresqlGlobal.auth.existingSecret }}
-      key: {{ .Values.postgresqlGlobal.auth.secretKeys.userPasswordKey }}
-  {{- else }}
-  # Error if neither the password nor the secret is provided
-  {{- fail "Please provide either postgresqlGlobal.auth.password or postgresqlGlobal.auth.existingSecret in values.yaml" }}
-  {{- end }}
+      name: {{ required "database.existingSecret is required" .Values.database.existingSecret }}
+      key: {{ .Values.database.passwordKey }}
 {{- end }}
 
 {{/*

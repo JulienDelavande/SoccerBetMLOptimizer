@@ -51,11 +51,11 @@ data:
   ## API
   DB_TYPE : postgresql
   DB_PILOT : psycopg2
-  DB_USER : "{{ .Values.postgresqlGlobal.auth.username }}"
-  DB_HOST : "{{ .Values.postgresqlGlobal.fullnameOverride }}"
-  DB_PORT : "{{ .Values.postgresqlGlobal.service.ports.postgresql }}"
+  DB_USER : "{{ .Values.database.user }}"
+  DB_HOST : "{{ .Values.database.host }}"
+  DB_PORT : "{{ .Values.database.port }}"
   ## Structure
-  DB_NAME : "{{ .Values.postgresqlGlobal.auth.database }}"
+  DB_NAME : "{{ .Values.database.name }}"
   DB_TN_FBREF_RESULTS : fbref_results
   DB_TN_SOFIFA_TEAMS_STATS : sofifa_teams_stats
   DB_TN_MODELS_RESULTS : models_results

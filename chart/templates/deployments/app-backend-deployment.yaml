@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: app-backend
-        image: "{{ .Values.containerRegistry.registry }}/{{ .Values.services.appBackend.image }}:{{ .Values.services.appBackend.tag }}"
+        image: "{{ .Values.image.registry }}/{{ .Values.services.appBackend.image }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: {{ .Values.services.appBackend.port }}
         env:
@@ -24,9 +24,9 @@ spec:
         - configMapRef:
             name: global-config
 
-      {{- if .Values.containerRegistry.imagePullSecrets.enabled }}
+      {{- if .Values.image.imagePullSecrets.enabled }}
       imagePullSecrets:
-        - name: {{ .Values.containerRegistry.imagePullSecrets.name }}
+        - name: {{ .Values.image.imagePullSecrets.name }}
       {{- end }}
         
 ---
