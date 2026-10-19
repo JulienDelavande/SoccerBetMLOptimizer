@@ -1,5 +1,5 @@
 import { drawdown, eur, fmtDate, pct } from "./format";
-import type { EquityPoint, GroupStat } from "./types";
+import type { EquityPoint, GroupStat, LinePoint } from "./types";
 
 // Charts are plain SVG strings; colours come from CSS classes so the theme switch needs no re-render.
 
@@ -142,4 +142,30 @@ export function clvChart(series: { day: string; clv: number; rolling: number | n
     `<line class="${v === 0 ? "c-base" : "c-grid"}" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
     `<text class="c-axis" x="${box.left - 8}" y="${y(v) + 4}" text-anchor="end">${v > 0 ? "+" : ""}${Math.round(v * 100)}%</text>`).join("");
   return `<svg class="chart" viewBox="0 0 ${box.w} ${box.h}">${grid}${dots}<path class="c-line" d="${line}"/></svg>`;
+}
+
+/** Pinnacle price of the chosen outcome over time, with our entry price as a reference line. */
+export function oddsChart(points: LinePoint[], ours: number, kickoff: string, box: Box = { w: 560, h: 220, top: 14, right: 70, bottom: 26, left: 44 }) {
+  if (points.length === 0) return `<div class="empty">Pas d'historique de cote Pinnacle.</div>`;
+  const pts = points.map((p) => ({ t: new Date(`${p.t}Z`).getTime(), v: p.price }));
+  const end = Math.max(pts[pts.length - 1].t, new Date(`${kickoff}Z`).getTime());
+  const t0 = pts[0].t, t1 = end > t0 ? end : t0 + 3600000;
+  const vals = [ours, ...pts.map((p) => p.v)], lo = Math.min(...vals), hi = Math.max(...vals), pad = (hi - lo) * 0.25 || 0.1;
+  const x = scale(t0, t1, box.left, box.w - box.right), y = scale(lo - pad, hi + pad, box.h - box.bottom, box.top);
+  let d = `M${x(pts[0].t)},${y(pts[0].v)}`;
+  for (let i = 1; i < pts.length; i++) d += ` H${x(pts[i].t)} V${y(pts[i].v)}`;
+  d += ` H${x(t1)}`;
+  const last = pts[pts.length - 1];
+  const grid = ticks(lo - pad, hi + pad, 3).map((v) =>
+    `<line class="c-grid" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
+    `<text class="c-axis" x="${box.left - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(2)}</text>`).join("");
+  const day = (t: number) => new Date(t).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+  return `<svg class="chart" viewBox="0 0 ${box.w} ${box.h}">${grid}
+    <line class="c-ours" x1="${box.left}" x2="${box.w - box.right}" y1="${y(ours)}" y2="${y(ours)}"/>
+    <text class="c-ours-t" x="${box.w - box.right + 6}" y="${y(ours) + 4}">nous ${ours.toFixed(2)}</text>
+    <path class="c-line" d="${d}"/>
+    <rect class="c-dot" x="${x(t1) - 4}" y="${y(last.v) - 4}" width="8" height="8"/>
+    <text class="c-axis-strong" x="${box.w - box.right + 6}" y="${y(last.v) + (Math.abs(y(last.v) - y(ours)) < 14 ? 16 : 4)}">clôt. ${last.v.toFixed(2)}</text>
+    <text class="c-axis" x="${box.left}" y="${box.h - 8}">${day(t0)}</text>
+    <text class="c-axis" x="${box.w - box.right}" y="${box.h - 8}" text-anchor="end">coup d'envoi ${day(t1)}</text></svg>`;
 }

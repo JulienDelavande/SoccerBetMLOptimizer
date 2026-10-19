@@ -25,6 +25,7 @@ class SoccerOdd(Base):
     market_last_update: Mapped[sa.DateTime] = mapped_column(sa.TIMESTAMP(timezone=False), nullable=False)
     outcome_name: Mapped[str] = mapped_column(sa.String(100), nullable=False)
     outcome_price: Mapped[sa.Numeric | None] = mapped_column(sa.Numeric(10, 2))
+    bookmaker_link: Mapped[str | None] = mapped_column(sa.Text)
     datetime_insert: Mapped[sa.DateTime | None] = mapped_column(
         sa.TIMESTAMP(timezone=False), server_default=sa.text("CURRENT_TIMESTAMP")
     )
