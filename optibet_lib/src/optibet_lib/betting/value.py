@@ -4,21 +4,41 @@ The fair probability of an outcome is Pinnacle's price with the margin removed,
 optionally blended with the model. A soft-book price is a value bet when
 p * price - 1 exceeds `min_edge`. Stakes are fractional Kelly with caps.
 Backtest 2024-09..2026-10 (bet at first sighting, 1xbet, quarter Kelly): mean
-closing-line value +2 to +3 % per bet; the model alone loses money.
+closing-line value +2 to +3 % per bet. Over 14 seasons (2012-2026, Big 5) the model alone loses
+-4.5 % per bet and blending it in degrades Pinnacle, so the default blend weight is 0; the edge
+comes from comparing many books (best price: +7.2 % per bet, 11 of 14 seasons positive).
 """
 import numpy as np
 import pandas as pd
+from scipy.optimize import brentq
 
 SIDES = ("home", "draw", "away")
 
 
-def devig(prices: np.ndarray) -> np.ndarray:
-    """Proportional de-vig: rows of decimal prices (home, draw, away) -> probabilities."""
+def devig(prices: np.ndarray, method: str = "shin") -> np.ndarray:
+    """Rows of decimal prices (home, draw, away) -> probabilities without the bookmaker margin.
+
+    - proportional: implied probabilities rescaled to sum to 1 (spreads the margin evenly)
+    - shin: Shin (1993) model, puts more of the margin on longshots, as bookmakers do.
+      14 seasons of Pinnacle prices (research/fd_evaluate.py): best closing log loss and the
+      best value-betting ROI of the three methods tried.
+    """
     prices = np.asarray(prices, dtype=float)
     if (prices <= 1).any():
         raise ValueError("decimal prices must be > 1")
-    inv = 1.0 / prices
-    return inv / inv.sum(axis=1, keepdims=True)
+    q = 1.0 / prices
+    if method == "proportional":
+        return q / q.sum(axis=1, keepdims=True)
+    if method != "shin":
+        raise ValueError(f"unknown de-vig method {method!r}")
+    out = np.empty_like(q)
+    for i, row in enumerate(q):
+        s = row.sum()
+        shin = lambda z: (np.sqrt(z * z + 4 * (1 - z) * row * row / s) - z) / (2 * (1 - z))
+        z = brentq(lambda z: shin(z).sum() - 1, 0.0, 0.4) if shin(0.0).sum() > 1 else 0.0
+        p = shin(z)
+        out[i] = p / p.sum()
+    return out
 
 
 def blend_with_model(p_market: np.ndarray, p_model: np.ndarray, weight: float) -> np.ndarray:

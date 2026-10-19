@@ -111,7 +111,7 @@ valueBets:
     kelly_fraction: 0.5  # half Kelly: backtest x1.63, max drawdown 11% (quarter: x1.29, 5.7%)
     max_stake: 0.05
     max_total: 0.30
-    blend_weight: 0.1
+    blend_weight: 0.0  # 14-season validation: the model does not add information to Pinnacle
     optim_label: value_pinnacle_1xbet
 
 # Model-only optimizers (optimize-*.yaml). Off: the backtest shows model-only edges lose money
