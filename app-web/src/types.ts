@@ -8,6 +8,7 @@ export interface Bet {
   published: boolean;
   league_key: string | null;
   link: string | null;
+  probs: Record<Side, number>;
   home: string;
   away: string;
   league: string;
@@ -74,8 +75,14 @@ export interface MatchDetail {
   referee: string | null;
   bet: { side: Side; book: string; price: number; fair_price: number; edge: number; stake: number; gain: number; clv: number | null; link: string | null };
   closing_fair_price: Record<Side, number> | null;
+  probs: Record<Side, number>;
+  closing_probs: Record<Side, number> | null;
+  elo: { home: SeriesPoint[]; away: SeriesPoint[] } | null;
+  xg_form: { home: XgPoint[]; away: XgPoint[] };
   pinnacle: Record<Side, LinePoint[]>;
   books: BookPrices[];
   form: { home: FormGame[]; away: FormGame[] };
   h2h: { date: string; home: string; away: string; score: string; league: string }[];
 }
+export interface SeriesPoint { d: string; v: number }
+export interface XgPoint { d: string; for: number; against: number }

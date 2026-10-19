@@ -8,6 +8,7 @@ from sqlalchemy import text
 
 from app._config import engine
 from app.services.match_detail import build_match_detail
+from app.services.team_charts import elo_history
 from app.services.site_payload import build_payload
 
 BETS_SQL = """
@@ -71,11 +72,20 @@ ORDER BY bookmaker_key, side, datetime_insert DESC
 """
 
 TEAM_MATCHES_SQL = """
-SELECT game, date, league, home_team_canonical_name AS home, away_team_canonical_name AS away, home_g, away_g
+SELECT game, date, league, home_team_canonical_name AS home, away_team_canonical_name AS away, home_g, away_g,
+       home_xg, away_xg
 FROM v_matches_fbref
 WHERE (home_team_canonical_name IN (:home, :away) OR away_team_canonical_name IN (:home, :away))
   AND date < :before AND date > :since
 """
+
+# Every match since ELO_SINCE feeds the Elo ratings (same rating as the model features).
+ELO_SINCE = datetime.date(2012, 7, 1)
+ELO_SQL = """
+SELECT date, home_team_canonical_name AS home, away_team_canonical_name AS away, home_g, away_g
+FROM v_matches_fbref WHERE date >= :since
+"""
+ELO_TTL_SECONDS = 6 * 3600
 
 TTL_SECONDS = 300
 _cache: dict[str, tuple[float, dict]] = {}
@@ -96,6 +106,21 @@ def site_payload(label: str) -> dict:
     with _lock:
         _cache[label] = (time.monotonic(), payload)
     return payload
+
+
+def elo_ratings() -> pd.DataFrame:
+    """Pre-match Elo history of every team, recomputed every few hours (a few seconds of work)."""
+    with _lock:
+        hit = _cache.get("elo")
+        if hit and time.monotonic() - hit[0] < ELO_TTL_SECONDS:
+            return hit[1]
+    with engine.connect() as conn:
+        matches = pd.read_sql(text(ELO_SQL), conn, params={"since": ELO_SINCE})
+    matches["date"] = pd.to_datetime(matches["date"]).dt.date
+    history = elo_history(matches)
+    with _lock:
+        _cache["elo"] = (time.monotonic(), history)
+    return history
 
 
 def match_detail(label: str, match_id: str) -> dict | None:
@@ -120,7 +145,7 @@ def match_detail(label: str, match_id: str) -> dict | None:
     for df in (pinnacle, books):
         df["price"] = df["price"].astype(float)
     matches["date"] = pd.to_datetime(matches["date"]).dt.date
-    detail = build_match_detail(bet, pinnacle, books, matches, datetime.datetime.utcnow(), links)
+    detail = build_match_detail(bet, pinnacle, books, matches, datetime.datetime.utcnow(), links, elo_ratings())
     with _lock:
         _cache[f"{label}/{match_id}"] = (time.monotonic(), detail)
     return detail

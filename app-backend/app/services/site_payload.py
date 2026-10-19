@@ -58,7 +58,8 @@ def bet_table(bets: pd.DataFrame, closing: pd.DataFrame, now: datetime.datetime,
     side_idx = stakes.argmax(axis=1)
     rows = np.arange(len(bets))
     price = bets[[f"odds_{s}" for s in SIDES]].to_numpy(float)[rows, side_idx]
-    fair = bets[["prob_home_win", "prob_draw", "prob_away_win"]].to_numpy(float)[rows, side_idx]
+    probs = bets[["prob_home_win", "prob_draw", "prob_away_win"]].to_numpy(float)
+    fair = probs[rows, side_idx]
     book = bets[[f"bookmaker_{s}_key" for s in SIDES]].to_numpy(object)[rows, side_idx]
     t = pd.DataFrame({
         "match_id": bets["match_id"].to_numpy(), "game": bets["game"].to_numpy(),
@@ -68,6 +69,7 @@ def bet_table(bets: pd.DataFrame, closing: pd.DataFrame, now: datetime.datetime,
         "league_key": [k or LEAGUE_KEYS.get(l) for l, k in zip(bets["league"], bets["sport_key"])],
         "odds_at": pd.to_datetime(bets["datetime_optim"]).to_numpy(),
         "side": [SIDES[i] for i in side_idx], "price": price, "fair_price": 1 / fair,
+        "p_home": probs[:, 0], "p_draw": probs[:, 1], "p_away": probs[:, 2],
         "edge": fair * price - 1, "stake": stakes[rows, side_idx], "book": book,
         "home_g": bets["home_g"].to_numpy(), "away_g": bets["away_g"].to_numpy(),
         "notes": bets["notes"].fillna("").to_numpy(),
@@ -121,6 +123,7 @@ def build_payload(bets: pd.DataFrame, closing: pd.DataFrame, now: datetime.datet
         return {"id": r.match_id, "kickoff": r.kickoff.isoformat(), "odds_at": r.odds_at.isoformat(timespec="seconds"),
                 "published": bool(r.odds_at >= LIVE_SINCE), "home": r.home, "away": r.away, "league": r.league,
                 "league_key": r.league_key, "link": r.link, "side": r.side,
+                "probs": {"home": round(float(r.p_home), 4), "draw": round(float(r.p_draw), 4), "away": round(float(r.p_away), 4)},
                 "price": round(float(r.price), 2), "fair_price": round(float(r.fair_price), 3),
                 "edge": float(r.edge), "stake": float(r.stake), "book": r.book, "status": r.status,
                 "score": None if pd.isna(r.home_g) else f"{int(r.home_g)}-{int(r.away_g)}",
