@@ -43,6 +43,7 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
         <button id="next" aria-label="Jour suivant">→</button>
         <span class="k" id="dayinfo"></span>
       </div>
+      <div id="daysum"></div>
       <div id="bets"></div>
     </section>`;
 
@@ -78,9 +79,10 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
     const bankroll = Math.max(0, Number(input.value) || 0);
     localStorage.setItem(BANKROLL_KEY, String(bankroll));
     const box = app.querySelector<HTMLElement>("#bets")!;
+    app.querySelector("#daysum")!.innerHTML = bets.length ? daySummary(bets, bankroll) : "";
     box.innerHTML = bets.length === 0
       ? `<div class="empty">Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).</div>`
-      : betsTable(bets, bankroll, { date: "day" }) + total(bets, bankroll);
+      : betsTable(bets, bankroll, { date: "day" });
     bindRows(box);
   };
   input.addEventListener("input", drawBets);
@@ -96,7 +98,22 @@ function dayInfo(bets: Bet[]) {
     : `Cotes relevées le ${fmtStamp(first.odds_at)}`;
 }
 
-const total = (bets: Bet[], bankroll: number) => {
-  const sum = bets.reduce((s, b) => s + stakeFor(b.stake, bankroll), 0);
-  return `<div class="total"><span>${bets.length} pari${bets.length > 1 ? "s" : ""} · total engagé</span><b>${eur(sum)} · ${pct(sum / (bankroll || 1)).replace("+", "")}</b></div>`;
-};
+const won = (bets: Bet[]) => { const n = bets.filter((b) => b.status === "won").length; return `${n} gagné${n > 1 ? "s" : ""}`; };
+
+/** What the day's bets commit and return for the visitor's bankroll. */
+export function daySummary(bets: Bet[], bankroll: number) {
+  const stake = bets.reduce((t, b) => t + stakeFor(b.stake, bankroll), 0);
+  const expected = bets.reduce((t, b) => t + stakeFor(b.stake, bankroll) * b.edge, 0);
+  const allWin = bets.reduce((t, b) => t + stakeFor(b.stake, bankroll) * (b.price - 1), 0);
+  const settled = bets.filter((b) => b.status === "won" || b.status === "lost");
+  const result = settled.reduce((t, b) => t + b.gain * bankroll, 0);
+  const cell = (k: string, v: string, s: string, tone = "") => `<div class="kpi"><div class="k">${k}</div><div class="v num ${tone}">${v}</div><div class="s">${s}</div></div>`;
+  return `<section class="kpis daysum">
+    ${cell("À engager", eur(stake), `${bets.length} pari${bets.length > 1 ? "s" : ""} · ${pct(stake / (bankroll || 1)).replace("+", "")} de la bankroll`)}
+    ${cell("Gain espéré", `${expected >= 0 ? "+" : "−"}${eur(Math.abs(expected))}`, "moyenne sur le long terme", "up")}
+    ${cell("Si tout passe", `+${eur(allWin)}`, "tous les paris gagnants")}
+    ${settled.length
+      ? cell("Résultat", `${result >= 0 ? "+" : "−"}${eur(Math.abs(result))}`, `${settled.length}/${bets.length} matchs joués · ${won(settled)}`, result >= 0 ? "up" : "down")
+      : cell("Résultat", "–", "aucun match joué")}
+  </section>`;
+}

@@ -29,13 +29,13 @@ export function betsTable(bets: Bet[], bankroll: number, opts: { date: "day" | "
   const rows = bets.map((b) => `<tr class="click ${b.status === "pending" ? "live" : ""}" data-id="${esc(b.id)}">
       <td class="mono">${when(b.kickoff)}</td>
       ${matchCell(b, `<span class="pick-s">${esc(betLabel(b))} · ${odds(b.price)}</span><span class="pick-s">${resultCell(b)}</span>`)}
-      <td class="hide-xs">${esc(betLabel(b))}</td>
+      <td class="hide-xs">${esc(betLabel(b))}${probBar(b.probs, b.side)}</td>
       <td class="r mono hide-xs">${odds(b.price)}</td>
       <td class="r mono hide-s">${odds(b.fair_price)}</td>
       <td class="r mono edge hide-xs">${pct(b.edge)}</td>
       <td class="r"><span class="stake">${eur(stakeFor(b.stake, bankroll))}</span></td>
       <td class="r hide-xs">${resultCell(b)}</td></tr>`).join("");
-  return `<table class="tbl bets"><thead><tr><th>Coup d'envoi</th><th>Match</th><th class="hide-xs">Pari</th><th class="r hide-xs">Cote</th><th class="r hide-s">Juste prix</th><th class="r hide-xs">Avantage</th><th class="r">Mise</th><th class="r hide-xs">Résultat</th></tr></thead>
+  return `<table class="tbl bets"><thead><tr><th>Coup d'envoi</th><th>Match</th><th class="hide-xs">Pari · probabilités 1 / N / 2</th><th class="r hide-xs">Cote</th><th class="r hide-s">Juste prix</th><th class="r hide-xs">Avantage</th><th class="r">Mise</th><th class="r hide-xs">Résultat</th></tr></thead>
     <tbody>${rows}</tbody></table>`;
 }
 
@@ -46,3 +46,10 @@ export function bindRows(root: HTMLElement) {
     location.hash = `#/match/${tr.dataset.id}`;
   }));
 }
+
+const SIDE_SHORT = { home: "1", draw: "N", away: "2" } as const;
+/** 1 / N / 2 probability bar (Pinnacle fair line); the outcome we bet on is highlighted. */
+export const probBar = (probs: Bet["probs"], side: Bet["side"], big = false) =>
+  `<div class="pbar ${big ? "pbar-big" : ""}">${(["home", "draw", "away"] as const).map((s) =>
+    `<span class="pb ${s === side ? "pb-on" : ""}" style="flex:${Math.max(probs[s], 0.04)}" title="${SIDE_SHORT[s]} ${Math.round(probs[s] * 100)} %">
+      <b>${big ? `${SIDE_SHORT[s]} · ` : ""}${Math.round(probs[s] * 100)}%</b></span>`).join("")}</div>`;

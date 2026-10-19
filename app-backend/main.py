@@ -55,6 +55,22 @@ app.add_middleware(
 
 app_start_time = time.time()
 
+
+@app.on_event("startup")
+def warm_elo_cache() -> None:
+    """Compute the Elo history in the background so the first match page is fast."""
+    import threading
+
+    from app.services.site import elo_ratings
+
+    def warm():
+        try:
+            elo_ratings()
+        except Exception:
+            logger.exception("Elo warm-up failed")
+
+    threading.Thread(target=warm, daemon=True).start()
+
 @app.get(
     "/",
     response_model=HealthCheckResponse,

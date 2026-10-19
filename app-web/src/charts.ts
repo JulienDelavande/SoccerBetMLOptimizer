@@ -1,5 +1,5 @@
 import { drawdown, eur, fmtDate, pct } from "./format";
-import type { EquityPoint, GroupStat, LinePoint } from "./types";
+import type { EquityPoint, GroupStat, LinePoint, SeriesPoint } from "./types";
 
 // Charts are plain SVG strings; colours come from CSS classes so the theme switch needs no re-render.
 
@@ -168,4 +168,31 @@ export function oddsChart(points: LinePoint[], ours: number, kickoff: string, bo
     <text class="c-axis-strong" x="${box.w - box.right + 6}" y="${y(last.v) + (Math.abs(y(last.v) - y(ours)) < 14 ? 16 : 4)}">clôt. ${last.v.toFixed(2)}</text>
     <text class="c-axis" x="${box.left}" y="${box.h - 8}">${day(t0)}</text>
     <text class="c-axis" x="${box.w - box.right}" y="${box.h - 8}" text-anchor="end">coup d'envoi ${day(t1)}</text></svg>`;
+}
+
+export interface Series { label: string; cls: string; points: SeriesPoint[]; dashed?: boolean }
+
+/** Several dated series on one chart (Elo, xG), labelled at their last point. */
+export function multiLineChart(series: Series[], digits = 0, box: Box = { w: 560, h: 240, top: 14, right: 110, bottom: 26, left: 46 }) {
+  const all = series.flatMap((s) => s.points);
+  if (all.length < 2) return `<div class="empty">Pas assez de données.</div>`;
+  const ts = all.map((p) => new Date(p.d).getTime()), vs = all.map((p) => p.v);
+  const t0 = Math.min(...ts), t1 = Math.max(...ts), lo = Math.min(...vs), hi = Math.max(...vs), pad = (hi - lo) * 0.12 || 1;
+  const x = scale(t0, t1, box.left, box.w - box.right), y = scale(lo - pad, hi + pad, box.h - box.bottom, box.top);
+  const grid = ticks(lo - pad, hi + pad, 3).map((v) =>
+    `<line class="c-grid" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
+    `<text class="c-axis" x="${box.left - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(digits)}</text>`).join("");
+  const months = monthTicks(t0, t1).map((t) =>
+    `<text class="c-axis" x="${x(t)}" y="${box.h - 8}" text-anchor="middle">${new Date(t).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" })}</text>`).join("");
+  const labels: number[] = [];
+  const lines = series.filter((s) => s.points.length).map((s) => {
+    const d = s.points.map((p, i) => `${i ? "L" : "M"}${x(new Date(p.d).getTime())},${y(p.v)}`).join(" ");
+    const last = s.points[s.points.length - 1];
+    let ly = y(last.v) + 4;
+    while (labels.some((l) => Math.abs(l - ly) < 13)) ly += 13;
+    labels.push(ly);
+    return `<path class="c-series ${s.cls}${s.dashed ? " dashed" : ""}" d="${d}"/>
+      <text class="c-series-t ${s.cls}" x="${box.w - box.right + 8}" y="${ly}">${s.label} ${last.v.toFixed(digits)}</text>`;
+  }).join("");
+  return `<svg class="chart" viewBox="0 0 ${box.w} ${box.h}">${grid}${months}${lines}</svg>`;
 }

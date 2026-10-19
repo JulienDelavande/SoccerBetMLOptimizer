@@ -16,6 +16,7 @@ dependencies = [
     "httpx>=0.28.1",
     "numpy>=1.26",
     "scipy>=1.11",
+    "trueskill>=0.4.5",  # imported by optibet_lib.feature_eng.team_stats (Elo charts)
 ]
 
 [tool.uv.sources]

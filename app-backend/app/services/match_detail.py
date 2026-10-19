@@ -6,6 +6,9 @@ import numpy as np
 import pandas as pd
 
 from app.services.site_payload import SIDES, bet_table, closing_fair
+from app.services.team_charts import elo_series, xg_series
+
+ELO_YEARS = 2
 
 FORM_GAMES = 5
 
@@ -55,11 +58,13 @@ def head_to_head(matches: pd.DataFrame, home: str, away: str, before: datetime.d
 
 
 def build_match_detail(bet: pd.DataFrame, pinnacle: pd.DataFrame, books: pd.DataFrame, matches: pd.DataFrame,
-                       now: datetime.datetime, links: pd.DataFrame | None = None) -> dict | None:
+                       now: datetime.datetime, links: pd.DataFrame | None = None,
+                       elo: pd.DataFrame | None = None) -> dict | None:
     """`bet`: one optim_results row joined with fbref (league, scores, notes, xg, venue, referee).
     `pinnacle`: Pinnacle (datetime_insert, side, price) rows before kickoff.
     `books`: (bookmaker_key, bookmaker_title, side, price) at bet time. `matches`: FBref results
-    with canonical team names (game, date, league, home, away, home_g, away_g)."""
+    with canonical team names (game, date, league, home, away, home_g, away_g, home_xg, away_xg).
+    `elo`: pre-match Elo history (date, team, elo) from team_charts.elo_history."""
     if bet.empty:
         return None
     closing = pinnacle.sort_values("datetime_insert").groupby("side").tail(1).assign(match_id=bet["match_id"].iloc[0])
@@ -77,9 +82,15 @@ def build_match_detail(bet: pd.DataFrame, pinnacle: pd.DataFrame, books: pd.Data
         "bet": {"side": t["side"], "book": t["book"], "price": float(t["price"]), "fair_price": float(t["fair_price"]),
                 "edge": float(t["edge"]), "stake": float(t["stake"]), "gain": float(t["gain"]),
                 "clv": None if pd.isna(t["clv"]) else float(t["clv"]), "link": t["link"]},
+        "probs": {s: float(t[f"p_{s}"]) for s in SIDES},
+        "closing_probs": None if fair_close.empty else {s: float(fair_close.iloc[0][s]) for s in SIDES},
         "closing_fair_price": None if fair_close.empty else {s: float(1 / fair_close.iloc[0][s]) for s in SIDES},
         "pinnacle": line_series(pinnacle),
         "books": books_table(books, t["book"]),
         "form": {"home": team_form(matches, t["home"], kickoff_day), "away": team_form(matches, t["away"], kickoff_day)},
         "h2h": head_to_head(matches, t["home"], t["away"], kickoff_day),
+        "elo": None if elo is None else {
+            side: elo_series(elo, t[side], kickoff_day - datetime.timedelta(days=365 * ELO_YEARS), kickoff_day)
+            for side in ("home", "away")},
+        "xg_form": {side: xg_series(matches, t[side], kickoff_day) for side in ("home", "away")},
     }

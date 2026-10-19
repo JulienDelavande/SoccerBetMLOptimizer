@@ -10,13 +10,15 @@ D = datetime.date
 
 
 def matches():
-    return pd.DataFrame([
+    m = pd.DataFrame([
         {"game": "a", "date": D(2026, 10, 1), "league": "ESP-La Liga", "home": "H1", "away": "X", "home_g": 2, "away_g": 0},
         {"game": "b", "date": D(2026, 10, 5), "league": "ESP-La Liga", "home": "Y", "away": "H1", "home_g": 1, "away_g": 1},
         {"game": "c", "date": D(2026, 10, 8), "league": "ESP-La Liga", "home": "A1", "away": "H1", "home_g": 3, "away_g": 1},
         {"game": "d", "date": D(2026, 10, 12), "league": "ESP-La Liga", "home": "H1", "away": "Z", "home_g": None, "away_g": None},
         {"game": "e", "date": D(2026, 10, 30), "league": "ESP-La Liga", "home": "H1", "away": "W", "home_g": 4, "away_g": 0},
     ])
+    m["home_xg"], m["away_xg"] = [1.5, 0.9, 2.0, None, 3.0], [0.4, 1.1, 0.8, None, 0.2]
+    return m
 
 
 def test_team_form_is_before_kickoff_newest_first_from_team_view():
@@ -62,6 +64,10 @@ def test_build_match_detail():
     assert d["bet"]["price"] == 2.2 and d["bet"]["clv"] == pytest.approx(2.2 / d["closing_fair_price"]["home"] - 1)
     assert len(d["pinnacle"]["home"]) == 2 and d["books"][0]["ours"]
     assert d["form"]["home"][0]["opponent"] == "A1"
+    assert sum(d["probs"].values()) == pytest.approx(1)
+    assert d["closing_probs"]["home"] == pytest.approx(1 / d["closing_fair_price"]["home"])
+    assert d["elo"] is None  # no Elo history given
+    assert [p["for"] for p in d["xg_form"]["home"]] == [pytest.approx((1.5 + 1.1 + 0.8) / 3, abs=0.01)]  # rounded to 2 decimals
 
 
 def test_build_match_detail_unknown_bet():
