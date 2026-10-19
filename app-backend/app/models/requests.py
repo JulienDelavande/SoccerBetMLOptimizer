@@ -227,6 +227,10 @@ class PerformanceGainsRequest(PerformanceRequest):
 
 class BotStrategyEnum(Enum):
     """Enumeration for bot strategies with key and display name."""
+    # Value bets against Pinnacle's fair line (pipelines /value_bets, daily CronJob). The only
+    # strategy still scheduled: the model-only ones below are kept for their history.
+    VALUE_PINNACLE_1XBET = ("value_pinnacle_1xbet", "Value bets vs Pinnacle (1xBet)")
+
     # Same Day strategies
     AUTO_SAME_DAY_KELLY = ("auto_same_day_kelly", "Same Day Kelly")
     AUTO_SAME_DAY_LINEAR_L10 = ("auto_same_day_linear_l10", "Same Day Linear L10")
