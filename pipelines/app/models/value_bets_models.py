@@ -11,7 +11,8 @@ class ValueBetsRequest(BaseModel):
     kelly_fraction: float = Field(default=0.25, gt=0, le=1)
     max_stake: float = Field(default=0.05, gt=0, le=1, description="Cap per bet, share of bankroll")
     max_total: float = Field(default=0.30, gt=0, le=1, description="Cap per run, share of bankroll")
-    blend_weight: float = Field(default=0.1, ge=0, le=1, description="Model weight blended with Pinnacle")
+    blend_weight: float = Field(default=0.0, ge=0, le=1,
+                                description="Model weight blended with Pinnacle (0: the model degrades Pinnacle over 14 seasons)")
     fresh_hours: float = Field(default=6.0, gt=0, description="Max lag of a soft price behind Pinnacle's update")
     model: str = "RSF_PR_LR"
     optim_label: str = "value_pinnacle_1xbet"

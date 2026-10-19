@@ -6,11 +6,20 @@ from optibet_lib.betting import blend_with_model, devig, kelly_stakes, select_va
 
 
 def test_devig_removes_margin_and_keeps_ranking():
-    p = devig(np.array([[2.0, 3.5, 4.0]]))
+    prices = np.array([[2.0, 3.5, 4.0]])
+    implied = 1 / prices[0]
+    np.testing.assert_allclose(devig(prices, "proportional")[0], implied / implied.sum())
+    p = devig(prices)  # Shin by default
     assert p.sum() == pytest.approx(1)
     assert p[0, 0] > p[0, 1] > p[0, 2]
-    implied = 1 / np.array([2.0, 3.5, 4.0])
-    np.testing.assert_allclose(p[0], implied / implied.sum())
+
+
+def test_shin_moves_margin_onto_the_longshot():
+    prices = np.array([[1.30, 5.50, 11.0]])
+    prop, shin = devig(prices, "proportional")[0], devig(prices, "shin")[0]
+    assert shin[0] > prop[0]        # favourite gets more probability
+    assert shin[2] < prop[2]        # longshot gets less
+    np.testing.assert_allclose(devig(np.array([[2.0, 4.0, 4.0]]) * 1.0, "shin").sum(), 1)
 
 
 def test_devig_rejects_invalid_prices():

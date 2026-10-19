@@ -47,6 +47,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", default="/work/data")
     parser.add_argument("--start", default="2024-08-01")
+    parser.add_argument("--models", default=",".join(CANDIDATES), help="comma-separated subset of CANDIDATES")
+    parser.add_argument("--out", default="oos.parquet")
     args = parser.parse_args()
     df = pd.read_parquet(f"{args.data}/matches.parquet")
     df["datetime"] = pd.to_datetime(df["datetime"])
@@ -60,13 +62,14 @@ def main():
         if test.empty:
             continue
         y = train["FTR"].astype(int)
-        for name, (factory, feats) in CANDIDATES.items():
+        for name in args.models.split(","):
+            factory, feats = CANDIDATES[name]
             model = factory().fit(train[feats], y)
             p = model.predict_proba(test[feats])
             out.append(pd.DataFrame({"game": test["game"].values, "model": name,
                                      "p_away": p[:, 0], "p_draw": p[:, 1], "p_home": p[:, 2]}))
         print(f"{m_start:%Y-%m}: train={len(train)} test={len(test)} ({time.time() - t0:.0f}s)", flush=True)
-    pd.concat(out).to_parquet(f"{args.data}/oos.parquet", index=False)
+    pd.concat(out).to_parquet(f"{args.data}/{args.out}", index=False)
 
 
 if __name__ == "__main__":
