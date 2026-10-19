@@ -4,7 +4,7 @@ CREATE MATERIALIZED VIEW mv_models_results_last_inferred AS
 SELECT *
 FROM (
   SELECT *,
-         ROW_NUMBER() OVER (PARTITION BY game ORDER BY datetime_inference DESC) AS rk
+         ROW_NUMBER() OVER (PARTITION BY model, game ORDER BY datetime_inference DESC) AS rk
   FROM models_results
 ) sub
 WHERE rk = 1;
@@ -42,21 +42,10 @@ FROM (
              ORDER BY bookmaker_last_update DESC
            ) AS rk
     FROM mv_soccer_odds_normalized
+    -- Pre-match prices only: the API also returns in-play events.
+    WHERE bookmaker_last_update < commence_time
 ) sub
 WHERE rk = 1;
 
 -- Index utile
 CREATE INDEX idx_soccer_odds_last_norm_match ON mv_soccer_odds_last_normalized(match_id);
-
-DROP MATERIALIZED VIEW IF EXISTS mv_models_results_last_inferred CASCADE;
-
-CREATE MATERIALIZED VIEW mv_models_results_last_inferred AS
-SELECT *
-FROM (
-  SELECT *,
-         ROW_NUMBER() OVER (PARTITION BY game ORDER BY datetime_inference DESC) AS rk
-  FROM models_results
-) sub
-WHERE rk = 1;
-
-CREATE INDEX idx_models_results_last_inferred_game ON mv_models_results_last_inferred(game);
