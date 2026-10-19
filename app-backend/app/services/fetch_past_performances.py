@@ -27,6 +27,7 @@ SELECT o.*, f.*
 FROM last_optim o
 JOIN fbref_results f ON o.game = f.game
 WHERE f.date BETWEEN :datetime_first_match AND :datetime_last_match
+  AND f.home_g IS NOT NULL AND f.away_g IS NOT NULL  -- unplayed matches are not draws
   AND f.game_id IS NOT NULL
 """
 

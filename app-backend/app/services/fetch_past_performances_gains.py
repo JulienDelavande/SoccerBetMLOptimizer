@@ -24,13 +24,15 @@ joined AS (
     JOIN fbref_results f ON o.game = f.game
     WHERE f.date BETWEEN :start_date AND :end_date
       AND f.game_id IS NOT NULL
+      AND f.home_g IS NOT NULL AND f.away_g IS NOT NULL  -- unplayed matches are not draws
 ),
 match_with_gain AS (
     SELECT *,
+        -- Stakes on outcomes not bet are 0 with a NULL price: COALESCE keeps the row's gain.
         CASE
-            WHEN home_g > away_g THEN (f_home * odds_home - (f_draw + f_away + f_home)) / :divisor
-            WHEN away_g > home_g THEN (f_away * odds_away - (f_draw + f_away + f_home)) / :divisor
-            ELSE (f_draw * odds_draw - (f_draw + f_away + f_home)) / :divisor
+            WHEN home_g > away_g THEN (COALESCE(f_home * odds_home, 0) - (f_draw + f_away + f_home)) / :divisor
+            WHEN away_g > home_g THEN (COALESCE(f_away * odds_away, 0) - (f_draw + f_away + f_home)) / :divisor
+            ELSE (COALESCE(f_draw * odds_draw, 0) - (f_draw + f_away + f_home)) / :divisor
         END AS gain
     FROM joined
 ),
@@ -52,7 +54,7 @@ ORDER BY day;
 """
 
 
-def fetch_past_performances_gains_fn(optim_label='manual', datetime_first_match=None, datetime_last_match=None, divisor=2):
+def fetch_past_performances_gains_fn(optim_label='manual', datetime_first_match=None, datetime_last_match=None, divisor=1):
     try:
         if datetime_first_match:
             datetime_first_match = datetime.datetime.strptime(datetime_first_match, "%Y-%m-%d %H:%M:%S")

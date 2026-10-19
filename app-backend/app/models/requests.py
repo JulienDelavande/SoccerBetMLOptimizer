@@ -162,9 +162,10 @@ class PerformanceRequest(BaseModel):
         description="Bankroll amount to consider for performance calculations"
     )
     divisor: float = Field(
-        2.0,
-        ge=0,
-        description="Divisor of fractions of bankroll to apply to stakes"
+        1.0,
+        gt=0,
+        description="Extra divisor on stored fractions. The optimizer already divided f before storing it, "
+                    "so 1 shows the recommended stakes (the former default 2 halved them a second time)."
     )
     bet_precision: float = Field(
         0.01,
@@ -208,9 +209,9 @@ class PerformanceGainsRequest(PerformanceRequest):
     """Request model for fetching past performance gains."""
     
     divisor: float = Field(
-        2,
+        1,
         ge=1,
-        description="Divisor for gain calculations"
+        description="Extra divisor on stored fractions (1 = recommended stakes, see PerformanceRequest)"
     )
 
     class Config:
@@ -220,7 +221,7 @@ class PerformanceGainsRequest(PerformanceRequest):
                 "optim_label": "manual",
                 "datetime_first_match": "2024-01-01 00:00:00",
                 "datetime_last_match": "2024-01-31 23:59:59",
-                "divisor": 2
+                "divisor": 1
             }
         }
 

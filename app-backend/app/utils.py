@@ -51,7 +51,7 @@ def dataframe_to_dict_safe(df: pd.DataFrame) -> List[Dict[str, Any]]:
         return []
 
 
-def format_performance_data(results_df: pd.DataFrame, bankroll: float = 100.0, divisor: float = 2.0, bet_precision: float = 0.01) -> tuple[list, dict, dict]:
+def format_performance_data(results_df: pd.DataFrame, bankroll: float = 100.0, divisor: float = 1.0, bet_precision: float = 0.01) -> tuple[list, dict, dict]:
     """
     Format performance data from DataFrame into structured matches, metrics, and period info.
     
