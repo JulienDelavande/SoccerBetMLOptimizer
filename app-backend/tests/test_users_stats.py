@@ -35,3 +35,22 @@ def test_stats_from_settled_bets():
     assert s["roi"] == pytest.approx(20.0 / 30.0)
     assert s["win_rate"] == pytest.approx(2 / 3)
     assert [p["delta"] for p in s["equity"]] == [10.0, 0.0, 20.0]  # cumulative
+
+
+def test_ledger_records_is_json_safe():
+    import datetime as dt
+
+    import numpy as np
+    from app.services.users import ledger_records
+
+    df = pd.DataFrame([
+        {"match_id": "m1", "side": "home", "stake": 5.0, "settled_gain": np.nan,
+         "created_at": dt.datetime(2026, 10, 20, 12, 0), "commence_time": pd.Timestamp("2026-10-21 19:00"),
+         "home_team": "A", "away_team": "B"},
+    ])
+    rec = ledger_records(df)[0]
+    assert rec["settled_gain"] is None
+    assert rec["created_at"] == "2026-10-20T12:00:00"
+    assert rec["commence_time"] == "2026-10-21T19:00:00"
+    import json
+    json.dumps(rec)  # must not raise
