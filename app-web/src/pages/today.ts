@@ -1,7 +1,9 @@
 import { attachEquityHover, equityChart } from "../charts";
 import { dayKey, eur, eur0, fmtDayKey, fmtStamp, odds, pct, sliceEquity, splitAmount, stakeFor, todayKey } from "../format";
 import type { Bet, SiteData } from "../types";
-import { BANKROLL_KEY, betsTable, bindRows, kpiStrip, savedBankroll } from "./shared";
+import { BANKROLL_KEY, betsTable, bindRows, kpiStrip, riskStake, savedBankroll } from "./shared";
+import { currentUser } from "../session";
+import { getView } from "../view";
 import { locale, t } from "../i18n";
 
 const RANGES: [string, number | null][] = [["1M", 31], ["3M", 92], ["1Y", 366], ["ALL", null]];
@@ -10,6 +12,8 @@ const RANGE_LABEL: Record<string, string> = { "1Y": "1A", "ALL": "TOUT" };  // F
 /** Home: track record on top, then the bets recommended on one day (default: the latest). */
 export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
   const k = data.kpis;
+  const user = currentUser();
+  const mine = !!user && getView() === "me";
   const days = [...new Set(data.bets.map((b) => dayKey(b.odds_at)))].sort();
   const selected = day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : days[days.length - 1] ?? todayKey();
   const [int, dec] = splitAmount(k?.bankroll ?? data.start_bankroll);
@@ -63,7 +67,7 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
   drawEq(3);
 
   const input = app.querySelector<HTMLInputElement>("#bk")!;
-  input.value = String(savedBankroll());
+  input.value = String(mine && user ? user.bankroll : savedBankroll());
   let current = selected;
   // Changing day only redraws the day section and rewrites the URL in place: no re-render, no scroll.
   const show = (d: string | undefined) => {
@@ -86,12 +90,17 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
     app.querySelector<HTMLButtonElement>("#next")!.disabled = !days.some((d) => d > current);
     picker.value = current;
     app.querySelector("#dayname")!.textContent = fmtDayKey(current);
-    const bets = data.bets.filter((b) => dayKey(b.odds_at) === current).sort((a, b) => a.kickoff.localeCompare(b.kickoff));
+    let bets = data.bets.filter((b) => dayKey(b.odds_at) === current).sort((a, b) => a.kickoff.localeCompare(b.kickoff));
+    if (mine && user) {
+      const books = user.books;
+      bets = bets.filter((b) => books.length === 0 || books.includes(b.book))
+                 .map((b) => ({ ...b, stake: riskStake(b.stake, user.risk_preset) }));
+    }
     app.querySelector("#dayinfo")!.innerHTML = dayInfo(bets);
     app.querySelector("#daysum")!.innerHTML = bets.length ? daySummary(bets, bankroll) : "";
     const box = app.querySelector<HTMLElement>("#bets")!;
     box.innerHTML = bets.length === 0
-      ? `<div class="empty">${t("Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).")}</div>`
+      ? `<div class="empty">${mine ? t("Aucun pari chez tes bookmakers ce jour-là.") : t("Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).")}</div>`
       : betsTable(bets, bankroll, { date: "day" });
     bindRows(box);
   }

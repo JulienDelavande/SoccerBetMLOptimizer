@@ -23,14 +23,14 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 1320px) { .shell { margin: 0; border-width: 0 0 2px; } }
 
 /* top bar */
-.bar { display: grid; grid-template-columns: auto 1fr auto auto; border-bottom: 2px solid var(--ink); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; position: sticky; top: 0; z-index: 5; background: var(--bg); }
+.bar { display: flex; align-items: stretch; border-bottom: 2px solid var(--ink); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; position: sticky; top: 0; z-index: 5; background: var(--bg); }
 .logo { font-family: Archivo, sans-serif; font-weight: 900; font-size: 22px; letter-spacing: -1px; background: var(--acid); color: var(--on-acid); padding: 10px 18px; display: flex; align-items: center; }
-.menu { display: flex; overflow-x: auto; min-width: 0; scrollbar-width: none; }
+.menu { display: flex; overflow-x: auto; min-width: 0; flex: 1; scrollbar-width: none; }
 .menu a { padding: 15px 18px; border-right: 1px solid var(--line); white-space: nowrap; }
 .menu a:hover { background: var(--hover); }
 .menu a.on { background: var(--ink); color: var(--bg); }
-.stamp { border-left: 2px solid var(--ink); color: var(--up); padding: 15px 18px; white-space: nowrap; }
-.theme { border: 0; border-left: 2px solid var(--ink); background: none; padding: 0 16px; cursor: pointer; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+.stamp { flex: none; border-left: 2px solid var(--ink); color: var(--up); padding: 15px 18px; white-space: nowrap; }
+.theme { flex: none; border: 0; border-left: 2px solid var(--ink); background: none; padding: 0 16px; cursor: pointer; font-family: "JetBrains Mono", monospace; font-size: 12px; }
 .theme:hover { background: var(--hover); }
 
 .k { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--mute); }
@@ -323,3 +323,10 @@ path.s-home, path.s-away { fill: none; }
 .go.danger { border-color: var(--down); color: var(--down); }
 .go.danger:hover { background: var(--down); color: #fff; }
 @media (max-width: 640px) { .settings, .mystat-row { grid-template-columns: 1fr 1fr; } }
+
+/* Bot / Me view switch (header) */
+.viewsw { display: flex; border: 2px solid var(--ink); margin: 0 4px; align-self: center; height: 28px; flex: none; }
+.viewsw button { border: 0; background: none; color: var(--mute); padding: 0 12px; font: 700 11px "JetBrains Mono", monospace; text-transform: uppercase; cursor: pointer; }
+.viewsw button.on { background: var(--acid); color: var(--on-acid); }
+.viewsw[hidden] { display: none; }
+@media (max-width: 640px) { .viewsw button { padding: 0 8px; } }

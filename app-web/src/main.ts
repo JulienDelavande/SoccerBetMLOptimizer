@@ -8,6 +8,7 @@ import { renderAccount } from "./pages/account";
 import { installLogoFallback } from "./logos";
 import { currentUser, initSession } from "./session";
 import { getLang, setLang, t } from "./i18n";
+import { getView, setView } from "./view";
 import type { SiteData } from "./types";
 import { esc, utc } from "./format";
 
@@ -33,6 +34,17 @@ function paintChrome() {
   document.querySelector("#foot-age")!.textContent = t("18+ · Joueurs Info Service 09 74 75 13 13");
   document.querySelector("#lang")!.textContent = getLang() === "fr" ? "EN" : "FR";
   paintAccountLink();
+  paintViewSwitch();
+}
+
+/** The Bot/Me switch: shown only when signed in; reflects the current view. */
+function paintViewSwitch() {
+  const sw = document.querySelector<HTMLElement>("#viewsw")!;
+  sw.hidden = !currentUser();
+  sw.querySelectorAll<HTMLButtonElement>("button[data-view]").forEach((b) => {
+    b.textContent = t(b.dataset.view === "bot" ? "Bot" : "Moi");
+    b.classList.toggle("on", b.dataset.view === getView());
+  });
 }
 
 function paintStamp() {
@@ -78,6 +90,11 @@ document.querySelector("#lang")!.addEventListener("click", () => {
   setLang(getLang() === "fr" ? "en" : "fr");
   document.documentElement.lang = getLang();
   paintChrome(); paintStamp(); route();
+});
+
+document.querySelector("#viewsw")!.addEventListener("click", (e) => {
+  const v = (e.target as HTMLElement).closest<HTMLButtonElement>("button[data-view]")?.dataset.view;
+  if (v === "bot" || v === "me") { setView(v); paintViewSwitch(); route(); }
 });
 
 Promise.all([load(), initSession()]).then(([data]) => {

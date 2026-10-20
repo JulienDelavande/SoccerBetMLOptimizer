@@ -1,10 +1,15 @@
 import { attachEquityHover, clvChart, drawdownChart, equityChart, groupTable, monthlyGrid } from "../charts";
+import { getMyBets } from "../api";
 import { eur, odds, pct } from "../format";
 import type { SiteData } from "../types";
 import { kpiStrip } from "./shared";
+import { currentUser } from "../session";
+import { getView } from "../view";
 import { locale, t } from "../i18n";
 
 export function renderPerformance(app: HTMLElement, data: SiteData) {
+  const user = currentUser();
+  if (user && getView() === "me") { renderMyPerformance(app, user.bankroll); return; }
   const k = data.kpis;
   if (!k) { app.innerHTML = `<div class="empty pad">${t("Pas encore de pari réglé.")}</div>`; return; }
   app.innerHTML = `
@@ -32,4 +37,24 @@ export function renderPerformance(app: HTMLElement, data: SiteData) {
   const eq = app.querySelector<HTMLElement>("#eq")!;
   eq.innerHTML = equityChart(data.equity, data.start_bankroll);
   attachEquityHover(eq, data.equity);
+}
+
+/** "Me" view: the signed-in user's own realised performance, from their confirmed bets. */
+function renderMyPerformance(app: HTMLElement, bankroll: number) {
+  app.innerHTML = `<section class="sec"><div class="sec-head"><h2>${t("Ma performance")}</h2></div></section>
+    <div id="myperf"><div class="empty pad">${t("Chargement…")}</div></div>`;
+  getMyBets().then(({ stats: s }) => {
+    const box = app.querySelector<HTMLElement>("#myperf")!;
+    if (s.settled === 0) { box.innerHTML = `<div class="empty pad">${t("Confirme tes paris pour suivre ta bankroll réelle.")}</div>`; return; }
+    const eq = [{ day: "", bankroll }, ...s.equity.map((p) => ({ day: p.t.slice(0, 10), bankroll: bankroll + p.delta }))];
+    box.innerHTML = kpiStrip([
+      [t("Gain net"), `${s.bankroll_delta >= 0 ? "+" : "−"}${eur(Math.abs(s.bankroll_delta))}`, "", s.bankroll_delta >= 0 ? "up" : "down"],
+      [t("ROI / pari"), s.roi === null ? "–" : pct(s.roi), t("mise fixe"), s.roi !== null && s.roi >= 0 ? "up" : "down"],
+      [t("Réussite"), s.win_rate === null ? "–" : `${Math.round(s.win_rate * 100)} %`, "", ""],
+      [t("Paris réglés"), `${s.settled}`, "", ""],
+    ]) + `<section class="panel"><div class="panel-h"><h3>${t("Bankroll")}</h3></div><div id="myeq"></div></section>`;
+    const el = app.querySelector<HTMLElement>("#myeq")!;
+    el.innerHTML = equityChart(eq, bankroll);
+    attachEquityHover(el, eq);
+  }).catch(() => { app.querySelector("#myperf")!.innerHTML = `<div class="empty pad">${t("Erreur de chargement.")}</div>`; });
 }
