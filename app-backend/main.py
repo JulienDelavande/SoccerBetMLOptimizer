@@ -346,7 +346,7 @@ def put_settings(body: SettingsUpdate, uid: int = Depends(auth.require_user)) ->
 @app.get("/me/bets", tags=["account"], summary="Personal ledger and stats")
 def get_my_bets(uid: int = Depends(auth.require_user)) -> dict:
     df = users_service.ledger(uid)
-    return {"bets": df.to_dict(orient="records"), "stats": users_service.personal_stats(uid)}
+    return {"bets": users_service.ledger_records(df), "stats": users_service.stats_from_ledger(df)}
 
 
 @app.post("/me/bets", tags=["account"], summary="Confirm a placed bet")

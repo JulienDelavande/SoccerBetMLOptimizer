@@ -106,12 +106,30 @@ def delete_account(uid: int) -> None:
 LEDGER_SQL = """
 SELECT b.match_id, b.side, b.recommended_price, b.placed_price, b.stake, b.status, b.settled_gain, b.created_at,
        f.league, f.home_g, f.away_g, f.notes,
-       o.home_team, o.away_team, o.commence_time
+       o.home_team, o.away_team,
+       (o.date_match + COALESCE(o.time_match, time '00:00')) AS commence_time
 FROM user_bets b
 LEFT JOIN optim_results o ON o.match_id = b.match_id AND o.optim_label = 'value_pinnacle'
 LEFT JOIN fbref_results f ON f.game = o.game
 WHERE b.user_id = :uid
 """
+
+
+def ledger_records(df: pd.DataFrame) -> list[dict]:
+    """JSON-safe rows (NaN -> None, timestamps -> ISO strings) for the API."""
+    out = []
+    for r in df.to_dict(orient="records"):
+        clean = {}
+        for k, v in r.items():
+            if isinstance(v, (pd.Timestamp, datetime.datetime, datetime.date)):
+                clean[k] = v.isoformat()
+            else:
+                try:
+                    clean[k] = None if pd.isna(v) else v
+                except (TypeError, ValueError):
+                    clean[k] = v
+        out.append(clean)
+    return out
 
 
 def ledger(uid: int) -> pd.DataFrame:
