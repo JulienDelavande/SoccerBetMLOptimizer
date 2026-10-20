@@ -32,6 +32,11 @@ data:
   PIPELINES_ENDPOINT_INFERENCE : predict
   PIPELINES_ENDPOINT_OPTIMIZATION : optimize
 
+  # Account area (public config; secret SESSION_SECRET is injected separately)
+  GOOGLE_CLIENT_ID : "{{ .Values.account.googleClientId }}"
+  TELEGRAM_BOT_USERNAME : "{{ .Values.account.telegramBot }}"
+  COOKIE_SECURE : "{{ .Values.account.cookieSecure }}"
+
   # App-backend
   ## API
   APP_BACKEND_PROTOCOL : http

@@ -69,11 +69,13 @@ version = "0.1.0"
 source = { virtual = "app-backend" }
 dependencies = [
     { name = "fastapi" },
+    { name = "google-auth" },
     { name = "httpx" },
     { name = "numpy" },
     { name = "optibet-lib" },
     { name = "pandas" },
     { name = "psycopg2-binary" },
+    { name = "pyjwt" },
     { name = "requests" },
     { name = "rich" },
     { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -86,11 +88,13 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.116.1" },
+    { name = "google-auth", specifier = ">=2.35" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "optibet-lib", editable = "optibet_lib" },
     { name = "pandas", specifier = ">=2.2.2" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
+    { name = "pyjwt", specifier = ">=2.9" },
     { name = "requests", specifier = ">=2.31.0" },
     { name = "rich", specifier = ">=13.7.1" },
     { name = "scipy", specifier = ">=1.11" },
@@ -2533,6 +2537,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/55/59/8bccf4157baf25e4aa5a0bb7fa3ba8600907de105ebc22b0c78cfbf6f565/pygments-2.17.2.tar.gz", hash = "sha256:da46cec9fd2de5be3a8a784f434e4c4ab670b4ff54d605c4c2717e9d49c4c367", size = 4827772, upload-time = "2023-11-21T20:43:53.875Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/97/9c/372fef8377a6e340b1704768d20daaded98bf13282b5327beb2e2fe2c7ef/pygments-2.17.2-py3-none-any.whl", hash = "sha256:b27c2826c47d0f3219f29554824c30c5e8945175d888647acd804ddd04af846c", size = 1179756, upload-time = "2023-11-21T20:43:49.423Z" },
+]
+
+[[package]]
+name = "pyjwt"
+version = "2.15.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/43/ea/5194e52748b0da83d71e082d75496eaec6e58f419f5e184786ded517e6a9/pyjwt-2.15.1.tar.gz", hash = "sha256:4f259e80cdfb6b3fc18a7de51fd1ef9ec79652f25019bae68975ca2468a34df8", size = 121252, upload-time = "2026-09-28T18:40:42.598Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/50/ca/44de4e75f8aadc457f0634be3b542815078ded46dca30efb960edeecad6e/pyjwt-2.15.1-py3-none-any.whl", hash = "sha256:42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193", size = 33860, upload-time = "2026-09-28T18:40:41.429Z" },
 ]
 
 [[package]]

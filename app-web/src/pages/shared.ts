@@ -1,6 +1,8 @@
 import { betLabel, bookName, esc, eur, fmtDate, fmtDay, fmtTime, odds, pct, stakeFor } from "../format";
 import { leagueLogo, teamLogo } from "../logos";
 import type { Bet } from "../types";
+import { confirmBet, removeBet } from "../api";
+import { currentUser } from "../session";
 
 /** Row of big KPI cells: [label, value, sub, tone]. */
 export const kpiStrip = (items: [string, string, string, string][]) =>
@@ -33,11 +35,17 @@ export function betsTable(bets: Bet[], bankroll: number, opts: { date: "day" | "
       <td class="r mono hide-xs">${odds(b.price)}</td>
       <td class="r mono hide-s">${odds(b.fair_price)}</td>
       <td class="r mono edge hide-xs">${pct(b.edge)}</td>
-      <td class="r"><span class="stake">${eur(stakeFor(b.stake, bankroll))}</span></td>
+      <td class="r"><span class="stake">${eur(stakeFor(b.stake, bankroll))}</span>${placedBtn(b, bankroll)}</td>
       <td class="r hide-xs">${resultCell(b)}</td></tr>`).join("");
   return `<table class="tbl bets"><thead><tr><th>Coup d'envoi</th><th>Match</th><th class="hide-xs">Pari · probabilités 1 / N / 2</th><th class="r hide-xs">Cote</th><th class="r hide-s">Juste prix</th><th class="r hide-xs">Avantage</th><th class="r">Mise</th><th class="r hide-xs">Résultat</th></tr></thead>
     <tbody>${rows}</tbody></table>`;
 }
+
+/** "J'ai joué" toggle, only for signed-in users and bets not yet started. */
+const placedBtn = (b: Bet, bankroll: number) =>
+  currentUser() && (b.status === "upcoming" || b.status === "pending")
+    ? `<button class="placed-btn" data-stop data-placed="${esc(b.id)}|${b.side}|${b.price}|${stakeFor(b.stake, bankroll)}">j'ai joué</button>`
+    : "";
 
 /** Opens the match detail when a bet row is clicked (links inside the row keep working). */
 export function bindRows(root: HTMLElement) {
@@ -45,6 +53,16 @@ export function bindRows(root: HTMLElement) {
     if ((e.target as HTMLElement).closest("[data-stop]")) return;
     sessionStorage.setItem(`scroll:${location.hash || "#/"}`, String(window.scrollY));
     location.hash = `#/match/${tr.dataset.id}`;
+  }));
+  root.querySelectorAll<HTMLButtonElement>("[data-placed]").forEach((btn) => btn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    const [match_id, side, price, stake] = btn.dataset.placed!.split("|");
+    const done = btn.classList.toggle("on");
+    btn.textContent = done ? "✓ joué" : "j'ai joué";
+    try {
+      if (done) await confirmBet({ match_id, side, recommended_price: Number(price), stake: Number(stake) });
+      else await removeBet(match_id, side);
+    } catch { btn.classList.toggle("on"); btn.textContent = "j'ai joué"; }
   }));
 }
 

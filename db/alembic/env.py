@@ -42,6 +42,7 @@ import models.sofifa_teams_stats
 import models.fbref_results
 import models.teams
 import models.team_alias
+import models.users
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
