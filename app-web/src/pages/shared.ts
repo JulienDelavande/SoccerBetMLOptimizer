@@ -13,6 +13,11 @@ export const kpiStrip = (items: [string, string, string, string][]) =>
 export const BANKROLL_KEY = "bankroll";
 export const savedBankroll = () => Math.max(0, Number(localStorage.getItem(BANKROLL_KEY) ?? "1000") || 0);
 
+// The bot stakes at half Kelly; a user's preset rescales that (capped at 5% per bet).
+const KELLY_BY_RISK: Record<string, number> = { prudent: 0.25, balanced: 0.5, aggressive: 1.0 };
+export const riskStake = (fraction: number, risk: string) =>
+  Math.min(fraction * ((KELLY_BY_RISK[risk] ?? 0.5) / 0.5), 0.05);
+
 export const matchCell = (b: Pick<Bet, "home" | "away" | "league" | "league_key">, extra = "") =>
   `<td class="match"><div class="teams"><span class="team">${teamLogo(b.home)}${esc(b.home)}</span><i>–</i><span class="team">${teamLogo(b.away)}${esc(b.away)}</span></div>
     <small>${leagueLogo(b.league_key, b.league)}${esc(b.league)}</small>${extra}</td>`;

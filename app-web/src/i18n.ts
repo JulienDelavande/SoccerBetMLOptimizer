@@ -30,9 +30,15 @@ export function t(fr: string, vars?: Record<string, string | number>): string {
 }
 
 const EN: Record<string, string> = {
+  "Règle ton espace, puis bascule en « Moi » (en haut) pour voir les paris et tes stats à ta façon.": "Set up your space, then switch to \"Me\" (top) to see the bets and your stats your way.",
+  "Vue": "View",
+  "Mon historique": "My history",
+  "Ma performance": "My performance",
+  "Aucun pari chez tes bookmakers ce jour-là.": "No bet at your bookmakers that day.",
+  "Mes paris de valeur du jour (tes bookmakers)": "Your value bets of the day (your bookmakers)",
   // nav / chrome
   "Aujourd'hui": "Today", "Performance": "Performance", "Historique": "History", "Méthode": "Method",
-  "Compte": "Account", "CHARGEMENT…": "LOADING…", "LIVE": "LIVE", "MAJ": "UPD", "HORS LIGNE": "OFFLINE",
+  "Compte": "Account", "Bot": "Bot", "Moi": "Me", "Mon espace": "My space", "CHARGEMENT…": "LOADING…", "LIVE": "LIVE", "MAJ": "UPD", "HORS LIGNE": "OFFLINE",
   "Chargement…": "Loading…",
   "OptiBet · paris de valeur, pas de conseil financier. Jouer comporte des risques.":
     "OptiBet · value bets, not financial advice. Gambling involves risk.",
