@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import { setLang } from "../i18n";
+beforeAll(() => setLang("fr"));
 import type { Bet } from "../types";
 import { daySummary } from "./today";
 

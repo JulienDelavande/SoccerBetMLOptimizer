@@ -1,9 +1,11 @@
 import { attachEquityHover, equityChart } from "../charts";
-import { dayKey, eur, fmtDayKey, fmtStamp, odds, pct, sliceEquity, splitAmount, stakeFor, todayKey } from "../format";
+import { dayKey, eur, eur0, fmtDayKey, fmtStamp, odds, pct, sliceEquity, splitAmount, stakeFor, todayKey } from "../format";
 import type { Bet, SiteData } from "../types";
 import { BANKROLL_KEY, betsTable, bindRows, kpiStrip, savedBankroll } from "./shared";
+import { locale, t } from "../i18n";
 
-const RANGES: [string, number | null][] = [["1M", 31], ["3M", 92], ["1A", 366], ["TOUT", null]];
+const RANGES: [string, number | null][] = [["1M", 31], ["3M", 92], ["1Y", 366], ["ALL", null]];
+const RANGE_LABEL: Record<string, string> = { "1Y": "1A", "ALL": "TOUT" };  // FR labels via i18n
 
 /** Home: track record on top, then the bets recommended on one day (default: the latest). */
 export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
@@ -15,32 +17,32 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
     <section class="hero">
       <div class="hero-l">
         <div>
-          <div class="k">Bankroll · départ ${eur(data.start_bankroll).replace(",00", "")} · ${k ? new Date(k.since).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) : ""}</div>
+          <div class="k">${t("Bankroll · départ {v} · {since}", { v: eur0(data.start_bankroll), since: k ? new Date(k.since).toLocaleDateString(locale(), { month: "long", year: "numeric" }) : "" })}</div>
           <div class="big num">${int}<span>${dec}</span></div>
           ${k ? `<div class="delta num ${k.return < 0 ? "neg" : ""}">${k.return >= 0 ? "▲" : "▼"} ${pct(k.return)}</div>` : ""}
         </div>
-        <p class="note">${k ? `${k.bets} paris réglés. ` : ""}On compare chaque cote à celle de Pinnacle, le bookmaker le plus précis du marché, et on ne joue que quand un bookmaker est en retard sur lui.</p>
+        <p class="note">${k ? t("{n} paris réglés. ", { n: k.bets }) : ""}${t("On compare chaque cote à celle de Pinnacle, le bookmaker le plus précis du marché, et on ne joue que quand un bookmaker est en retard sur lui.")}</p>
       </div>
       <div class="hero-chart">
-        <div class="tabs">${RANGES.map(([l], i) => `<button data-range="${i}" class="${i === 3 ? "on" : ""}">${l}</button>`).join("")}</div>
+        <div class="tabs">${RANGES.map(([l], i) => `<button data-range="${i}" class="${i === 3 ? "on" : ""}">${t(RANGE_LABEL[l] ?? l)}</button>`).join("")}</div>
         <div id="eq"></div>
       </div>
     </section>
     ${k ? kpiStrip([
-      ["CLV moyen", k.clv === null ? "–" : pct(k.clv), "vs clôture Pinnacle", k.clv !== null && k.clv >= 0 ? "up" : "down"],
-      ["Paris", `${k.bets}`, `${Math.round(k.win_rate * 100)} % gagnants`, ""],
-      ["ROI / pari", pct(k.roi), `cote moy. ${odds(k.avg_price)}`, k.roi >= 0 ? "" : "down"],
-      ["Drawdown max", pct(k.max_drawdown), new Date(k.max_drawdown_day).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }), "down"],
+      [t("CLV moyen"), k.clv === null ? "–" : pct(k.clv), t("vs clôture Pinnacle"), k.clv !== null && k.clv >= 0 ? "up" : "down"],
+      [t("Paris"), `${k.bets}`, t("{n} % gagnants", { n: Math.round(k.win_rate * 100) }), ""],
+      [t("ROI / pari"), pct(k.roi), t("cote moy. {v}", { v: odds(k.avg_price) }), k.roi >= 0 ? "" : "down"],
+      [t("Drawdown max"), pct(k.max_drawdown), new Date(k.max_drawdown_day).toLocaleDateString(locale(), { month: "long", year: "numeric" }), "down"],
     ]) : ""}
     <section class="sec" id="day">
       <div class="sec-head">
-        <h2>Paris du jour</h2>
-        <label class="bankroll">Ma bankroll <input id="bk" type="number" min="1" step="10" inputmode="decimal" /> €</label>
+        <h2>${t("Paris du jour")}</h2>
+        <label class="bankroll">${t("Ma bankroll")} <input id="bk" type="number" min="1" step="10" inputmode="decimal" /> €</label>
       </div>
       <div class="daynav">
-        <button id="prev" aria-label="Jour précédent">←</button>
+        <button id="prev" aria-label="${t('Jour précédent')}">←</button>
         <label class="daypick"><span id="dayname"></span><input id="daydate" type="date" /></label>
-        <button id="next" aria-label="Jour suivant">→</button>
+        <button id="next" aria-label="${t('Jour suivant')}">→</button>
         <span class="k" id="dayinfo"></span>
       </div>
       <div id="daysum"></div>
@@ -89,7 +91,7 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
     app.querySelector("#daysum")!.innerHTML = bets.length ? daySummary(bets, bankroll) : "";
     const box = app.querySelector<HTMLElement>("#bets")!;
     box.innerHTML = bets.length === 0
-      ? `<div class="empty">Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).</div>`
+      ? `<div class="empty">${t("Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).")}</div>`
       : betsTable(bets, bankroll, { date: "day" });
     bindRows(box);
   }
@@ -106,11 +108,11 @@ function dayInfo(bets: Bet[]) {
   if (bets.length === 0) return "";
   const first = bets.reduce((a, b) => (a.odds_at < b.odds_at ? a : b));
   return first.published
-    ? `<span class="pub">✓ Publié le ${fmtStamp(first.odds_at)}, avant les coups d'envoi</span>`
-    : `Cotes relevées le ${fmtStamp(first.odds_at)}`;
+    ? `<span class="pub">${t("✓ Publié le {t}, avant les coups d'envoi", { t: fmtStamp(first.odds_at) })}</span>`
+    : t("Cotes relevées le {t}", { t: fmtStamp(first.odds_at) });
 }
 
-const won = (bets: Bet[]) => { const n = bets.filter((b) => b.status === "won").length; return `${n} gagné${n > 1 ? "s" : ""}`; };
+const won = (bets: Bet[]) => { const n = bets.filter((b) => b.status === "won").length; return t(n > 1 ? "{n} gagnés" : "{n} gagné", { n }); };
 
 /** What the day's bets commit and return for the visitor's bankroll. */
 export function daySummary(bets: Bet[], bankroll: number) {
@@ -121,11 +123,11 @@ export function daySummary(bets: Bet[], bankroll: number) {
   const result = settled.reduce((t, b) => t + b.gain * bankroll, 0);
   const cell = (k: string, v: string, s: string, tone = "") => `<div class="kpi"><div class="k">${k}</div><div class="v num ${tone}">${v}</div><div class="s">${s}</div></div>`;
   return `<section class="kpis daysum">
-    ${cell("À engager", eur(stake), `${bets.length} pari${bets.length > 1 ? "s" : ""} · ${pct(stake / (bankroll || 1)).replace("+", "")} de la bankroll`)}
-    ${cell("Gain espéré", `${expected >= 0 ? "+" : "−"}${eur(Math.abs(expected))}`, "moyenne sur le long terme", "up")}
-    ${cell("Si tout passe", `+${eur(allWin)}`, "tous les paris gagnants")}
+    ${cell(t("À engager"), eur(stake), t(bets.length > 1 ? "{n} paris · {p} de la bankroll" : "{n} pari · {p} de la bankroll", { n: bets.length, p: pct(stake / (bankroll || 1)).replace("+", "") }))}
+    ${cell(t("Gain espéré"), `${expected >= 0 ? "+" : "−"}${eur(Math.abs(expected))}`, t("moyenne sur le long terme"), "up")}
+    ${cell(t("Si tout passe"), `+${eur(allWin)}`, t("tous les paris gagnants"))}
     ${settled.length
-      ? cell("Résultat", `${result >= 0 ? "+" : "−"}${eur(Math.abs(result))}`, `${settled.length}/${bets.length} matchs joués · ${won(settled)}`, result >= 0 ? "up" : "down")
-      : cell("Résultat", "–", "aucun match joué")}
+      ? cell(t("Résultat"), `${result >= 0 ? "+" : "−"}${eur(Math.abs(result))}`, t("{n}/{m} matchs joués · {w}", { n: settled.length, m: bets.length, w: won(settled) }), result >= 0 ? "up" : "down")
+      : cell(t("Résultat"), "–", t("aucun match joué"))}
   </section>`;
 }

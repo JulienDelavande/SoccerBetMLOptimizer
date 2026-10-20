@@ -3,6 +3,7 @@ import { leagueLogo, teamLogo } from "../logos";
 import type { Bet } from "../types";
 import { confirmBet, removeBet } from "../api";
 import { currentUser } from "../session";
+import { t } from "../i18n";
 
 /** Row of big KPI cells: [label, value, sub, tone]. */
 export const kpiStrip = (items: [string, string, string, string][]) =>
@@ -19,9 +20,9 @@ export const matchCell = (b: Pick<Bet, "home" | "away" | "league" | "league_key"
 /** Result cell: bet link before kickoff, live tag, or settled gain. */
 export const resultCell = (b: Bet) => {
   if (b.status === "upcoming")
-    return b.link ? `<a class="go" href="${esc(b.link)}" target="_blank" rel="noopener nofollow" data-stop>${esc(bookName(b.book))} ↗</a>` : `<span class="res res-up">À venir</span>`;
-  if (b.status === "pending") return `<span class="res res-live">EN COURS</span>`;
-  if (b.status === "void") return `<span class="res res-void">Annulé</span>`;
+    return b.link ? `<a class="go" href="${esc(b.link)}" target="_blank" rel="noopener nofollow" data-stop>${esc(bookName(b.book))} ↗</a>` : `<span class="res res-up">${t("À venir")}</span>`;
+  if (b.status === "pending") return `<span class="res res-live">${t("EN COURS")}</span>`;
+  if (b.status === "void") return `<span class="res res-void">${t("Annulé")}</span>`;
   return `<span class="res res-${b.status}">${b.score ?? ""} · ${pct(b.gain, 2)}</span>`;
 };
 
@@ -37,14 +38,14 @@ export function betsTable(bets: Bet[], bankroll: number, opts: { date: "day" | "
       <td class="r mono edge hide-xs">${pct(b.edge)}</td>
       <td class="r"><span class="stake">${eur(stakeFor(b.stake, bankroll))}</span>${placedBtn(b, bankroll)}</td>
       <td class="r hide-xs">${resultCell(b)}</td></tr>`).join("");
-  return `<table class="tbl bets"><thead><tr><th>Coup d'envoi</th><th>Match</th><th class="hide-xs">Pari · probabilités 1 / N / 2</th><th class="r hide-xs">Cote</th><th class="r hide-s">Juste prix</th><th class="r hide-xs">Avantage</th><th class="r">Mise</th><th class="r hide-xs">Résultat</th></tr></thead>
+  return `<table class="tbl bets"><thead><tr><th>${t("Coup d'envoi")}</th><th>${t("Match")}</th><th class="hide-xs">${t("Pari · probabilités 1 / N / 2")}</th><th class="r hide-xs">${t("Cote")}</th><th class="r hide-s">${t("Juste prix")}</th><th class="r hide-xs">${t("Avantage")}</th><th class="r">${t("Mise")}</th><th class="r hide-xs">${t("Résultat")}</th></tr></thead>
     <tbody>${rows}</tbody></table>`;
 }
 
 /** "J'ai joué" toggle, only for signed-in users and bets not yet started. */
 const placedBtn = (b: Bet, bankroll: number) =>
   currentUser() && (b.status === "upcoming" || b.status === "pending")
-    ? `<button class="placed-btn" data-stop data-placed="${esc(b.id)}|${b.side}|${b.price}|${stakeFor(b.stake, bankroll)}">j'ai joué</button>`
+    ? `<button class="placed-btn" data-stop data-placed="${esc(b.id)}|${b.side}|${b.price}|${stakeFor(b.stake, bankroll)}">${t("j'ai joué")}</button>`
     : "";
 
 /** Opens the match detail when a bet row is clicked (links inside the row keep working). */
@@ -58,11 +59,11 @@ export function bindRows(root: HTMLElement) {
     e.stopPropagation();
     const [match_id, side, price, stake] = btn.dataset.placed!.split("|");
     const done = btn.classList.toggle("on");
-    btn.textContent = done ? "✓ joué" : "j'ai joué";
+    btn.textContent = done ? t("✓ joué") : t("j'ai joué");
     try {
       if (done) await confirmBet({ match_id, side, recommended_price: Number(price), stake: Number(stake) });
       else await removeBet(match_id, side);
-    } catch { btn.classList.toggle("on"); btn.textContent = "j'ai joué"; }
+    } catch { btn.classList.toggle("on"); btn.textContent = t("j'ai joué"); }
   }));
 }
 
