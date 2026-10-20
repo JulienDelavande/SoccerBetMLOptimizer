@@ -7,14 +7,18 @@ Provides endpoints for optimization computations, predictions fetching, and perf
 
 import time
 import logging
+import os
 from typing import List, Annotated
 import datetime
 
-from fastapi import FastAPI, HTTPException, status, Body, Query
+from fastapi import FastAPI, HTTPException, status, Body, Query, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import httpx
 
 from app._config import PIPELINES_PROTOCOL, PIPELINES_HOST, PIPELINES_PORT, PIPELINES_ENDPOINT_OPTIMIZATION
+from app import auth
+from app.services import users as users_service
 
 from app.models import (
     OptimizationRequest,
@@ -260,6 +264,106 @@ def fetch_site_match(match_id: str, optim_label: str = "value_pinnacle") -> dict
     if detail is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unknown bet")
     return detail
+
+
+# ---------------------------------------------------------------------------
+# Account area (Google sign-in, personal settings, personal bet ledger)
+# ---------------------------------------------------------------------------
+TELEGRAM_BOT_USERNAME = os.getenv("TELEGRAM_BOT_USERNAME", "")
+
+
+class GoogleLogin(BaseModel):
+    credential: str  # Google ID token from Google Identity Services
+
+
+class SettingsUpdate(BaseModel):
+    bankroll: float | None = None
+    risk_preset: str | None = None  # prudent | balanced | aggressive
+    books: list[str] | None = None
+    min_edge: float | None = None
+    alerts_enabled: bool | None = None
+
+
+class BetConfirm(BaseModel):
+    match_id: str
+    side: str
+    recommended_price: float | None = None
+    placed_price: float | None = None
+    stake: float | None = None
+
+
+class BetDelete(BaseModel):
+    match_id: str
+    side: str
+
+
+@app.get("/config", tags=["account"], summary="Public frontend config")
+def public_config() -> dict:
+    """Non-secret config the frontend needs (Google client id, whether sign-in is on)."""
+    return {"auth_enabled": auth.auth_configured(), "google_client_id": auth.GOOGLE_CLIENT_ID or "",
+            "telegram_bot": TELEGRAM_BOT_USERNAME}
+
+
+@app.post("/auth/google", tags=["account"], summary="Sign in with a Google ID token")
+def auth_google(body: GoogleLogin, response: Response) -> dict:
+    claims = auth.verify_google_token(body.credential)
+    uid = users_service.upsert_user(claims)
+    auth.issue_session(response, uid)
+    return {"user": users_service.get_profile(uid)}
+
+
+@app.get("/auth/me", tags=["account"], summary="Current user (null if anonymous)")
+def auth_me(uid: int | None = Depends(auth.optional_user)) -> dict:
+    return {"user": users_service.get_profile(uid) if uid is not None else None}
+
+
+@app.post("/auth/logout", tags=["account"], summary="Sign out")
+def auth_logout(response: Response) -> dict:
+    auth.clear_session(response)
+    return {"status": "ok"}
+
+
+@app.delete("/account", tags=["account"], summary="Delete account and all personal data")
+def delete_account(response: Response, uid: int = Depends(auth.require_user)) -> dict:
+    users_service.delete_account(uid)
+    auth.clear_session(response)
+    return {"status": "deleted"}
+
+
+@app.get("/me/settings", tags=["account"], summary="Personal settings")
+def get_settings(uid: int = Depends(auth.require_user)) -> dict:
+    return {"user": users_service.get_profile(uid)}
+
+
+@app.put("/me/settings", tags=["account"], summary="Update personal settings")
+def put_settings(body: SettingsUpdate, uid: int = Depends(auth.require_user)) -> dict:
+    try:
+        return {"user": users_service.update_settings(uid, **body.model_dump(exclude_none=True))}
+    except ValueError as e:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
+
+
+@app.get("/me/bets", tags=["account"], summary="Personal ledger and stats")
+def get_my_bets(uid: int = Depends(auth.require_user)) -> dict:
+    df = users_service.ledger(uid)
+    return {"bets": df.to_dict(orient="records"), "stats": users_service.personal_stats(uid)}
+
+
+@app.post("/me/bets", tags=["account"], summary="Confirm a placed bet")
+def post_my_bet(body: BetConfirm, uid: int = Depends(auth.require_user)) -> dict:
+    users_service.confirm_bet(uid, body.match_id, body.side, body.recommended_price, body.placed_price, body.stake)
+    return {"status": "ok"}
+
+
+@app.delete("/me/bets", tags=["account"], summary="Remove a confirmed bet")
+def delete_my_bet(body: BetDelete, uid: int = Depends(auth.require_user)) -> dict:
+    users_service.remove_bet(uid, body.match_id, body.side)
+    return {"status": "ok"}
+
+
+@app.post("/me/telegram/link", tags=["account"], summary="Get a Telegram linking code")
+def telegram_link(uid: int = Depends(auth.require_user)) -> dict:
+    return {"code": users_service.telegram_link_code(uid), "bot": TELEGRAM_BOT_USERNAME}
 
 
 # Additional utility endpoints

@@ -9,6 +9,16 @@ image:
 global:
   envRef: global-config
 
+# Personal account area (Google sign-in, Telegram alerts). Public ids set in the
+# homelab-infra HelmRelease; SESSION_SECRET comes from a sealed secret.
+account:
+  googleClientId: ""   # Google OAuth Web client id (public); empty disables sign-in
+  telegramBot: ""      # Telegram bot username (without @)
+  cookieSecure: "true"
+  sessionSecret:
+    existingSecret: optibet-session
+    key: session-secret
+
 # External PostgreSQL (CloudNativePG cluster "optibet-db" in homelab-infra).
 database:
   host: optibet-db-rw

@@ -11,6 +11,22 @@ Usage: {{ include "inject_db_password" . }}
 {{- end }}
 
 {{/*
+SESSION_SECRET (JWT signing) from a secret, only if configured. Optional so the pod
+boots before the account feature's secret exists.
+Usage: {{ include "inject_session_secret" . }}
+*/}}
+{{- define "inject_session_secret" -}}
+{{- if .Values.account.sessionSecret.existingSecret }}
+- name: SESSION_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.account.sessionSecret.existingSecret }}
+      key: {{ .Values.account.sessionSecret.key }}
+      optional: true
+{{- end }}
+{{- end }}
+
+{{/*
 Helper function to inject THE_ODDS_API_KEY from either a direct value or un secret.
 Usage: {{ include "inject_api_key" . }}
 */}}

@@ -292,3 +292,34 @@ path.s-home, path.s-away { fill: none; }
   .tbl .res { font-size: 11px; padding: 3px 5px; }
   .go { padding: 3px 5px; font-size: 11px; }
 }
+
+/* account area */
+.nav-avatar { width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; margin-right: 6px; }
+.acct-hero { padding: 24px 22px 32px; border-top: 2px solid var(--ink); }
+.acct-pitch .lead { font-family: Archivo, sans-serif; font-weight: 900; font-size: clamp(22px, 3vw, 30px); letter-spacing: -.03em; margin-bottom: 16px; }
+.perks { list-style: none; padding: 0; display: grid; gap: 10px; max-width: 560px; margin-bottom: 24px; }
+.perks li { font-size: 15px; line-height: 1.5; color: var(--mute2); padding-left: 20px; position: relative; }
+.perks li::before { content: "→"; position: absolute; left: 0; color: var(--up); font-weight: 700; }
+.perks b { color: var(--ink); }
+.gbtn { min-height: 44px; }
+.acct-id { display: flex; align-items: center; gap: 10px; font-family: "JetBrains Mono", monospace; font-size: 13px; }
+.acct-id .avatar { width: 28px; height: 28px; border-radius: 50%; }
+.settings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; padding: 16px 22px 20px; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field.full { grid-column: 1 / -1; }
+.field > .k { font-size: 11px; }
+.field input { border: 2px solid var(--ink); background: var(--bg); padding: 8px 10px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 15px; color: var(--ink); max-width: 160px; }
+.field input:focus { outline: none; background: var(--acid); color: var(--on-acid); }
+.books { display: flex; flex-wrap: wrap; gap: 6px; }
+.books button { border: 1px solid var(--line); background: var(--bg); color: var(--mute2); padding: 5px 10px; font: 12px "JetBrains Mono", monospace; cursor: pointer; }
+.books button:hover { border-color: var(--ink); }
+.books button.on { background: var(--acid); color: var(--on-acid); border-color: var(--acid); font-weight: 700; }
+.tg code { background: var(--hover); padding: 2px 6px; font-family: "JetBrains Mono", monospace; }
+.mystat-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.mystat-row .v { font-family: Archivo, sans-serif; font-weight: 900; font-size: clamp(22px, 2.6vw, 30px); letter-spacing: -.04em; margin-top: 4px; }
+.placed-btn { display: block; margin-top: 6px; border: 1px solid var(--ink); background: none; color: var(--mute2); padding: 3px 8px; font: 11px "JetBrains Mono", monospace; cursor: pointer; white-space: nowrap; }
+.placed-btn:hover { background: var(--hover); }
+.placed-btn.on { background: var(--acid); color: var(--on-acid); border-color: var(--acid); font-weight: 700; }
+.go.danger { border-color: var(--down); color: var(--down); }
+.go.danger:hover { background: var(--down); color: #fff; }
+@media (max-width: 640px) { .settings, .mystat-row { grid-template-columns: 1fr 1fr; } }
