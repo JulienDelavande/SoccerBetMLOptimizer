@@ -1,4 +1,5 @@
 import { drawdown, eur, fmtDate, pct } from "./format";
+import { locale, t } from "./i18n";
 import type { EquityPoint, GroupStat, LinePoint, SeriesPoint } from "./types";
 
 // Charts are plain SVG strings; colours come from CSS classes so the theme switch needs no re-render.
@@ -15,7 +16,7 @@ function ticks(min: number, max: number, count = 4) {
 
 /** Step equity curve with grid, start-bankroll baseline and a last-value tag. */
 export function equityChart(eq: EquityPoint[], start: number, box: Box = { w: 760, h: 320, top: 16, right: 16, bottom: 28, left: 58 }) {
-  if (eq.length < 2) return `<div class="empty">Pas encore assez de paris réglés.</div>`;
+  if (eq.length < 2) return `<div class="empty">${t("Pas encore assez de paris réglés.")}</div>`;
   const vals = eq.map((p) => p.bankroll);
   const lo = Math.min(start, ...vals), hi = Math.max(start, ...vals), pad = (hi - lo) * 0.08 || 10;
   const t0 = new Date(eq[0].day).getTime(), t1 = new Date(eq[eq.length - 1].day).getTime();
@@ -30,7 +31,7 @@ export function equityChart(eq: EquityPoint[], start: number, box: Box = { w: 76
     `<text class="c-axis" x="${box.left - 8}" y="${y(v) + 4}" text-anchor="end">${Math.round(v)}</text>`).join("");
   const months = monthTicks(t0, t1).map((t) =>
     `<line class="c-grid" y1="${box.top}" y2="${box.h - box.bottom}" x1="${x(t)}" x2="${x(t)}"/>` +
-    `<text class="c-axis" x="${x(t) + 4}" y="${box.h - 8}">${new Date(t).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" })}</text>`).join("");
+    `<text class="c-axis" x="${x(t) + 4}" y="${box.h - 8}">${new Date(t).toLocaleDateString(locale(), { month: "short", year: "2-digit" })}</text>`).join("");
   const tagW = 92, tagX = Math.min(lx - tagW / 2, box.w - box.right - tagW), tagY = ly > box.h / 2 ? ly - 34 : ly + 12;
   return `<svg class="chart" viewBox="0 0 ${box.w} ${box.h}" data-eq='${JSON.stringify({ t0, t1, lo: lo - pad, hi: hi + pad, box })}'>
     ${grid}${months}
@@ -106,7 +107,7 @@ export function monthlyGrid(monthly: { month: string; return: number }[]) {
   }
   const names = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
   const max = Math.max(0.05, ...monthly.map((m) => Math.abs(m.return)));
-  const head = `<div class="mg-row mg-head"><span></span>${names.map((n) => `<span>${n}</span>`).join("")}<span>Année</span></div>`;
+  const head = `<div class="mg-row mg-head"><span></span>${names.map((n) => `<span>${n}</span>`).join("")}<span>${t("Année")}</span></div>`;
   const rows = [...byYear.entries()].map(([yr, months]) => {
     const year = [...months.values()].reduce((a, r) => a * (1 + r), 1) - 1;
     const cells = names.map((_, i) => {
@@ -123,7 +124,7 @@ export function monthlyGrid(monthly: { month: string; return: number }[]) {
 /** Horizontal profit bars with the group's stats. */
 export function groupTable(groups: GroupStat[], label: string) {
   const max = Math.max(1, ...groups.map((g) => Math.abs(g.profit)));
-  return `<table class="tbl groups"><thead><tr><th>${label}</th><th class="r">Paris</th><th class="r">Réussite</th><th class="r">ROI</th><th class="r">CLV</th><th>Gain sur 1 000 €</th></tr></thead><tbody>
+  return `<table class="tbl groups"><thead><tr><th>${label}</th><th class="r">${t("Paris")}</th><th class="r">${t("Réussite")}</th><th class="r">ROI</th><th class="r">${t("CLV")}</th><th>${t("Gain sur 1 000 €")}</th></tr></thead><tbody>
     ${groups.map((g) => `<tr><td class="strong">${g.name}</td><td class="r">${g.bets}</td><td class="r">${Math.round(g.win_rate * 100)} %</td>
       <td class="r ${g.roi >= 0 ? "up" : "down"}">${pct(g.roi)}</td><td class="r">${g.clv === null ? "–" : pct(g.clv)}</td>
       <td><div class="gbar"><span class="${g.profit >= 0 ? "gb-up" : "gb-down"}" style="width:${(Math.abs(g.profit) / max) * 100}%"></span><b>${g.profit >= 0 ? "+" : "−"}${Math.abs(Math.round(g.profit))} €</b></div></td></tr>`).join("")}
@@ -132,7 +133,7 @@ export function groupTable(groups: GroupStat[], label: string) {
 
 /** CLV per bet (dots) and its 30-bet rolling mean (line). */
 export function clvChart(series: { day: string; clv: number; rolling: number | null }[], box: Box = { w: 760, h: 220, top: 12, right: 16, bottom: 24, left: 58 }) {
-  if (series.length < 5) return `<div class="empty">Pas encore assez de paris.</div>`;
+  if (series.length < 5) return `<div class="empty">${t("Pas encore assez de paris.")}</div>`;
   const vals = series.map((s) => s.clv), lim = Math.max(0.05, Math.min(0.25, Math.max(...vals.map(Math.abs))));
   const x = scale(0, series.length - 1, box.left, box.w - box.right), y = scale(-lim, lim, box.h - box.bottom, box.top);
   const dots = series.map((s, i) => `<rect class="${s.clv >= 0 ? "c-dot-up" : "c-dot-down"}" x="${x(i) - 2}" y="${y(Math.max(-lim, Math.min(lim, s.clv))) - 2}" width="4" height="4"/>`).join("");
@@ -146,7 +147,7 @@ export function clvChart(series: { day: string; clv: number; rolling: number | n
 
 /** Pinnacle price of the chosen outcome over time, with our entry price as a reference line. */
 export function oddsChart(points: LinePoint[], ours: number, kickoff: string, box: Box = { w: 560, h: 220, top: 14, right: 70, bottom: 26, left: 44 }) {
-  if (points.length === 0) return `<div class="empty">Pas d'historique de cote Pinnacle.</div>`;
+  if (points.length === 0) return `<div class="empty">${t("Pas d'historique de cote Pinnacle.")}</div>`;
   const pts = points.map((p) => ({ t: new Date(`${p.t}Z`).getTime(), v: p.price }));
   const end = Math.max(pts[pts.length - 1].t, new Date(`${kickoff}Z`).getTime());
   const t0 = pts[0].t, t1 = end > t0 ? end : t0 + 3600000;
@@ -159,15 +160,15 @@ export function oddsChart(points: LinePoint[], ours: number, kickoff: string, bo
   const grid = ticks(lo - pad, hi + pad, 3).map((v) =>
     `<line class="c-grid" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
     `<text class="c-axis" x="${box.left - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(2)}</text>`).join("");
-  const day = (t: number) => new Date(t).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+  const day = (t: number) => new Date(t).toLocaleDateString(locale(), { day: "2-digit", month: "2-digit" });
   return `<svg class="chart" viewBox="0 0 ${box.w} ${box.h}">${grid}
     <line class="c-ours" x1="${box.left}" x2="${box.w - box.right}" y1="${y(ours)}" y2="${y(ours)}"/>
-    <text class="c-ours-t" x="${box.w - box.right + 6}" y="${y(ours) + 4}">nous ${ours.toFixed(2)}</text>
+    <text class="c-ours-t" x="${box.w - box.right + 6}" y="${y(ours) + 4}">${t("nous {v}", { v: ours.toFixed(2) })}</text>
     <path class="c-line" d="${d}"/>
     <rect class="c-dot" x="${x(t1) - 4}" y="${y(last.v) - 4}" width="8" height="8"/>
-    <text class="c-axis-strong" x="${box.w - box.right + 6}" y="${y(last.v) + (Math.abs(y(last.v) - y(ours)) < 14 ? 16 : 4)}">clôt. ${last.v.toFixed(2)}</text>
+    <text class="c-axis-strong" x="${box.w - box.right + 6}" y="${y(last.v) + (Math.abs(y(last.v) - y(ours)) < 14 ? 16 : 4)}">${t("clôt. {v}", { v: last.v.toFixed(2) })}</text>
     <text class="c-axis" x="${box.left}" y="${box.h - 8}">${day(t0)}</text>
-    <text class="c-axis" x="${box.w - box.right}" y="${box.h - 8}" text-anchor="end">coup d'envoi ${day(t1)}</text></svg>`;
+    <text class="c-axis" x="${box.w - box.right}" y="${box.h - 8}" text-anchor="end">${t("coup d'envoi {d}", { d: day(t1) })}</text></svg>`;
 }
 
 export interface Series { label: string; cls: string; points: SeriesPoint[]; dashed?: boolean }
@@ -175,7 +176,7 @@ export interface Series { label: string; cls: string; points: SeriesPoint[]; das
 /** Several dated series on one chart (Elo, xG), labelled at their last point. */
 export function multiLineChart(series: Series[], digits = 0, box: Box = { w: 560, h: 240, top: 14, right: 110, bottom: 26, left: 46 }) {
   const all = series.flatMap((s) => s.points);
-  if (all.length < 2) return `<div class="empty">Pas assez de données.</div>`;
+  if (all.length < 2) return `<div class="empty">${t("Pas assez de données.")}</div>`;
   const ts = all.map((p) => new Date(p.d).getTime()), vs = all.map((p) => p.v);
   const t0 = Math.min(...ts), t1 = Math.max(...ts), lo = Math.min(...vs), hi = Math.max(...vs), pad = (hi - lo) * 0.12 || 1;
   const x = scale(t0, t1, box.left, box.w - box.right), y = scale(lo - pad, hi + pad, box.h - box.bottom, box.top);
@@ -183,7 +184,7 @@ export function multiLineChart(series: Series[], digits = 0, box: Box = { w: 560
     `<line class="c-grid" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
     `<text class="c-axis" x="${box.left - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(digits)}</text>`).join("");
   const months = monthTicks(t0, t1).map((t) =>
-    `<text class="c-axis" x="${x(t)}" y="${box.h - 8}" text-anchor="middle">${new Date(t).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" })}</text>`).join("");
+    `<text class="c-axis" x="${x(t)}" y="${box.h - 8}" text-anchor="middle">${new Date(t).toLocaleDateString(locale(), { month: "short", year: "2-digit" })}</text>`).join("");
   const labels: number[] = [];
   const lines = series.filter((s) => s.points.length).map((s) => {
     const d = s.points.map((p, i) => `${i ? "L" : "M"}${x(new Date(p.d).getTime())},${y(p.v)}`).join(" ");

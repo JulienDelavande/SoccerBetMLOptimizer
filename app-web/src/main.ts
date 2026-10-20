@@ -7,6 +7,7 @@ import { renderMatch } from "./pages/match";
 import { renderAccount } from "./pages/account";
 import { installLogoFallback } from "./logos";
 import { currentUser, initSession } from "./session";
+import { getLang, setLang, t } from "./i18n";
 import type { SiteData } from "./types";
 import { esc, utc } from "./format";
 
@@ -14,14 +15,31 @@ const app = document.querySelector<HTMLElement>("#app")!;
 const routes: Record<string, (app: HTMLElement, data: SiteData) => void> = {
   "/": renderToday, "/performance": renderPerformance, "/historique": renderHistory, "/methode": renderMethod,
 };
+const NAV: Record<string, string> = {
+  "/": "Aujourd'hui", "/performance": "Performance", "/historique": "Historique", "/methode": "Méthode", "/compte": "Compte",
+};
 installLogoFallback();
-// Whether the visitor navigated inside the site (a deep-linked match page goes "back" to its day).
 let navigated = false;
+let siteData: SiteData | null = null;
 
-async function load(): Promise<SiteData> {
-  const res = await fetch("/api/site");
-  if (!res.ok) throw new Error(`API ${res.status}`);
-  return res.json();
+/** Translate the static chrome (nav labels, footer, lang button) for the current language. */
+function paintChrome() {
+  document.querySelectorAll<HTMLAnchorElement>(".menu a[data-route]").forEach((a) => {
+    const label = NAV[a.dataset.route!];
+    if (label) a.textContent = t(label);
+  });
+  document.querySelector("#foot-legal")!.textContent =
+    t("OptiBet · paris de valeur, pas de conseil financier. Jouer comporte des risques.");
+  document.querySelector("#foot-age")!.textContent = t("18+ · Joueurs Info Service 09 74 75 13 13");
+  document.querySelector("#lang")!.textContent = getLang() === "fr" ? "EN" : "FR";
+  paintAccountLink();
+}
+
+function paintStamp() {
+  if (!siteData) return;
+  const at = utc(siteData.generated_at);
+  document.querySelector("#stamp")!.textContent =
+    `● ${t("LIVE")} · ${at.toLocaleDateString(undefined, { weekday: "short", day: "2-digit", month: "2-digit" }).toUpperCase()} · ${t("MAJ")} ${at.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}`;
 }
 
 /** Reflect the signed-in state in the nav (avatar/name on the account link). */
@@ -30,11 +48,18 @@ function paintAccountLink() {
   if (!a) return;
   const u = currentUser();
   a.innerHTML = u
-    ? `${u.avatar_url ? `<img src="${esc(u.avatar_url)}" class="nav-avatar" alt="">` : ""}${esc((u.name ?? "Compte").split(" ")[0])}`
-    : "Compte";
+    ? `${u.avatar_url ? `<img src="${esc(u.avatar_url)}" class="nav-avatar" alt="">` : ""}${esc((u.name ?? t("Compte")).split(" ")[0])}`
+    : t("Compte");
 }
 
-function route(data: SiteData) {
+async function load(): Promise<SiteData> {
+  const res = await fetch("/api/site");
+  if (!res.ok) throw new Error(`API ${res.status}`);
+  return res.json();
+}
+
+function route() {
+  const data = siteData!;
   const path = location.hash.replace(/^#/, "") || "/";
   const match = path.match(/^\/match\/([\w-]+)$/);
   const day = path.match(/^\/jour\/(\d{4}-\d{2}-\d{2})$/);
@@ -49,14 +74,19 @@ function route(data: SiteData) {
   else { routes[key](app, data); window.scrollTo(0, 0); }
 }
 
+document.querySelector("#lang")!.addEventListener("click", () => {
+  setLang(getLang() === "fr" ? "en" : "fr");
+  document.documentElement.lang = getLang();
+  paintChrome(); paintStamp(); route();
+});
+
 Promise.all([load(), initSession()]).then(([data]) => {
-  const at = utc(data.generated_at);
-  document.querySelector("#stamp")!.textContent =
-    `● LIVE · ${at.toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit", month: "2-digit" }).toUpperCase()} · MAJ ${at.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`;
-  paintAccountLink();
-  window.addEventListener("hashchange", () => { navigated = true; paintAccountLink(); route(data); });
-  route(data);
+  siteData = data;
+  document.documentElement.lang = getLang();
+  paintChrome(); paintStamp();
+  window.addEventListener("hashchange", () => { navigated = true; paintAccountLink(); route(); });
+  route();
 }).catch((e) => {
-  document.querySelector("#stamp")!.textContent = "● HORS LIGNE";
-  app.innerHTML = `<div class="empty pad">Impossible de charger les données (${String(e.message)}). Réessayez dans un instant.</div>`;
+  document.querySelector("#stamp")!.textContent = `● ${t("HORS LIGNE")}`;
+  app.innerHTML = `<div class="empty pad">${t("Impossible de charger les données ({e}). Réessayez dans un instant.", { e: String(e.message) })}</div>`;
 });
