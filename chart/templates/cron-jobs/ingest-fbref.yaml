@@ -18,7 +18,7 @@ spec:
               - |
                 echo "Ingesting data from FBref"
 
-                curl -fsS -X POST "${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_FBREF}" \
+                curl -fsS --retry 20 --retry-delay 30 --retry-connrefused -X POST "${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_FBREF}" \
                   -H "accept: application/json" -H "Content-Type: application/json" \
                   -d '{
                         "get_current_season_only": true,
