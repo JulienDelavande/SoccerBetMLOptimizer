@@ -18,7 +18,7 @@ spec:
             command: ["/bin/sh", "-c"]
             args:
               - |
-                curl -fsS -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/value_bets" \
+                curl -fsS --retry 20 --retry-delay 30 --retry-connrefused -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/value_bets" \
                   -H "accept: application/json" -H "Content-Type: application/json" \
                   -d '{{ .Values.valueBets.request | toJson }}'
             envFrom:

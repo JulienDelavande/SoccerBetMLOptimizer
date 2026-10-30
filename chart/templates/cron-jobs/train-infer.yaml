@@ -19,7 +19,7 @@ spec:
                 echo  "Training and inferring match results"
 
                 echo "curl -fsS -X POST ${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_INFERENCE} -H 'Content-Type: application/json' -d '{}'"
-                curl -fsS -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_INFERENCE}" \
+                curl -fsS --retry 20 --retry-delay 30 --retry-connrefused -X POST "${PIPELINES_PROTOCOL}://${PIPELINES_HOST}:${PIPELINES_PORT}/${PIPELINES_ENDPOINT_INFERENCE}" \
                   -H "accept: application/json" \
                   -H "Content-Type: application/json" \
                   -d '{}'

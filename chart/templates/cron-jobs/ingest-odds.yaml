@@ -18,7 +18,7 @@ spec:
               - |
                 echo "Ingesting data from the odds API"
 
-                curl -fsS -X POST "${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS}" \
+                curl -fsS --retry 20 --retry-delay 30 --retry-connrefused -X POST "${DATA_INGESTION_PROTOCOL}://${DATA_INGESTION_HOST}:${DATA_INGESTION_PORT}/${DATA_INGESTION_ENDPOINT_THE_ODDS_API_ODDS}" \
                   -H "accept: application/json" -H "Content-Type: application/json" \
                   -d '{"run_in_background": false}'
 
