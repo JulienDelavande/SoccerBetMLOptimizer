@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { setLang } from "./i18n";
 beforeAll(() => setLang("fr"));
-import { betLabel, drawdown, pct, sliceEquity, splitAmount, stakeFor } from "./format";
+import { betLabel, drawdown, isoUtc, pct, sliceEquity, splitAmount, stakeFor } from "./format";
 
 describe("format", () => {
   it("formats signed percentages with a real minus sign", () => {
@@ -85,5 +85,16 @@ describe("numbers and days", () => {
     expect(prevDayKey("2026-11-02")).toBe("2026-11-01");
     expect(prevDayKey("2026-03-01")).toBe("2026-02-28");
     expect(prevDayKey("2026-03-30")).toBe("2026-03-29");
+  });
+});
+
+describe("isoUtc", () => {
+  // Safari rejects "2024-09-23Z" (Chrome accepts it): every naive backend value must become strict ISO 8601.
+  it("turns date-only keys into midnight UTC", () => expect(isoUtc("2024-09-23")).toBe("2024-09-23T00:00:00Z"));
+  it("marks naive timestamps as UTC", () => expect(isoUtc("2026-11-15T14:49:21")).toBe("2026-11-15T14:49:21Z"));
+  it("accepts a space separator", () => expect(isoUtc("2026-11-15 14:49:21")).toBe("2026-11-15T14:49:21Z"));
+  it("keeps explicit zones", () => {
+    expect(isoUtc("2026-11-15T14:49:21Z")).toBe("2026-11-15T14:49:21Z");
+    expect(isoUtc("2026-11-15T14:49:21+01:00")).toBe("2026-11-15T14:49:21+01:00");
   });
 });

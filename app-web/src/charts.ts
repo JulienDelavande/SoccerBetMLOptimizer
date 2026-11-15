@@ -1,4 +1,4 @@
-import { axisNum, drawdown, esc, eur, eur0, fmtDate, pct } from "./format";
+import { axisNum, drawdown, esc, eur, eur0, fmtDate, pct, utc } from "./format";
 import { locale, t } from "./i18n";
 import type { EquityPoint, GroupStat, LinePoint, SeriesPoint } from "./types";
 
@@ -204,8 +204,8 @@ export function clvChart(series: { day: string; clv: number; rolling: number | n
 export function oddsChart(points: LinePoint[], ours: number, kickoff: string, box0: Box = { w: 560, h: 240, top: 14, right: 78, bottom: 26, left: 44 }) {
   const box = fit(box0);
   if (points.length === 0) return `<div class="empty">${t("Pas d'historique de cote Pinnacle.")}</div>`;
-  const pts = points.map((p) => ({ t: new Date(`${p.t}Z`).getTime(), v: p.price }));
-  const end = Math.max(pts[pts.length - 1].t, new Date(`${kickoff}Z`).getTime());
+  const pts = points.map((p) => ({ t: utc(p.t).getTime(), v: p.price }));
+  const end = Math.max(pts[pts.length - 1].t, utc(kickoff).getTime());
   const t0 = pts[0].t, t1 = end > t0 ? end : t0 + 3600000;
   const vals = [ours, ...pts.map((p) => p.v)], lo = Math.min(...vals), hi = Math.max(...vals), pad = (hi - lo) * 0.25 || 0.1;
   const x = scale(t0, t1, box.left, box.w - box.right), y = scale(lo - pad, hi + pad, box.h - box.bottom, box.top);
