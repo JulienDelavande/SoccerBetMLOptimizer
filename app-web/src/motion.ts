@@ -117,7 +117,12 @@ export function prepareCount(el: HTMLElement): CountJob | null {
  *  re-renders in place (language switch) without replaying the stagger and count-ups. */
 export function withTransition(update: () => void, replay = true) {
   const d = document as Document & { startViewTransition?: (cb: () => void) => unknown };
-  const run = () => { if (replay) markRoute(); else markSettled(); update(); };
+  const run = () => {
+    if (replay) markRoute(); else markSettled();
+    // Errors thrown inside a view-transition callback only reject its promise: rethrow them
+    // outside so they reach the console instead of silently leaving a half-rendered page.
+    try { update(); } catch (e) { setTimeout(() => { throw e; }); }
+  };
   if (!d.startViewTransition || reducedMotion()) { run(); return; }
   d.startViewTransition(run);
 }

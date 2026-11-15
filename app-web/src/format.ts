@@ -54,8 +54,14 @@ export const bookName = (k: string) => BOOKS[k] ?? prettyBook(k);
 /** One day before a YYYY-MM-DD key (UTC arithmetic, DST-safe). */
 export const prevDayKey = (k: string) => new Date(Date.parse(`${k}T12:00:00Z`) - 86400000).toISOString().slice(0, 10);
 
-/** Backend timestamps are naive UTC. */
-export const utc = (s: string) => new Date(s.endsWith("Z") || s.includes("+") ? s : `${s}Z`);
+/** Backend timestamps are naive UTC, sometimes date-only. Strict ISO 8601 output, because Safari
+ *  returns Invalid Date for "2024-09-23Z" and Intl formatters then throw a RangeError. */
+export const isoUtc = (s: string) => {
+  const v = s.trim().replace(" ", "T");
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return `${v}T00:00:00Z`;
+  return /(Z|[+-]\d{2}:?\d{2})$/.test(v) ? v : `${v}Z`;
+};
+export const utc = (s: string) => new Date(isoUtc(s));
 const dtf = (opts: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(locale(), opts);
 export const fmtDay = (s: string) => dtf({ weekday: "short", day: "2-digit", month: "short" }).format(utc(s));
 export const fmtTime = (s: string) => dtf({ hour: "2-digit", minute: "2-digit" }).format(utc(s));
