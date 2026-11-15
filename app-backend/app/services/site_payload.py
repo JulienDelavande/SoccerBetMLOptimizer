@@ -2,7 +2,8 @@
 
 Pure functions (no database) so they can be unit tested; app/services/site.py feeds them.
 Stakes are fractions of the bankroll at bet time and gains compound per kickoff day,
-like the /performance/gains endpoint.
+like the /performance/gains endpoint. Only bets published live (LIVE_SINCE on) are shown:
+earlier recommendations were replayed after the fact and are kept out of the public record.
 """
 import datetime
 
@@ -12,7 +13,8 @@ import pandas as pd
 from optibet_lib.betting import devig
 
 SIDES = ("home", "draw", "away")
-START_BANKROLL = 1000.0
+# Fictitious starting bankroll of the public track record (simulation, not real money).
+START_BANKROLL = 10000.0
 ODDS_BUCKETS = [(1.0, 2.0, "< 2.00"), (2.0, 2.5, "2.00 – 2.49"), (2.5, 3.0, "2.50 – 2.99"), (3.0, 99.0, "≥ 3.00")]
 LEAGUES = {
     "ENG-Premier League": "Premier League", "ESP-La Liga": "LaLiga", "ITA-Serie A": "Serie A",
@@ -29,8 +31,16 @@ LEAGUE_KEYS = {
     "UEFA Champions League": "soccer_uefa_champs_league",
 }
 # Recommendations stored from this date on were published live by the daily job; earlier
-# ones were replayed on the odds recorded at the time (research/backfill_value_bets.py).
+# ones were replayed on the odds recorded at the time (research/backfill_value_bets.py) and
+# never appear on the public site.
 LIVE_SINCE = datetime.datetime(2026, 10, 19)
+
+
+def live_only(t: pd.DataFrame) -> pd.DataFrame:
+    """Rows of a bet table recommended (odds recorded) on or after LIVE_SINCE."""
+    if t.empty:
+        return t
+    return t[pd.to_datetime(t["odds_at"]) >= LIVE_SINCE].reset_index(drop=True)
 
 
 def _none_if_nan(v):
@@ -112,7 +122,11 @@ def group_stats(settled: pd.DataFrame, key: pd.Series) -> list[dict]:
 
 def build_payload(bets: pd.DataFrame, closing: pd.DataFrame, now: datetime.datetime,
                   links: pd.DataFrame | None = None) -> dict:
-    t = bet_table(bets, closing, now, links)
+    return summarize(live_only(bet_table(bets, closing, now, links)), now)
+
+
+def summarize(t: pd.DataFrame, now: datetime.datetime) -> dict:
+    """Public payload from a bet table already restricted to live bets."""
     payload = {"generated_at": now.isoformat(timespec="seconds"), "start_bankroll": START_BANKROLL,
                "live_since": LIVE_SINCE.isoformat(), "bets": [], "equity": [], "kpis": None, "monthly": [],
                "by_league": [], "by_odds": [], "clv_series": []}
@@ -121,8 +135,8 @@ def build_payload(bets: pd.DataFrame, closing: pd.DataFrame, now: datetime.datet
 
     def record(r):
         return {"id": r.match_id, "kickoff": r.kickoff.isoformat(), "odds_at": r.odds_at.isoformat(timespec="seconds"),
-                "published": bool(r.odds_at >= LIVE_SINCE), "home": r.home, "away": r.away, "league": r.league,
-                "league_key": r.league_key, "link": r.link, "side": r.side,
+                "home": r.home, "away": r.away, "league": r.league,
+                "league_key": r.league_key, "side": r.side,
                 "probs": {"home": round(float(r.p_home), 4), "draw": round(float(r.p_draw), 4), "away": round(float(r.p_away), 4)},
                 "price": round(float(r.price), 2), "fair_price": round(float(r.fair_price), 3),
                 "edge": float(r.edge), "stake": float(r.stake), "book": r.book, "status": r.status,

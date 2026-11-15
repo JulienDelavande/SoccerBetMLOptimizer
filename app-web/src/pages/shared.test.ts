@@ -8,11 +8,23 @@ import type { UserProfile } from "../api";
 import { equityChart } from "../charts";
 
 const bet = (o: Partial<Bet>): Bet => ({
-  id: "abc123", kickoff: "2026-11-22T14:00:00", odds_at: "2026-11-15T11:05:00", published: true, league_key: "soccer_italy_serie_a",
-  link: "https://example.test/bet", probs: { home: 0.35, draw: 0.28, away: 0.37 }, home: "Sassuolo", away: "Genoa", league: "Serie A",
+  id: "abc123", kickoff: "2026-11-22T14:00:00", odds_at: "2026-11-15T11:05:00", league_key: "soccer_italy_serie_a",
+  probs: { home: 0.35, draw: 0.28, away: 0.37 }, home: "Sassuolo", away: "Genoa", league: "Serie A",
   side: "away", price: 2.85, fair_price: 2.74, edge: 0.041, stake: 0.0111, book: "unibet_se", status: "upcoming", score: null, gain: 0, clv: null, ...o,
 });
 const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+
+describe("no outbound bookmaker links", () => {
+  it("shows the bookmaker as plain text on tickets and rows, never as a link", () => {
+    for (const html of [betTickets([bet({})], 1000), betsTable([bet({})], 1000, { date: "day" })]) {
+      expect(html).not.toContain("example.test");
+      expect(html).not.toMatch(/target="_blank"/);
+      expect(text(html)).toMatch(/À venir/);
+    }
+    expect(text(betTickets([bet({})], 1000))).toMatch(/Cote · Unibet \(SE\)/);
+    expect(text(betTickets([bet({})], 1000))).toMatch(/Écart de cote \+4,1 %/);
+  });
+});
 
 describe("betTickets", () => {
   it("renders a ticket linking to the match with price, stake and edge", () => {
@@ -52,11 +64,11 @@ describe("marquee", () => {
 });
 
 describe("equityChart callouts", () => {
-  it("pins the record high and the worst trough", () => {
+  it("pins the peak and the worst trough", () => {
     const eq = [1000, 1100, 1300, 1050, 980, 1010, 1200, 1250, 1240, 1260, 1270, 1280].map((b, i) =>
       ({ day: `2026-01-${String(i + 1).padStart(2, "0")}`, bankroll: b }));
     const t = text(equityChart(eq, 1000));
-    expect(t).toMatch(/Record 1\s300 €/);
+    expect(t).toMatch(/Plus haut 1\s300 €/);
     expect(t).toMatch(/Pire creux −24,6 %/);
   });
 

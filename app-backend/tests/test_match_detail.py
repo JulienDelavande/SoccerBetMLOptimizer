@@ -70,5 +70,10 @@ def test_build_match_detail():
     assert [p["for"] for p in d["xg_form"]["home"]] == [pytest.approx((1.5 + 1.1 + 0.8) / 3, abs=0.01)]  # rounded to 2 decimals
 
 
+def test_build_match_detail_hides_replayed_bets():
+    b = frame(bet(1, "2026-10-20", "home", 2.2, 0.02, score=(2, 1), odds_at="2026-10-18 10:05:00"))
+    assert build_match_detail(b, pd.DataFrame(columns=["datetime_insert", "side", "price"]), pd.DataFrame(), matches(), NOW) is None
+
+
 def test_build_match_detail_unknown_bet():
     assert build_match_detail(pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), matches(), NOW) is None

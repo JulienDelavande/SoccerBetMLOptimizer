@@ -5,19 +5,25 @@ import type { Bet, SiteData } from "../types";
 import { ballCallouts, daySummary } from "./today";
 
 const bet = (o: Partial<Bet>): Bet => ({
-  id: "x", kickoff: "2026-10-20T19:00:00", odds_at: "2026-10-19T10:05:00", published: true, league_key: null, link: null,
+  id: "x", kickoff: "2026-10-20T19:00:00", odds_at: "2026-10-19T10:05:00", league_key: null,
   probs: { home: 0.5, draw: 0.3, away: 0.2 }, home: "A", away: "B", league: "L", side: "home", price: 2, fair_price: 1.9,
   edge: 0.05, stake: 0.02, book: "onexbet", status: "upcoming", score: null, gain: 0, clv: null, ...o,
 });
 const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 
 describe("daySummary", () => {
-  it("sums stakes, expected and maximum gain for the bankroll", () => {
+  it("sums the stakes and the maximum loss for the visitor's bankroll", () => {
     const t = text(daySummary([bet({}), bet({ price: 3, stake: 0.01 })], 1000));
-    expect(t).toMatch(/À engager 30,00 €/);
-    expect(t).toMatch(/Gain espéré \+1,50 €/); // 20*0.05 + 10*0.05
-    expect(t).toMatch(/Si tout passe \+40,00 €/); // 20*1 + 10*2
-    expect(t).toMatch(/aucun match joué/);
+    expect(t).toMatch(/À engager 30,00 € 2 paris · 3,0 % de la bankroll/);
+    expect(t).toMatch(/Perte maximale −30,00 € si tous les paris sont perdus/);
+    expect(t).toMatch(/Résultat – aucun match joué/);
+  });
+
+  it("never projects a gain: no theoretical edge, no all-win amount", () => {
+    const t = text(daySummary([bet({}), bet({ price: 3, stake: 0.01 })], 1000));
+    expect(t).not.toMatch(/Écart théorique|Fourchette|tout gagné|Gain espéré|Si tout passe|long terme/);
+    expect(t).not.toMatch(/\+1,50 €|\+40,00 €/); // 20*0.05 + 10*0.05 edge, 20*1 + 10*2 all-win
+    expect(t).not.toMatch(/\+/);
   });
 
   it("reports the settled result", () => {
@@ -27,18 +33,25 @@ describe("daySummary", () => {
 });
 
 describe("ballCallouts", () => {
-  const kpis = { bankroll: 2000, return: 1, bets: 400, win_rate: 0.5, roi: 0.1, avg_price: 2.4, avg_stake: 0.02, avg_edge: 0.036, clv: 0.03, clv_coverage: 1, max_drawdown: -0.1, max_drawdown_day: "2026-10-30", since: "2024-09-24" };
-  const site = (k: object | null) => ({ kpis: k, bets: [], equity: [], start_bankroll: 1000 } as unknown as SiteData);
+  const kpis = { bankroll: 12900, return: 0.29, bets: 80, win_rate: 0.5875, roi: 0.27, avg_price: 2.4, avg_stake: 0.02, avg_edge: 0.036, clv: 0.024, clv_coverage: 1, max_drawdown: -0.034, max_drawdown_day: "2026-10-30", since: "2026-10-19" };
+  const site = (k: object | null) => ({ kpis: k, bets: [], equity: [], start_bankroll: 10000 } as unknown as SiteData);
 
-  it("pins live CLV, edge and bookmaker count, CLV first and books last (the two kept on phones)", () => {
+  it("pins neutral measurements: settled bets, CLV and bookmaker count (first and last kept on phones)", () => {
     const cs = ballCallouts(site(kpis), 28);
-    expect(cs.map((c) => c.value)).toEqual(["+3,0 %", "+3,6 %", "28"]);
-    expect(cs[0].label).toBe("CLV moyen");
-    expect(cs[2]).toMatchObject({ label: "bookmakers comparés", valueFirst: true });
+    expect(cs.map((c) => c.value)).toEqual(["80", "+2,4 %", "28"]);
+    expect(cs.map((c) => c.label)).toEqual(["paris réglés", "CLV moyen", "bookmakers retenus"]);
+    expect(cs[0]).toMatchObject({ valueFirst: true, tone: "accent" });
+    expect(cs[2]).toMatchObject({ valueFirst: true });
+  });
+
+  it("never pins the return or the bankroll", () => {
+    const values = ballCallouts(site(kpis), 28).map((c) => c.value);
+    expect(values).not.toContain("+29,0 %");
+    expect(values.join(" ")).not.toMatch(/€/);
   });
 
   it("drops what the payload lacks", () => {
-    expect(ballCallouts(site({ ...kpis, clv: null }), 1).map((c) => c.label)).toEqual(["Écart vs juste prix Pinnacle", "bookmaker comparé"]);
+    expect(ballCallouts(site({ ...kpis, clv: null, bets: 1 }), 1).map((c) => c.label)).toEqual(["pari réglé", "bookmaker retenu"]);
     expect(ballCallouts(site(null), 0)).toEqual([]);
   });
 });

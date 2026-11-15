@@ -5,7 +5,7 @@ import datetime
 import numpy as np
 import pandas as pd
 
-from app.services.site_payload import SIDES, bet_table, closing_fair
+from app.services.site_payload import LIVE_SINCE, SIDES, bet_table, closing_fair
 from app.services.team_charts import elo_series, xg_series
 
 ELO_YEARS = 2
@@ -64,8 +64,9 @@ def build_match_detail(bet: pd.DataFrame, pinnacle: pd.DataFrame, books: pd.Data
     `pinnacle`: Pinnacle (datetime_insert, side, price) rows before kickoff.
     `books`: (bookmaker_key, bookmaker_title, side, price) at bet time. `matches`: FBref results
     with canonical team names (game, date, league, home, away, home_g, away_g, home_xg, away_xg).
-    `elo`: pre-match Elo history (date, team, elo) from team_charts.elo_history."""
-    if bet.empty:
+    `elo`: pre-match Elo history (date, team, elo) from team_charts.elo_history.
+    Replayed bets (recommended before LIVE_SINCE) are not public: None, like an unknown bet."""
+    if bet.empty or pd.Timestamp(bet["datetime_optim"].iloc[0]) < LIVE_SINCE:
         return None
     closing = pinnacle.sort_values("datetime_insert").groupby("side").tail(1).assign(match_id=bet["match_id"].iloc[0])
     t = bet_table(bet, closing[["match_id", "side", "price"]], now, links).iloc[0]
@@ -81,7 +82,7 @@ def build_match_detail(bet: pd.DataFrame, pinnacle: pd.DataFrame, books: pd.Data
         "venue": row.get("venue") or None, "referee": row.get("referee") or None,
         "bet": {"side": t["side"], "book": t["book"], "price": float(t["price"]), "fair_price": float(t["fair_price"]),
                 "edge": float(t["edge"]), "stake": float(t["stake"]), "gain": float(t["gain"]),
-                "clv": None if pd.isna(t["clv"]) else float(t["clv"]), "link": t["link"]},
+                "clv": None if pd.isna(t["clv"]) else float(t["clv"])},
         "probs": {s: float(t[f"p_{s}"]) for s in SIDES},
         "closing_probs": None if fair_close.empty else {s: float(fair_close.iloc[0][s]) for s in SIDES},
         "closing_fair_price": None if fair_close.empty else {s: float(1 / fair_close.iloc[0][s]) for s in SIDES},

@@ -299,10 +299,34 @@ html.motion .ball-stage:not(.in) .br-leads { opacity: 0; }
 .delta span { opacity: .82; font-size: .8125rem; }
 .delta.neg { background: var(--accent-text); color: #fff; }
 [data-theme="dark"] .delta.neg { color: var(--on-accent); }
+.big-note { margin-top: 10px; font-size: .875rem; color: var(--muted); }
 .lede { margin-top: 24px; color: var(--muted); max-width: 42ch; font-size: 1.0625rem; }
 .hero-chart { padding: 18px 20px 10px; }
 .hero-chart .card-h { margin-bottom: 4px; padding-left: 4px; align-items: center; }
 .hero-chart .card-h h2 { font-size: 1rem; }
+
+.hero-chart .card-h h2 small { font-size: .8125rem; font-weight: 500; color: var(--muted); margin-left: 10px; letter-spacing: 0; }
+.card-h h2 small { font-size: .8125rem; font-weight: 500; color: var(--muted); }
+.hero-chart .chart-note { font-size: .8125rem; margin: 30px 4px 8px; line-height: 1.45; }
+/* a trough pill hangs up to ~68px below its point, past the plot: keep the note under a chart clear of it */
+.card :has(.callout.down) + .note, .hero-chart:has(.callout.down) .chart-note { margin-top: 60px; }
+.nowrap { white-space: nowrap; }
+
+/* track-record notice: visible, next to the numbers (not fine print) */
+.notice {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: start;
+  background: var(--surface); border: 2px solid var(--accent); border-radius: var(--r-card); padding: 22px 24px;
+}
+.notice-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: var(--on-accent); }
+.notice-ic .ic { width: 22px; height: 22px; }
+.notice h2 { font-size: 1.125rem; font-weight: 800; letter-spacing: -.015em; line-height: 1.25; }
+.notice p { margin-top: 8px; color: var(--text); line-height: 1.55; max-width: 88ch; font-size: .9375rem; }
+.notice p + p { color: var(--muted); }
+.notice a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+main > .bento + .notice { margin-top: 16px; }
+main > .notice + .marquee { margin-top: 48px; }
+.bankroll > span:first-child { display: grid; text-align: right; line-height: 1.2; }
+.bankroll small { font-size: .75rem; font-weight: 500; }
 
 /* bento: the one tomato stat card + scoreboard tiles */
 .bento { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 3fr); gap: 16px; margin-top: 32px !important; }
@@ -400,7 +424,7 @@ html:not(.motion) .mq-run[aria-hidden] { display: none; }
 .dayinfo .ic { width: 16px; height: 16px; }
 
 .daysum {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 20px; background: var(--surface);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 20px; background: var(--surface);
   border-radius: var(--r-card); border: 1px solid var(--card-border); box-shadow: var(--shadow-card);
 }
 .daysum .kpi { padding: 20px 24px; border-radius: 0; gap: 4px; }
@@ -508,6 +532,7 @@ html:not(.motion) .mq-run[aria-hidden] { display: none; }
   padding: 16px 16px 12px; border-bottom: 1px solid var(--line);
 }
 .tbl-scroll .tbl th { position: static; }
+.tbl td.thin { opacity: .45; }
 .tbl td { padding: 14px 16px; border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent); vertical-align: middle; }
 .tbl tr > :first-child { padding-left: 24px; } .tbl tr > :last-child { padding-right: 24px; }
 .tbl tbody tr:last-child td { border-bottom: 0; }
@@ -627,6 +652,15 @@ html.motion .chart-wrap:has(.chart.draw:not(.in)) .callout { opacity: 0; }
 .mg-down { background: color-mix(in srgb, var(--mg-down) calc(var(--a) * 100%), var(--surface-2)); }
 .mg-total { font: 700 .8125rem var(--mono); display: flex; align-items: center; justify-content: flex-end; }
 
+/* short history: one tile per month */
+.mtiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.mt-tile { border-radius: var(--r-tile); padding: 14px 16px 16px; display: grid; gap: 10px; color: var(--text); }
+.mt-tile.mg-hi { color: var(--mg-ink); }
+[data-theme="dark"] .mt-tile.mg-hi { color: var(--text); }
+.mt-name { font-size: .875rem; font-weight: 650; text-transform: capitalize; display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; }
+.mt-name small { font-size: .75rem; font-weight: 500; text-transform: none; opacity: .8; }
+.mt-tile b { font: 700 1.375rem var(--mono); font-variant-numeric: tabular-nums; }
+
 /* ---------- history ---------- */
 .filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .select { position: relative; display: inline-flex; }
@@ -659,7 +693,12 @@ html.motion .chart-wrap:has(.chart.draw:not(.in)) .callout { opacity: 0; }
 .perks li { display: grid; align-content: start; gap: 4px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9375rem; }
 .perks b { color: var(--text); font-size: 1rem; display: flex; align-items: center; gap: 8px; }
 .perks b::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--tomato-500); flex: none; }
-.gbtn { min-height: 44px; align-self: end; }
+.signin { align-self: end; display: grid; gap: 14px; justify-items: start; }
+.gbtn { min-height: 44px; transition: opacity 180ms ease; }
+.gbtn.locked { opacity: .4; cursor: not-allowed; }
+.age-check { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: .9375rem; font-weight: 600; cursor: pointer; }
+.age-check input { width: 20px; height: 20px; margin: 0; accent-color: var(--structure); flex: none; cursor: pointer; }
+.age-check input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .acct-id { display: flex; align-items: center; gap: 12px; font-size: .9375rem; font-weight: 600; }
 .acct-id .avatar { width: 32px; height: 32px; border-radius: 50%; }
 .settings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
@@ -738,9 +777,10 @@ html.motion .chart-wrap:has(.chart.draw:not(.in)) .callout { opacity: 0; }
 
 /* ---------- footer ---------- */
 .foot { margin-top: 96px; background: var(--deep); color: var(--on-green); padding: 48px var(--gutter) calc(48px + env(safe-area-inset-bottom)); border-top: 1px solid var(--card-border); }
-.foot-in { max-width: var(--wrap); margin: 0 auto; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px 40px; }
+.foot-in { max-width: var(--wrap); margin: 0 auto; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 16px 40px; }
 .logo-foot .logo-mark rect { fill: var(--green-500); }
-.foot p { font-size: .875rem; color: var(--green-300); }
+.foot p { font-size: .875rem; line-height: 1.55; color: var(--green-300); max-width: 88ch; text-wrap: pretty; }
+.foot p a { color: var(--on-green); font-weight: 650; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
 
 /* ---------- motion: reveal, view transitions ---------- */
 html.motion [data-reveal]:not(.in) { opacity: 0; transform: translateY(16px); }
@@ -799,13 +839,16 @@ html.vt-theme::view-transition-new(root) { animation: 200ms ease both fade; }
   .tickets { grid-template-columns: minmax(0, 1fr); }
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .daysum { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .daysum .kpi:nth-child(3) { border-left: 0; }
-  .daysum .kpi:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .daysum .kpi:nth-child(3) { border-left: 0; grid-column: 1 / -1; border-top: 1px solid var(--line); }
   .acct-hero { grid-template-columns: minmax(0, 1fr); padding: 28px; gap: 28px; }
   .perks { grid-row: auto; }
   .foot-in { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 640px) {
+  .hero-chart .chart-note { margin-top: 44px; }
+  .card :has(.callout.down) + .note, .hero-chart:has(.callout.down) .chart-note { margin-top: 56px; }
+  .kpi .v.txt { font-size: 1.5rem; white-space: normal; line-height: 1.05; }
+  .notice { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 20px; }
   body { font-size: 1rem; }
   .stamp:not(.is-offline) { display: none; }
   .phead { padding-top: 36px; }
@@ -847,6 +890,7 @@ html.vt-theme::view-transition-new(root) { animation: 200ms ease both fade; }
   .tk-meta { align-self: end; }
   .tk-act { grid-column: 1 / -1; margin-top: 0; }
   .tk-act > * { flex: 1; justify-content: center; }
+  .tk-act > .res-up { flex: none; }
   .pbar { max-width: none; }
   .card { padding: 18px; border-radius: 20px; }
   .card.flush { padding: 18px 0 4px; }

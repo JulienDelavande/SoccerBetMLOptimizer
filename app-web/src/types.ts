@@ -5,9 +5,7 @@ export interface Bet {
   id: string;
   kickoff: string;
   odds_at: string;
-  published: boolean;
   league_key: string | null;
-  link: string | null;
   probs: Record<Side, number>;
   home: string;
   away: string;
@@ -73,7 +71,7 @@ export interface MatchDetail {
   xg: [number, number] | null;
   venue: string | null;
   referee: string | null;
-  bet: { side: Side; book: string; price: number; fair_price: number; edge: number; stake: number; gain: number; clv: number | null; link: string | null };
+  bet: { side: Side; book: string; price: number; fair_price: number; edge: number; stake: number; gain: number; clv: number | null };
   closing_fair_price: Record<Side, number> | null;
   probs: Record<Side, number>;
   closing_probs: Record<Side, number> | null;
