@@ -17,6 +17,7 @@ import { icon } from "./icons";
 import { JIS_PHONE } from "./pages/shared";
 import { initMotion, reducedMotion, withTransition } from "./motion";
 
+const WAITLIST_PATH = "/liste-attente";
 const FOOTER = "OptiBet · information sur les cotes, pas un conseil de pari. Jouer comporte des risques : endettement, isolement, dépendance. Pour être aidé, appelez le 09 74 75 13 13 (appel non surtaxé). Interdit aux moins de 18 ans.";
 const app = document.querySelector<HTMLElement>("#app")!;
 const routes: Record<string, (app: HTMLElement, data: SiteData) => void> = {
@@ -38,6 +39,8 @@ function paintChrome() {
   // Responsible-gambling footer on every page; the helpline number becomes a tap-to-call link.
   document.querySelector("#foot-legal")!.innerHTML = esc(t(FOOTER)).replace(JIS_PHONE, `<a href="tel:+33974751313">${JIS_PHONE}</a>`);
   document.querySelector(".skip")!.textContent = t("Aller au contenu");
+  document.querySelector("#foot-wl")!.textContent = t("Liste d'attente");
+  document.querySelector("#foot-privacy")!.textContent = t("Confidentialité");
   document.querySelector(".menu")!.setAttribute("aria-label", t("Navigation"));
   const lang = document.querySelector<HTMLButtonElement>("#lang")!;
   lang.textContent = getLang() === "fr" ? "EN" : "FR";
@@ -129,6 +132,7 @@ function route() {
   const match = path.match(/^\/match\/([\w-]+)$/);
   const day = path.match(/^\/jour\/(\d{4}-\d{2}-\d{2})$/);
   const key = match || day ? "/" : routes[path] || path === "/compte" ? path : "/";
+  const offlineKey = path === WAITLIST_PATH ? path : key;
   document.querySelectorAll<HTMLAnchorElement>(".menu a").forEach((a) => {
     const on = a.dataset.route === key;
     a.classList.toggle("on", on);
@@ -137,19 +141,31 @@ function route() {
   syncMenuScroll(true);
   document.title = routeTitle(path);
   paintCta(key === "/" && !match);
-  if (!data) { renderOffline(key); return; }
+  if (!data) { renderOffline(offlineKey); return; }
   if (match) {
     renderMatch(app, match[1], () => { if (navigated) history.back(); else location.hash = (document.querySelector<HTMLAnchorElement>("#back")!.getAttribute("href") ?? "#/"); });
     return;
   }
   if (path === "/compte") { renderAccount(app); window.scrollTo(0, 0); return; }
+  if (path === WAITLIST_PATH) { renderToday(app, data); scrollToWaitlist(); return; }
   if (day || key === "/") renderToday(app, data, day?.[1]);
   else { routes[key](app, data); window.scrollTo(0, 0); }
 }
 
+/** Footer link target: the waitlist card (on Today, or on the account page when offline). Runs after
+ *  the route's own scroll reset and focus move; focuses the card title, not a field (no phone keyboard). */
+function scrollToWaitlist() {
+  requestAnimationFrame(() => {
+    const card = document.querySelector<HTMLElement>("#waitlist");
+    if (!card) return;
+    card.scrollIntoView({ block: "start" });
+    card.querySelector<HTMLElement>("#wl-title")?.focus({ preventScroll: true });
+  });
+}
+
 /** No data: account and method still work (they do not need it); other routes offer a retry. */
 function renderOffline(key: string) {
-  if (key === "/compte") { renderAccount(app); return; }
+  if (key === "/compte" || key === WAITLIST_PATH) { renderAccount(app); if (key === WAITLIST_PATH) scrollToWaitlist(); return; }
   if (key === "/methode") { renderMethod(app, { kpis: null } as SiteData); return; }
   app.innerHTML = `<div class="empty pad offline"><p>${t("Impossible de charger les données. Vérifie ta connexion puis réessaie.")}</p>
     <button class="go" id="retry" type="button">${t("Réessayer")}</button></div>`;
@@ -173,6 +189,10 @@ document.querySelector("#theme")!.addEventListener("click", () => {
   const root = document.documentElement;
   root.classList.add("vt-theme");
   d.startViewTransition(apply).finished.finally(() => root.classList.remove("vt-theme"));
+});
+
+document.querySelector("#foot-wl")!.addEventListener("click", () => {
+  if (location.hash === `#${WAITLIST_PATH}`) scrollToWaitlist();  // same hash: no hashchange
 });
 
 document.querySelector("#cta")!.addEventListener("click", () => {

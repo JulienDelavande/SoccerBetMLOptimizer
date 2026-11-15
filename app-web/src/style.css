@@ -928,6 +928,89 @@ html.vt-theme::view-transition-new(root) { animation: 200ms ease both fade; }
   .logo-word { display: none; }
 }
 
+/* ---------- waitlist (paid offer, V1: no payment) ---------- */
+main > .waitlist { margin-top: 48px; }
+.waitlist { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px 56px; padding: 40px; }
+.wl-pitch { display: grid; align-content: start; justify-items: start; gap: 16px; }
+.wl-badge {
+  display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px 0 10px; border-radius: var(--r-pill);
+  background: var(--accent-tint); color: var(--accent-text); font-size: .75rem; font-weight: 700; font-stretch: 125%; text-transform: uppercase; letter-spacing: .12em;
+}
+.wl-badge .ic { width: 16px; height: 16px; }
+.wl-pitch h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 850; letter-spacing: -.03em; line-height: 1.05; max-width: 15ch; }
+.wl-pitch p { color: var(--muted); max-width: 44ch; }
+#wl-title:focus:not(:focus-visible), #wl-done-t:focus:not(:focus-visible) { outline: none; }
+.wl-body { min-width: 0; }
+.wl-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.wl-wide { grid-column: 1 / -1; }
+.wl-field { display: grid; gap: 10px; align-content: start; min-width: 0; border: 0; }
+fieldset.wl-field { display: block; }
+fieldset.wl-field > legend { padding: 0; margin-bottom: 10px; }
+fieldset.wl-field > .wl-err { margin-top: 8px; }
+.wl-field small { text-transform: none; letter-spacing: 0; font-stretch: 100%; font-weight: 500; }
+.wl-input {
+  width: 100%; min-height: 48px; padding: 11px 16px; border: 2px solid var(--line-strong); border-radius: 14px; background: var(--surface);
+  font: inherit; font-size: 1rem; color: var(--text); transition: border-color 180ms ease, background-color 180ms ease;
+}
+textarea.wl-input { display: block; min-height: 96px; resize: vertical; line-height: 1.45; }
+.wl-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--text); }
+.wl-input[readonly] { background: var(--surface-2); border-color: var(--line); color: var(--muted); }
+.wl-input[aria-invalid="true"] { border-color: var(--neg); }
+.wl-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.wl-opt { position: relative; display: inline-flex; }
+.wl-opt input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.wl-opt span {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: var(--r-pill); border: 1.5px solid var(--line-strong);
+  font-size: .875rem; font-weight: 600; color: var(--muted); white-space: nowrap; pointer-events: none;
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease, transform 100ms var(--ease-out);
+}
+@media (hover: hover) { .wl-opt:hover input:not(:checked) + span { border-color: var(--structure); color: var(--text); } }
+.wl-opt:active span { transform: scale(.97); }
+.wl-opt input:checked + span { background: var(--structure); border-color: var(--structure); color: var(--on-structure); }
+.wl-opt input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.has-err .wl-opt input:not(:checked) + span { border-color: var(--neg); }
+.wl-note { font-size: .8125rem; color: var(--muted); }
+.wl-count { justify-self: end; margin-top: -2px; font-family: var(--mono); font-size: .75rem; }
+.wl-link { display: inline; padding: 6px 0; color: var(--accent-text); font-weight: 650; text-decoration: underline; text-underline-offset: 2px; user-select: auto; }
+.wl-err { font-size: .8125rem; font-weight: 650; color: var(--neg); }
+.wl-checks { display: grid; gap: 0; }
+.wl-check { align-items: flex-start; font-weight: 500; line-height: 1.45; padding: 10px 0; }
+.wl-check input { margin-top: 1px; }
+.wl-check a { color: var(--accent-text); font-weight: 650; text-decoration: underline; text-underline-offset: 2px; }
+.wl-checks .wl-err { margin: -6px 0 6px 30px; }
+.wl-hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.wl-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.btn-cta.wl-submit { padding: 0 28px; }
+.wl-submit.is-loading { opacity: .72; cursor: progress; }
+.wl-status { font-size: .875rem; font-weight: 650; }
+.wl-status:empty { display: none; }
+.wl-done {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px 16px; align-items: center; align-content: center;
+  height: 100%; padding: 28px; border-radius: var(--r-tile); background: var(--pos-tint);
+}
+.wl-done-ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--pos); color: var(--surface); }
+.wl-done-ic .ic { width: 22px; height: 22px; }
+.wl-done-t { font-size: 1.25rem; font-weight: 800; letter-spacing: -.015em; line-height: 1.25; }
+.wl-done .wl-note { margin-top: 4px; overflow-wrap: anywhere; }
+.wl-done .wl-note b { color: var(--text); font-weight: 650; }
+.wl-done .go { grid-column: 2; justify-self: start; min-height: 44px; }
+.foot-links { grid-column: 2; display: flex; flex-wrap: wrap; gap: 0 24px; margin-top: -8px; }
+.foot .foot-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--green-300); font-weight: 600; }
+@media (hover: hover) { .foot .foot-links a:hover { color: var(--on-green); } }
+@media (max-width: 900px) {
+  .waitlist { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 28px; }
+  .foot-links { grid-column: auto; margin-top: 0; }
+}
+@media (max-width: 640px) {
+  .waitlist { padding: 22px 18px; }
+  .wl-form { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .wl-submit { width: 100%; justify-content: center; }
+  .wl-opts-budget { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wl-opts-budget .wl-opt span { width: 100%; justify-content: center; }
+  .wl-done { grid-template-columns: minmax(0, 1fr); padding: 22px 18px; }
+  .wl-done .go { grid-column: auto; }
+}
+
 /* match page skeleton (shown while the detail loads) */
 .match-sk { display: grid; gap: 16px; padding-top: 8px; }
 .sk { background: color-mix(in srgb, var(--surface) 70%, var(--line)); border-radius: 20px; }

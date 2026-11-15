@@ -11,14 +11,16 @@ import os
 from typing import List, Annotated
 import datetime
 
-from fastapi import FastAPI, HTTPException, status, Body, Query, Depends, Response
+from fastapi import FastAPI, HTTPException, status, Body, Query, Depends, Response, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from fastapi.responses import HTMLResponse
+from pydantic import BaseModel, ValidationError
 import httpx
 
 from app._config import PIPELINES_PROTOCOL, PIPELINES_HOST, PIPELINES_PORT, PIPELINES_ENDPOINT_OPTIMIZATION
 from app import auth
 from app.services import users as users_service
+from app.services import waitlist as waitlist_service
 
 from app.models import (
     OptimizationRequest,
@@ -364,6 +366,65 @@ def delete_my_bet(body: BetDelete, uid: int = Depends(auth.require_user)) -> dic
 @app.post("/me/telegram/link", tags=["account"], summary="Get a Telegram linking code")
 def telegram_link(uid: int = Depends(auth.require_user)) -> dict:
     return {"code": users_service.telegram_link_code(uid), "bot": TELEGRAM_BOT_USERNAME}
+
+
+# ---------------------------------------------------------------------------
+# Waitlist for the future paid offer (no payment; the owner gets an ntfy push)
+# ---------------------------------------------------------------------------
+@app.post(
+    "/waitlist",
+    tags=["account"],
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Join (or update) the waitlist",
+    description=(
+        "Body: {email, plan: monthly|yearly|unsure, budget: lt10|10_20|20_30|30plus, message?: <=1000 chars, "
+        "lang: fr|en, consent: true, adult: true, website: honeypot, must stay empty}. "
+        "Upsert on the lowercased email; 204 on success (and, silently, when the honeypot is filled), "
+        "422 on invalid input, 429 after 5 submissions per hour from one IP."
+    ),
+    responses={204: {"description": "Recorded"}, 422: {"description": "Invalid input"}, 429: {"description": "Too many submissions"}},
+)
+def join_waitlist(
+    request: Request,
+    background: BackgroundTasks,
+    payload: dict = Body(...),
+    uid: int | None = Depends(auth.optional_user),
+) -> Response:
+    ip = waitlist_service.client_ip(request.headers, request.client.host if request.client else None)
+    if not waitlist_service.limiter.allow(ip):
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "Too many submissions, try again later")
+    if waitlist_service.is_bot(payload):
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    try:
+        entry = waitlist_service.WaitlistIn.model_validate(payload)
+    except ValidationError as e:
+        # Field and reason only, never the submitted values.
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY,
+                            [{"loc": list(err["loc"]), "msg": err["msg"], "type": err["type"]} for err in e.errors()])
+    created = waitlist_service.upsert(entry, uid)
+    background.add_task(waitlist_service.notify, entry, created)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+UNSUBSCRIBE_PAGE = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
+<title>OptiBet</title><style>body{{max-width:560px;margin:15vh auto;padding:0 20px;font-family:system-ui,sans-serif;
+color:#1F2A20;background:#EDE4CF;line-height:1.6}}a{{color:#B8321C}}</style></head>
+<body><h1>{title}</h1><p>{text}</p><p><a href="https://optibet.delavande.fr">OptiBet</a></p></body></html>"""
+
+
+@app.get("/waitlist/unsubscribe", tags=["account"], summary="One-click removal from the waitlist",
+         response_class=HTMLResponse)
+def leave_waitlist(email: str = "", token: str = "") -> HTMLResponse:
+    """Link for future launch emails: token = HMAC-SHA256(SESSION_SECRET, email), see
+    waitlist.unsubscribe_token. Same answer whether or not the email was listed."""
+    if not waitlist_service.valid_unsubscribe_token(email, token):
+        return HTMLResponse(UNSUBSCRIBE_PAGE.format(
+            title="Lien invalide", text="Ce lien de désinscription est invalide ou incomplet."), status_code=400)
+    waitlist_service.remove(email)
+    return HTMLResponse(UNSUBSCRIBE_PAGE.format(
+        title="C'est fait", text="Ton adresse a été retirée de la liste d'attente d'OptiBet."),
+        headers={"Cache-Control": "no-store"})
 
 
 # Additional utility endpoints

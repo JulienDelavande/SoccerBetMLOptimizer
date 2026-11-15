@@ -43,6 +43,7 @@ import models.fbref_results
 import models.teams
 import models.team_alias
 import models.users
+import models.waitlist
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

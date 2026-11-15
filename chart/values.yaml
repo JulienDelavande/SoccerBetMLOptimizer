@@ -19,6 +19,11 @@ account:
     existingSecret: optibet-session
     key: session-secret
 
+# Waitlist signups push a notification to ntfy. secretName: an existing secret with key NTFY_URL
+# (full topic URL); empty = no pushes.
+notify:
+  secretName: ""
+
 # External PostgreSQL (CloudNativePG cluster "optibet-db" in homelab-infra).
 database:
   host: optibet-db-rw

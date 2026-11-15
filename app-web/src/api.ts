@@ -13,13 +13,18 @@ export interface UserProfile {
 }
 export interface PublicConfig { auth_enabled: boolean; google_client_id: string; telegram_bot: string }
 
+/** Non-2xx answer; `status` lets callers word the error (e.g. 429 vs 5xx). */
+export class ApiError extends Error {
+  constructor(public status: number) { super(`API ${status}`); }
+}
+
 async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`/api${path}`, {
     credentials: "include",
     headers: init.body ? { "Content-Type": "application/json" } : undefined,
     ...init,
   });
-  if (!res.ok) throw new Error(`API ${res.status}`);
+  if (!res.ok) throw new ApiError(res.status);
   return res.status === 204 ? (undefined as T) : res.json();
 }
 
@@ -36,6 +41,11 @@ export const confirmBet = (b: { match_id: string; side: string; recommended_pric
   call("/me/bets", { method: "POST", body: JSON.stringify(b) });
 export const removeBet = (match_id: string, side: string) =>
   call("/me/bets", { method: "DELETE", body: JSON.stringify({ match_id, side }) });
+export interface WaitlistPayload {
+  email: string; plan: "monthly" | "yearly" | "unsure"; budget: "lt10" | "10_20" | "20_30" | "30plus";
+  message: string | null; lang: "fr" | "en"; consent: true; adult: true; website: string;
+}
+export const joinWaitlist = (p: WaitlistPayload) => call<void>("/waitlist", { method: "POST", body: JSON.stringify(p) });
 export const telegramLink = () => call<{ code: string; bot: string }>("/me/telegram/link", { method: "POST" });
 
 export interface MyBet {

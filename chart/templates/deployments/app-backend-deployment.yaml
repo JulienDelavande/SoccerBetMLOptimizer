@@ -21,6 +21,7 @@ spec:
         env:
           {{ include "inject_db_password" . | nindent 10 }}  # Utilisation de indent pour corriger l'indentation dans l'environnement
           {{- include "inject_session_secret" . | nindent 10 }}
+          {{- include "inject_ntfy_url" . | nindent 10 }}
         envFrom:
         - configMapRef:
             name: global-config

@@ -27,6 +27,22 @@ Usage: {{ include "inject_session_secret" . }}
 {{- end }}
 
 {{/*
+NTFY_URL (full ntfy topic URL for waitlist signup pushes) from an existing secret, only if
+notify.secretName is set. Optional: an absent secret or key just disables the pushes.
+Usage: {{ include "inject_ntfy_url" . }}
+*/}}
+{{- define "inject_ntfy_url" -}}
+{{- if .Values.notify.secretName }}
+- name: NTFY_URL
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.notify.secretName }}
+      key: NTFY_URL
+      optional: true
+{{- end }}
+{{- end }}
+
+{{/*
 Helper function to inject THE_ODDS_API_KEY from either a direct value or un secret.
 Usage: {{ include "inject_api_key" . }}
 */}}

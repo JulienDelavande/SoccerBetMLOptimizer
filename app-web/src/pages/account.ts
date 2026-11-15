@@ -7,6 +7,8 @@ import { t } from "../i18n";
 import { icon } from "../icons";
 import { avatar } from "../logos";
 import { pageHead } from "./shared";
+import { ageConfirmed, setAgeConfirmed } from "../age";
+import { mountWaitlist, waitlistCard } from "../waitlist";
 
 const RISK = [
   ["prudent", "Prudent", "quart de Kelly · mises prudentes"],
@@ -14,9 +16,7 @@ const RISK = [
   ["aggressive", "Agressif", "Kelly plein · plus volatil"],
 ] as const;
 
-/** Age confirmation required before sign-in (18+ only), remembered on this device. */
-export const AGE_KEY = "age_confirmed";
-export const ageConfirmed = () => typeof localStorage !== "undefined" && localStorage.getItem(AGE_KEY) === "1";
+export { AGE_KEY, ageConfirmed } from "../age";
 
 export function renderAccount(app: HTMLElement) {
   const user = currentUser();
@@ -29,10 +29,11 @@ export function renderAccount(app: HTMLElement) {
     box.checked = ageConfirmed();
     lock(box.checked);
     box.addEventListener("change", () => {
-      if (box.checked) localStorage.setItem(AGE_KEY, "1"); else localStorage.removeItem(AGE_KEY);
+      setAgeConfirmed(box.checked);
       lock(box.checked);
     });
     renderGoogleButton(gbtn, (u) => { setUser(u); renderAccount(app); });
+    mountWaitlist(app.querySelector<HTMLElement>("#waitlist")!, null);
     return;
   }
   renderSettings(app, user);
@@ -54,7 +55,8 @@ function loggedOut() {
           <div id="gbtn" class="gbtn"></div>
         </div>
       </div>
-    </section>`;
+    </section>
+    ${waitlistCard()}`;
 }
 
 function renderSettings(app: HTMLElement, user: UserProfile) {
@@ -75,6 +77,7 @@ function renderSettings(app: HTMLElement, user: UserProfile) {
     </section>
     <section class="card" data-reveal><div class="card-h"><h2>${t("Alertes Telegram")}</h2></div>
       <div class="tg" id="tg"></div></section>
+    ${waitlistCard()}
     <section class="card danger-zone" data-reveal><div class="card-h"><h2>${t("Compte")}</h2></div>
       <p class="note">${t("Supprimer ton compte efface définitivement tes réglages et tes paris.")}</p>
       <button class="go danger" id="delacct">${t("Supprimer mon compte")}</button>
@@ -118,6 +121,7 @@ function renderSettings(app: HTMLElement, user: UserProfile) {
     catch { const de = app.querySelector<HTMLElement>("#del-err")!; de.textContent = t("Suppression impossible pour l'instant. Réessaie dans un instant."); de.hidden = false; }
   });
   renderTelegram(app.querySelector<HTMLElement>("#tg")!, user);
+  mountWaitlist(app.querySelector<HTMLElement>("#waitlist")!, user);
 }
 
 function renderTelegram(el: HTMLElement, user: UserProfile) {
