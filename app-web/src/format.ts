@@ -29,7 +29,10 @@ export const betLabel = (b: Pick<Bet, "side" | "home" | "away">) =>
   b.side === "draw" ? t("Match nul") : t("Victoire {team}", { team: b.side === "home" ? b.home : b.away });
 
 export const BOOKS: Record<string, string> = { onexbet: "1xBet", williamhill: "William Hill", sport888: "888sport" };
-export const bookName = (k: string) => BOOKS[k] ?? k;
+/** "unibet_se" -> "Unibet (SE)", "betfred_uk" -> "Betfred (UK)" for keys without a curated name. */
+export const prettyBook = (k: string) =>
+  k.replace(/_(eu|uk|nl|se|de|it|fr)$/, (_m, r: string) => ` (${r.toUpperCase()})`).replace(/(^|\s)\w/g, (c) => c.toUpperCase());
+export const bookName = (k: string) => BOOKS[k] ?? prettyBook(k);
 
 /** Backend timestamps are naive UTC. */
 export const utc = (s: string) => new Date(s.endsWith("Z") || s.includes("+") ? s : `${s}Z`);

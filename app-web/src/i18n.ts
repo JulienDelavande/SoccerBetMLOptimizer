@@ -57,7 +57,7 @@ const EN: Record<string, string> = {
   "Jour précédent": "Previous day", "Jour suivant": "Next day",
   "Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).":
     "No value bet recommended that day. Daily analysis at 14:05 (Paris time).",
-  "✓ Publié le {t}, avant les coups d'envoi": "✓ Published {t}, before kick-off",
+  "Publié le {t}, avant les coups d'envoi": "Published {t}, before kick-off",
   "Cotes relevées le {t}": "Odds recorded {t}",
   "{n} pari · total engagé": "{n} bet · total staked", "{n} paris · total engagé": "{n} bets · total staked",
   "À engager": "To stake", "{n} pari · {p} de la bankroll": "{n} bet · {p} of bankroll",
@@ -69,7 +69,7 @@ const EN: Record<string, string> = {
   // bets table
   "Coup d'envoi": "Kick-off", "Match": "Match", "Pari · probabilités 1 / N / 2": "Bet · probabilities 1 / X / 2",
   "Pari": "Bet", "Cote": "Odds", "Juste prix": "Fair price", "Avantage": "Edge", "Mise": "Stake",
-  "j'ai joué": "I bet this", "✓ joué": "✓ placed", "À venir": "Upcoming", "EN COURS": "LIVE",
+  "j'ai joué": "I bet this", "joué": "placed", "À venir": "Upcoming", "EN COURS": "LIVE",
   "Annulé": "Void", "en attente": "pending",
   "Victoire {team}": "{team} win", "Match nul": "Draw",
   // performance
@@ -100,7 +100,7 @@ const EN: Record<string, string> = {
   "Retour": "Back", "Gagné · {p} de bankroll": "Won · {p} of bankroll", "Perdu · {p} de bankroll": "Lost · {p} of bankroll",
   "juste prix {v}": "fair price {v}", "vs juste prix": "vs fair price",
   "Mise · {b}": "Stake · {b}", "{p} de la bankroll": "{p} of bankroll",
-  "Parier chez {book} ↗": "Bet at {book} ↗",
+  "Parier chez {book}": "Bet at {book}",
   "Cote Pinnacle · {label}": "Pinnacle odds · {label}",
   "Pinnacle jusqu'au coup d'envoi contre notre cote. Clôture sous notre cote = on a acheté moins cher que le marché (CLV).":
     "Pinnacle up to kick-off against our price. Close below our price = we bought below the market (CLV).",
@@ -165,8 +165,8 @@ const EN: Record<string, string> = {
   "Mes bookmakers": "My bookmakers", "(aucun = tous)": "(none = all)",
   "Relie Telegram pour recevoir les paris du jour dès leur sortie.":
     "Link Telegram to get the day's bets as soon as they're out.",
-  "Relier Telegram": "Link Telegram", "✓ Telegram relié. Tu reçois les paris du jour.":
-    "✓ Telegram linked. You'll receive the day's bets.",
+  "Relier Telegram": "Link Telegram", "Telegram relié. Tu reçois les paris du jour.":
+    "Telegram linked. You'll receive the day's bets.",
   "Ouvre le bot et valide : ": "Open the bot and confirm: ", "Ouvrir @{bot}": "Open @{bot}",
   "Envoie {cmd} au bot Telegram.": "Send {cmd} to the Telegram bot.", "Indisponible pour l'instant.": "Unavailable for now.",
   "Mes stats": "My stats", "Confirme tes paris pour suivre ta bankroll réelle.":
@@ -181,4 +181,13 @@ const EN: Record<string, string> = {
   "Supprimer définitivement ton compte et toutes tes données ?":
     "Permanently delete your account and all your data?",
   "Échec de la connexion.": "Sign-in failed.",
+  // redesign (Barley / Hunter / Tomato)
+  "Aller au contenu": "Skip to content", "Navigation": "Navigation",
+  "Passer en thème clair": "Switch to light theme", "Passer en thème sombre": "Switch to dark theme",
+  "Courbe de bankroll": "Bankroll curve", "Période": "Period", "Record": "Record high", "Pire creux": "Worst trough",
+  "jour": "day", "départ {v} · {since}": "from {v} · {since}", "depuis le départ": "since the start",
+  "{n} pari de valeur ce jour": "{n} value bet on the day", "{n} paris de valeur ce jour": "{n} value bets on the day",
+  "{n} paris réglés": "{n} settled bets", "{n} bookmakers comparés à Pinnacle": "{n} bookmakers compared with Pinnacle",
+  "Analyse quotidienne 14 h 05": "Daily analysis at 14:05", "En direct": "Live", "Choisir un jour": "Pick a day",
+  "Retirer ce pari": "Remove this bet", "Comment chaque pari est choisi, misé et jugé.": "How each bet is picked, staked and judged.",
 };
