@@ -1,3 +1,4 @@
+import { matchIdFromHref, prefetchMatch } from "../matchCache";
 import { betLabel, bookName, esc, eur, eur0, fmtDate, fmtDay, fmtLongDate, fmtTime, int, odds, pct, periodLabel, stakeFor } from "../format";
 import { leagueLogo, teamLogo } from "../logos";
 import type { Bet, SiteData } from "../types";
@@ -170,6 +171,17 @@ export function bindRows(root: HTMLElement, placed?: Set<string>) {
     location.hash = `#/match/${tr.dataset.id}`;
   }));
   root.querySelectorAll<HTMLAnchorElement>(".tk-link, .row-link").forEach((a) => a.addEventListener("click", rememberScroll));
+  // Start loading a match as soon as intent shows (hover, touch, keyboard focus): the click then finds it ready.
+  const warm = (e: Event) => {
+    const el = (e.target as HTMLElement).closest<HTMLElement>(".tk-w, tr.click");
+    const id = el?.matches("tr.click") ? el.dataset.id : matchIdFromHref(el?.querySelector<HTMLAnchorElement>(".tk-link")?.getAttribute("href") ?? null);
+    if (id) prefetchMatch(id);
+  };
+  root.querySelectorAll<HTMLElement>(".tk-w, tr.click").forEach((el) => {
+    el.addEventListener("pointerenter", warm, { passive: true });
+    el.addEventListener("touchstart", warm, { passive: true });
+    el.addEventListener("focusin", warm);
+  });
   root.querySelectorAll<HTMLButtonElement>("[data-placed]").forEach((btn) => btn.addEventListener("click", async (e) => {
     e.stopPropagation();
     const [match_id, side, price, stake] = btn.dataset.placed!.split("|");

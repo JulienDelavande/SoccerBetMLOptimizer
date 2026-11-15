@@ -1,3 +1,4 @@
+import { prefetchMatch } from "../matchCache";
 import { attachEquityHover, equityChart } from "../charts";
 import { dayKey, eur, eur0, fmtDate, fmtDayKey, fmtStamp, int as count, pct, sliceEquity, stakeFor, todayKey, usefulRanges } from "../format";
 import type { Bet, SiteData } from "../types";
@@ -155,6 +156,10 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
       ? `<div class="empty">${mine ? t("Aucun pari chez tes bookmakers ce jour-là.") : t("Aucune cote signalée ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).")}</div>`
       : betTickets(bets, bankroll, placed);
     bindRows(box, placed);
+    // A day has a handful of bets: warm their match pages once the browser is idle, so a tap opens instantly.
+    const ids = bets.slice(0, 6).map((b) => b.id);
+    const idle = (cb: () => void) => ("requestIdleCallback" in window ? requestIdleCallback(cb, { timeout: 3000 }) : setTimeout(cb, 1500));
+    if (ids.length) idle(() => ids.forEach(prefetchMatch));
   }
   drawDay();
 

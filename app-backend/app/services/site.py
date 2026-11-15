@@ -38,15 +38,6 @@ WHERE side IS NOT NULL
 ORDER BY match_id, side, datetime_insert DESC
 """
 
-# Latest event link per bookmaker (stored since includeLinks was enabled on the odds ingestion).
-LINKS_SQL = """
-SELECT DISTINCT ON (match_id, bookmaker_key) match_id, bookmaker_key, bookmaker_link
-FROM soccer_odds
-WHERE bookmaker_link IS NOT NULL
-  AND match_id IN (SELECT match_id FROM optim_results WHERE optim_label = :label)
-ORDER BY match_id, bookmaker_key, datetime_insert DESC
-"""
-
 ODDS_SIDE = """CASE WHEN outcome_name = home_team THEN 'home' WHEN outcome_name = away_team THEN 'away'
                 WHEN outcome_name = 'Draw' THEN 'draw' END"""
 
@@ -100,9 +91,8 @@ def site_payload(label: str) -> dict:
     with engine.connect() as conn:
         bets = pd.read_sql(text(BETS_SQL), conn, params={"label": label})
         closing = pd.read_sql(text(CLOSING_SQL), conn, params={"label": label})
-        links = pd.read_sql(text(LINKS_SQL), conn, params={"label": label})
     closing["price"] = closing["price"].astype(float)
-    payload = build_payload(bets, closing, datetime.datetime.utcnow(), links)
+    payload = build_payload(bets, closing, datetime.datetime.utcnow())
     with _lock:
         _cache[label] = (time.monotonic(), payload)
     return payload
@@ -140,12 +130,10 @@ def match_detail(label: str, match_id: str) -> dict | None:
         matches = pd.read_sql(text(TEAM_MATCHES_SQL), conn, params={
             "home": bet["home_team"].iloc[0], "away": bet["away_team"].iloc[0],
             "before": kickoff.date(), "since": kickoff.date() - datetime.timedelta(days=6 * 365)})
-        links = pd.read_sql(text(LINKS_SQL), conn, params={"label": label})
-    links = links[links["match_id"] == match_id]
     for df in (pinnacle, books):
         df["price"] = df["price"].astype(float)
     matches["date"] = pd.to_datetime(matches["date"]).dt.date
-    detail = build_match_detail(bet, pinnacle, books, matches, datetime.datetime.utcnow(), links, elo_ratings())
+    detail = build_match_detail(bet, pinnacle, books, matches, datetime.datetime.utcnow(), None, elo_ratings())
     with _lock:
         _cache[f"{label}/{match_id}"] = (time.monotonic(), detail)
     return detail
