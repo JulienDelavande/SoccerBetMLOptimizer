@@ -57,7 +57,7 @@ const EN: Record<string, string> = {
   "Jour précédent": "Previous day", "Jour suivant": "Next day",
   "Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).":
     "No value bet recommended that day. Daily analysis at 14:05 (Paris time).",
-  "✓ Publié le {t}, avant les coups d'envoi": "✓ Published {t}, before kick-off",
+  "Publié le {t}, avant les coups d'envoi": "Published {t}, before kick-off",
   "Cotes relevées le {t}": "Odds recorded {t}",
   "{n} pari · total engagé": "{n} bet · total staked", "{n} paris · total engagé": "{n} bets · total staked",
   "À engager": "To stake", "{n} pari · {p} de la bankroll": "{n} bet · {p} of bankroll",
@@ -69,7 +69,7 @@ const EN: Record<string, string> = {
   // bets table
   "Coup d'envoi": "Kick-off", "Match": "Match", "Pari · probabilités 1 / N / 2": "Bet · probabilities 1 / X / 2",
   "Pari": "Bet", "Cote": "Odds", "Juste prix": "Fair price", "Avantage": "Edge", "Mise": "Stake",
-  "j'ai joué": "I bet this", "✓ joué": "✓ placed", "À venir": "Upcoming", "EN COURS": "LIVE",
+  "j'ai joué": "I bet this", "joué": "placed", "À venir": "Upcoming", "EN COURS": "LIVE",
   "Annulé": "Void", "en attente": "pending",
   "Victoire {team}": "{team} win", "Match nul": "Draw",
   // performance
@@ -97,10 +97,10 @@ const EN: Record<string, string> = {
   "Aucun pari.": "No bet.", "Voir plus ({n})": "Show more ({n})", "Date": "Date", "Score": "Score",
   // match page
   "Paris du {d}": "Bets of {d}", "Impossible de charger ce match ({e}).": "Could not load this match ({e}).",
-  "Retour": "Back", "Gagné · {p} de bankroll": "Won · {p} of bankroll", "Perdu · {p} de bankroll": "Lost · {p} of bankroll",
+  "Retour": "Back",
   "juste prix {v}": "fair price {v}", "vs juste prix": "vs fair price",
   "Mise · {b}": "Stake · {b}", "{p} de la bankroll": "{p} of bankroll",
-  "Parier chez {book} ↗": "Bet at {book} ↗",
+  "Parier chez {book}": "Bet at {book}",
   "Cote Pinnacle · {label}": "Pinnacle odds · {label}",
   "Pinnacle jusqu'au coup d'envoi contre notre cote. Clôture sous notre cote = on a acheté moins cher que le marché (CLV).":
     "Pinnacle up to kick-off against our price. Close below our price = we bought below the market (CLV).",
@@ -124,8 +124,8 @@ const EN: Record<string, string> = {
   "Pinnacle est le bookmaker le plus précis du monde : marges faibles, il accepte les gros parieurs et corrige ses cotes avec leur argent. On retire sa marge (méthode de Shin) pour obtenir la vraie probabilité de chaque issue.":
     "Pinnacle is the sharpest bookmaker in the world: low margins, it welcomes big bettors and corrects its odds with their money. We strip its margin (Shin method) to get the true probability of each outcome.",
   "On cherche les bookmakers en retard": "We find the lagging bookmakers",
-  "Chaque jour, on compare les cotes de 1xBet à ce juste prix. Quand une cote dépasse le juste prix d'au moins 2 % (cote ≤ 3,50, prix récent, avant le coup d'envoi), c'est un pari de valeur. Un seul pari par match, au premier signal.":
-    "Each day we compare the bookmakers' prices to that fair price. When a price beats fair value by at least 2% (odds ≤ 3.50, fresh price, before kick-off), it's a value bet. One bet per match, at first signal.",
+  "Chaque jour, on compare à ce juste prix les cotes de plus de vingt bookmakers grand public (Pinnacle sert de référence, les bourses d'échange sont exclues). Quand une cote dépasse le juste prix d'au moins 2 % (cote ≤ 3,50, prix récent, avant le coup d'envoi), c'est un pari de valeur. Un bookmaker seul est rarement en retard : l'avantage vient du nombre de bookmakers surveillés. Un seul pari par match, au premier signal.":
+    "Each day we compare that fair price with the odds of more than twenty mainstream bookmakers (Pinnacle is the reference, betting exchanges are left out). When a price beats fair value by at least 2% (odds ≤ 3.50, fresh price, before kick-off), it's a value bet. A single bookmaker rarely lags: the edge comes from watching many of them. One bet per match, at first signal.",
   "On mise avec Kelly": "We stake with Kelly",
   "La mise suit le critère de Kelly, divisé par deux : plus l'avantage est grand, plus on mise, sans jamais dépasser 5 % de la bankroll par pari ni 30 % par jour. En moyenne, moins de 2 % par pari.":
     "Stakes follow the Kelly criterion, halved: the bigger the edge, the bigger the stake, never above 5% of bankroll per bet or 30% per day. On average, under 2% per bet.",
@@ -165,8 +165,8 @@ const EN: Record<string, string> = {
   "Mes bookmakers": "My bookmakers", "(aucun = tous)": "(none = all)",
   "Relie Telegram pour recevoir les paris du jour dès leur sortie.":
     "Link Telegram to get the day's bets as soon as they're out.",
-  "Relier Telegram": "Link Telegram", "✓ Telegram relié. Tu reçois les paris du jour.":
-    "✓ Telegram linked. You'll receive the day's bets.",
+  "Relier Telegram": "Link Telegram", "Telegram relié. Tu reçois les paris du jour.":
+    "Telegram linked. You'll receive the day's bets.",
   "Ouvre le bot et valide : ": "Open the bot and confirm: ", "Ouvrir @{bot}": "Open @{bot}",
   "Envoie {cmd} au bot Telegram.": "Send {cmd} to the Telegram bot.", "Indisponible pour l'instant.": "Unavailable for now.",
   "Mes stats": "My stats", "Confirme tes paris pour suivre ta bankroll réelle.":
@@ -181,4 +181,30 @@ const EN: Record<string, string> = {
   "Supprimer définitivement ton compte et toutes tes données ?":
     "Permanently delete your account and all your data?",
   "Échec de la connexion.": "Sign-in failed.",
+  // redesign (Barley / Hunter / Tomato)
+  "Aller au contenu": "Skip to content", "Navigation": "Navigation",
+  "Passer en thème clair": "Switch to light theme", "Passer en thème sombre": "Switch to dark theme",
+  "Courbe de bankroll": "Bankroll curve", "Période": "Period", "Record": "Record high", "Pire creux": "Worst trough",
+  "jour": "day", "départ {v} · {since}": "from {v} · {since}", "depuis le départ": "since the start",
+  "{n} pari de valeur ce jour": "{n} value bet on the day", "{n} paris de valeur ce jour": "{n} value bets on the day",
+  "{n} paris réglés": "{n} settled bets", "{n} bookmakers comparés à Pinnacle": "{n} bookmakers compared with Pinnacle",
+  "Analyse quotidienne 14 h 05": "Daily analysis at 14:05", "En direct": "Live", "Choisir un jour": "Pick a day",
+  "Retirer ce pari": "Remove this bet", "Comment chaque pari est choisi, misé et jugé.": "How each bet is picked, staked and judged.",
+  // fixes round (a11y, edge cases, signed-in)
+  "Paris de valeur du jour": "Today's value bets", "{home} contre {away}": "{home} vs {away}",
+  "départ {v}": "from {v}", "Dernière sélection": "Latest picks",
+  "Dernière sélection · {d} · {n} pari": "Latest picks · {d} · {n} bet", "Dernière sélection · {d} · {n} paris": "Latest picks · {d} · {n} bets",
+  "Mettre le bandeau en pause": "Pause the ticker",
+  "N": "X", "pari : {s}": "bet: {s}",
+  "Courbe de bankroll : de {a} à {b}, du {d0} au {d1}": "Bankroll curve: from {a} to {b}, {d0} to {d1}",
+  "Drawdown : pire creux {v}": "Drawdown: worst trough {v}",
+  "Closing line value : {n} paris, moyenne glissante finale {v}": "Closing line value: {n} bets, latest rolling mean {v}",
+  "Cote Pinnacle de {a} à {b} jusqu'au coup d'envoi, notre cote {o}": "Pinnacle odds from {a} to {b} up to kick-off, our price {o}",
+  "Elo": "Elo", "xG glissant": "Rolling xG",
+  "Gagné": "Won", "Perdu": "Lost", "En cours": "Live", "mise remboursée": "stake refunded", "match en cours": "match in progress",
+  "Impossible de retirer ce pari. Réessaie dans un instant.": "Could not remove this bet. Try again in a moment.",
+  "Réglage non enregistré. Réessaie dans un instant.": "Setting not saved. Try again in a moment.",
+  "Suppression impossible pour l'instant. Réessaie dans un instant.": "Could not delete the account right now. Try again in a moment.",
+  "Impossible de charger les données. Vérifie ta connexion puis réessaie.": "Could not load the data. Check your connection and try again.",
+  "Réessayer": "Try again", "({n} paris)": "({n} bets)", "({n} pari)": "({n} bet)",
 };

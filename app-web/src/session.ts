@@ -1,6 +1,7 @@
 // Session state: loaded once at startup, shared across pages.
 import { getConfig, getMe, loginGoogle, logout as apiLogout } from "./api";
 import type { PublicConfig, UserProfile } from "./api";
+import { t } from "./i18n";
 
 let config: PublicConfig | null = null;
 let user: UserProfile | null = null;
@@ -41,7 +42,7 @@ function loadGsi(): Promise<void> {
 /** Render the "Sign in with Google" button into `el`; on success, sets the user and calls onLogin. */
 export async function renderGoogleButton(el: HTMLElement, onLogin: (u: UserProfile) => void): Promise<void> {
   if (!config?.auth_enabled || !config.google_client_id) {
-    el.innerHTML = `<p class="note">La connexion sera bientôt disponible.</p>`;
+    el.innerHTML = `<p class="note">${t("La connexion sera bientôt disponible.")}</p>`;
     return;
   }
   await loadGsi();
@@ -53,7 +54,7 @@ export async function renderGoogleButton(el: HTMLElement, onLogin: (u: UserProfi
         const u = await loginGoogle(resp.credential);
         user = u;
         onLogin(u);
-      } catch { el.insertAdjacentHTML("beforeend", `<p class="note down">Échec de la connexion.</p>`); }
+      } catch { el.insertAdjacentHTML("beforeend", `<p class="note down">${t("Échec de la connexion.")}</p>`); }
     },
   });
   g.accounts.id.renderButton(el, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with" });

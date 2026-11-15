@@ -49,3 +49,41 @@ describe("dayKey", () => {
     expect(dayKey("2026-10-19T22:30:00")).toBe("2026-10-20"); // 00:30 in Paris
   });
 });
+
+import { bookName } from "./format";
+describe("bookName", () => {
+  it("keeps curated names and prettifies raw keys", () => {
+    expect(bookName("onexbet")).toBe("1xBet");
+    expect(bookName("unibet_se")).toBe("Unibet (SE)");
+    expect(bookName("marathonbet")).toBe("Marathonbet");
+  });
+
+  it("uses the brands' own spelling, with the region kept", () => {
+    expect(bookName("mybookieag")).toBe("MyBookie");
+    expect(bookName("betonlineag")).toBe("BetOnline");
+    expect(bookName("gtbets")).toBe("GTbets");
+    expect(bookName("leovegas")).toBe("LeoVegas");
+    expect(bookName("leovegas_se")).toBe("LeoVegas (SE)");
+    expect(bookName("paddypower")).toBe("Paddy Power");
+    expect(bookName("betvictor")).toBe("BetVictor");
+    expect(bookName("skybet")).toBe("Sky Bet");
+    expect(bookName("nordicbet")).toBe("Nordic Bet");
+    expect(bookName("livescorebet_eu")).toBe("LiveScore Bet (EU)");
+    expect(bookName("betfair_ex_uk")).toBe("Betfair (UK)");
+  });
+});
+
+import { axisNum, int, prevDayKey } from "./format";
+describe("numbers and days", () => {
+  it("groups counts and compacts large axis values", () => {
+    expect(int(12873).replace(/\s/g, " ")).toBe("12 873");
+    expect(axisNum(1650)).toBe("1650".replace(/^(\d)(\d{3})$/, "$1\u202f$2"));
+    expect(axisNum(1234567)).toMatch(/^1,2\s?M/);
+  });
+
+  it("steps back one calendar day, across months and DST", () => {
+    expect(prevDayKey("2026-11-02")).toBe("2026-11-01");
+    expect(prevDayKey("2026-03-01")).toBe("2026-02-28");
+    expect(prevDayKey("2026-03-30")).toBe("2026-03-29");
+  });
+});
