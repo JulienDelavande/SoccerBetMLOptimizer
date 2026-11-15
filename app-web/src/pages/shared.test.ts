@@ -8,7 +8,7 @@ import type { UserProfile } from "../api";
 import { equityChart } from "../charts";
 
 const bet = (o: Partial<Bet>): Bet => ({
-  id: "abc123", kickoff: "2026-11-22T14:00:00", odds_at: "2026-11-15T11:05:00", published: true, league_key: "soccer_italy_serie_a",
+  id: "abc123", kickoff: "2026-11-22T14:00:00", odds_at: "2026-11-15T11:05:00", league_key: "soccer_italy_serie_a",
   link: "https://example.test/bet", probs: { home: 0.35, draw: 0.28, away: 0.37 }, home: "Sassuolo", away: "Genoa", league: "Serie A",
   side: "away", price: 2.85, fair_price: 2.74, edge: 0.041, stake: 0.0111, book: "unibet_se", status: "upcoming", score: null, gain: 0, clv: null, ...o,
 });

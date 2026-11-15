@@ -1,40 +1,45 @@
 import { EQ_WIDE, attachEquityHover, clvChart, drawdownChart, equityChart, groupTable, monthlyGrid } from "../charts";
 import { getMyBets } from "../api";
-import { eur, int, odds, pct, prevDayKey } from "../format";
+import { eur, eur0, int, odds, pct, prevDayKey } from "../format";
 import type { MyStats } from "../api";
 import type { EquityPoint } from "../types";
 import type { SiteData } from "../types";
-import { card, kpiStrip, pageHead } from "./shared";
+import { bankrollNote, card, kpiStrip, pageHead, recordFacts, recordNotice } from "./shared";
 import { currentUser } from "../session";
 import { getView } from "../view";
 import { locale, t } from "../i18n";
 
+/** Published track record: CLV and bet count lead, the fictitious bankroll and its return come
+ *  second with the max drawdown right beside them, and the notice sits above the charts. */
 export function renderPerformance(app: HTMLElement, data: SiteData) {
   const user = currentUser();
   if (user && getView() === "me") { renderMyPerformance(app, user.bankroll); return; }
   const k = data.kpis;
   if (!k) { app.innerHTML = `<div class="empty pad">${t("Pas encore de pari réglé.")}</div>`; return; }
+  const f = recordFacts(data);
+  const won = Math.round(k.win_rate * k.bets);
   app.innerHTML = `
-    ${pageHead(t("Performance"), t("Depuis le {d} · mises en demi-Kelly", { d: new Date(k.since).toLocaleDateString(locale()) }))}
+    ${pageHead(t("Performance"), t("Paris publiés en direct depuis le {d} · {p} · mises en demi-Kelly", { d: f.since, p: f.period }))}
     ${kpiStrip([
-      [t("Bankroll"), eur(k.bankroll), `${t("départ")} ${eur(data.start_bankroll)}`, ""],
-      [t("Rendement"), pct(k.return), t("cumulé"), k.return >= 0 ? "up" : "down"],
-      [t("CLV moyen"), k.clv === null ? "–" : pct(k.clv), t("{n} % des paris mesurés", { n: Math.round(k.clv_coverage * 100) }), k.clv !== null && k.clv >= 0 ? "up" : "down"],
+      [t("CLV moyen"), k.clv === null ? "–" : pct(k.clv), t("vs clôture Pinnacle · {n} % des paris mesurés", { n: Math.round(k.clv_coverage * 100) }), ""],
+      [t("Paris réglés"), int(k.bets), t("{w} gagnés · {l} perdus", { w: int(won), l: int(k.bets - won) }), ""],
+      [t("Rendement fictif"), pct(k.return), t("bankroll fictive {v}", { v: eur0(k.bankroll) }), ""],
       [t("Drawdown max"), pct(k.max_drawdown), new Date(k.max_drawdown_day).toLocaleDateString(locale()), "down"],
     ])}
+    ${recordNotice(data)}
     ${kpiStrip([
-      [t("Paris"), int(k.bets), t("{n} % gagnants", { n: Math.round(k.win_rate * 100) }), ""],
-      [t("ROI / pari"), pct(k.roi), t("mise fixe"), k.roi >= 0 ? "" : "down"],
-      [t("Cote moyenne"), odds(k.avg_price), t("avantage moyen {v}", { v: pct(k.avg_edge) }), "", false],
+      [t("Écart moyen"), pct(k.avg_edge), t("cote publiée vs juste prix"), ""],
+      [t("ROI / pari"), pct(k.roi), t("mise fixe · échantillon court"), ""],
+      [t("Cote moyenne"), odds(k.avg_price), t("{n} % gagnants", { n: Math.round(k.win_rate * 100) }), "", false],
       [t("Mise moyenne"), pct(k.avg_stake).replace("+", ""), t("de la bankroll"), ""],
     ], "light")}
-    ${card(t("Bankroll"), "", `<div id="eq"></div>`)}
+    ${card(t("Bankroll fictive"), t("départ {v}", { v: eur0(data.start_bankroll) }), `<div id="eq"></div><p class="note">${bankrollNote(data.start_bankroll)}</p>`)}
     ${card(t("Drawdown"), t("Écart au plus haut historique"), drawdownChart(data.equity))}
-    ${card(t("Rendement mensuel"), "", monthlyGrid(data.monthly))}
+    ${card(t("Rendement mensuel"), t("bankroll fictive"), monthlyGrid(data.monthly, { since: k.since, now: data.generated_at }))}
     ${card(t("Closing line value"), t("Chaque point = un pari · ligne = moyenne glissante 30 paris"),
-      `${clvChart(data.clv_series)}<p class="note">${t("Le CLV compare notre cote à la cote de clôture de Pinnacle. Positif en moyenne = on achète moins cher que le juste prix : c'est l'indicateur qui prédit les gains à long terme, bien avant le résultat des matchs.")}</p>`)}
-    ${card(t("Par championnat"), "", groupTable(data.by_league, t("Championnat")), "flush")}
-    ${card(t("Par cote"), "", groupTable(data.by_odds, t("Cote")), "flush")}`;
+      `${clvChart(data.clv_series)}<p class="note">${t("Le CLV compare la cote publiée à la cote de clôture de Pinnacle. Une moyenne positive signifie que les cotes publiées étaient en moyenne au-dessus du prix final du marché. C'est un écart mesuré, pas une garantie : le résultat des matchs reste aléatoire.")}</p>`)}
+    ${card(t("Par championnat"), "", groupTable(data.by_league, t("Championnat"), data.start_bankroll), "flush")}
+    ${card(t("Par cote"), "", groupTable(data.by_odds, t("Cote"), data.start_bankroll), "flush")}`;
   const eq = app.querySelector<HTMLElement>("#eq")!;
   eq.innerHTML = equityChart(data.equity, data.start_bankroll, { draw: true, box: EQ_WIDE });
   attachEquityHover(eq, data.equity);

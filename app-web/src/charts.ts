@@ -43,8 +43,8 @@ export function equityChart(eq: EquityPoint[], start: number, opts: EquityOpts =
   const grid = ticks(lo - pad, hi + pad).map((v) =>
     `<line class="c-grid" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
     `<text class="c-axis" x="${box.left - 10}" y="${y(v) + 4}" text-anchor="end">${axisNum(v)}</text>`).join("");
-  const months = monthTicks(t0, t1, box.w - box.left - box.right).map((t) =>
-    `<text class="c-axis" x="${x(t)}" y="${box.h - 8}" text-anchor="middle">${new Date(t).toLocaleDateString(locale(), { month: "short", year: "2-digit" })}</text>`).join("");
+  const months = timeTicks(t0, t1, box.w - box.left - box.right).map((k) =>
+    `<text class="c-axis" x="${x(k.t)}" y="${box.h - 8}" text-anchor="middle">${k.label}</text>`).join("");
   const label = opts.label ?? t("Courbe de bankroll : de {a} à {b}, du {d0} au {d1}", { a: eur0(eq[0].bankroll), b: eur0(last.bankroll), d0: fmtDate(eq[0].day), d1: fmtDate(last.day) });
   const svg = `<svg class="chart${opts.draw ? " draw" : ""}" viewBox="0 0 ${box.w} ${box.h}" role="img" aria-label="${esc(label)}" data-eq='${JSON.stringify({ t0, t1, lo: lo - pad, hi: hi + pad, box })}'>
     ${grid}${months}
@@ -80,6 +80,21 @@ function equityCallouts(eq: EquityPoint[], X: (p: EquityPoint) => number, y: (v:
   if (dd[trough].dd < -0.03 && Math.abs(trough - peak) > eq.length * 0.08)
     pin(trough, "down", "co-neg", t("Pire creux"), pct(dd[trough].dd));
   return out.join("");
+}
+
+/** Time axis ticks: first-of-month for long spans; for a short history (under ~10 weeks, where
+ *  months would give one lonely tick) Mondays labelled with day and month, thinned the same way. */
+export function timeTicks(t0: number, t1: number, plotW = 700): { t: number; label: string }[] {
+  const DAY = 86400000;
+  if (t1 - t0 >= 70 * DAY)
+    return monthTicks(t0, t1, plotW).map((t) => ({ t, label: new Date(t).toLocaleDateString(locale(), { month: "short", year: "2-digit" }) }));
+  const d = new Date(t0); d.setUTCHours(0, 0, 0, 0);
+  d.setUTCDate(d.getUTCDate() + ((8 - d.getUTCDay()) % 7 || 7));   // next Monday, strictly after t0
+  const weeks = (t1 - t0) / (7 * DAY), every = Math.max(1, Math.ceil(weeks / Math.max(1, plotW / 80)));
+  const out: { t: number; label: string }[] = [];
+  for (let i = 0; d.getTime() < t1; i++, d.setUTCDate(d.getUTCDate() + 7))
+    if (i % every === 0) out.push({ t: d.getTime(), label: d.toLocaleDateString(locale(), { day: "numeric", month: "short", timeZone: "UTC" }) });
+  return out;
 }
 
 /** First-of-month ticks, thinned so labels (~64 units wide) never collide on the plot width. */
@@ -145,13 +160,16 @@ export function drawdownChart(eq: EquityPoint[], box0: Box = { w: 1120, h: 220, 
   for (const p of dd) d += ` H${x(new Date(p.day).getTime())} V${y(p.dd)}`;
   const grid = ticks(lo, 0, 3).map((v) =>
     `<line class="c-grid" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
-    `<text class="c-axis" x="${box.left - 8}" y="${y(v) + 4}" text-anchor="end">${Math.round(v * 100)}%</text>`).join("");
+    `<text class="c-axis" x="${box.left - 8}" y="${y(v) + 4}" text-anchor="end">${new Intl.NumberFormat(locale(), { maximumFractionDigits: lo > -0.1 ? 1 : 0 }).format(Math.abs(v) < 1e-9 ? 0 : v * 100)}%</text>`).join("");
   return `<svg class="chart draw" viewBox="0 0 ${box.w} ${box.h}" role="img" aria-label="${esc(t("Drawdown : pire creux {v}", { v: pct(Math.min(...dd.map((d) => d.dd))) }))}">${grid}
     <path class="c-loss-area c-area" d="${d} V${y(0)}Z"/><path class="c-loss c-line" pathLength="1" d="${d}"/></svg>`;
 }
 
-/** One row per year, one cell per month, coloured by the month's return. */
-export function monthlyGrid(monthly: { month: string; return: number }[]) {
+/** One row per year, one cell per month, coloured by the month's return. A history of a few months
+ *  gets one tile per month instead (a year row would be mostly empty cells), with the partial first
+ *  month and the month in progress labelled as such. */
+export function monthlyGrid(monthly: { month: string; return: number }[], opts: { since?: string; now?: string } = {}) {
+  if (monthly.length > 0 && monthly.length < 6) return monthTiles(monthly, opts);
   const byYear = new Map<string, Map<number, number>>();
   for (const m of monthly) {
     const [yr, mo] = m.month.split("-");
@@ -175,13 +193,27 @@ export function monthlyGrid(monthly: { month: string; return: number }[]) {
   return `<div class="mgrid" tabindex="0" role="region" aria-label="${t("Rendement mensuel")}">${head}${rows}</div>`;
 }
 
-/** Horizontal profit bars with the group's stats. */
-export function groupTable(groups: GroupStat[], label: string) {
+function monthTiles(monthly: { month: string; return: number }[], { since, now }: { since?: string; now?: string }) {
+  const max = Math.max(0.05, ...monthly.map((m) => Math.abs(m.return)));
+  const first = since?.slice(0, 7), current = now?.slice(0, 7);
+  const tiles = monthly.map((m, i) => {
+    const alpha = 0.15 + 0.85 * Math.min(1, Math.abs(m.return) / max);
+    const name = new Date(`${m.month}-01T12:00:00Z`).toLocaleDateString(locale(), { month: "long", year: "numeric", timeZone: "UTC" });
+    const note = m.month === current ? t("en cours")
+      : i === 0 && m.month === first && since && Number(since.slice(8, 10)) > 1 ? t("depuis le {d}", { d: utc(since).toLocaleDateString(locale(), { day: "numeric", month: "short", timeZone: "UTC" }) }) : "";
+    return `<div role="listitem" class="mt-tile ${m.return >= 0 ? "mg-up" : "mg-down"}${alpha > 0.5 ? " mg-hi" : ""}" style="--a:${alpha.toFixed(2)}">
+      <span class="mt-name">${name}${note ? `<small>${note}</small>` : ""}</span><b class="num">${pct(m.return)}</b></div>`;
+  }).join("");
+  return `<div class="mtiles" role="list" aria-label="${t("Rendement mensuel")}">${tiles}</div>`;
+}
+
+/** Horizontal result bars with the group's stats; `base` is the fictitious bankroll the flat result is counted on. */
+export function groupTable(groups: GroupStat[], label: string, base: number) {
   const max = Math.max(1, ...groups.map((g) => Math.abs(g.profit)));
-  return `<div class="tbl-scroll" tabindex="0" role="region" aria-label="${esc(label)}"><table class="tbl groups"><thead><tr><th>${label}</th><th class="r">${t("Paris")}</th><th class="r">${t("Réussite")}</th><th class="r">ROI</th><th class="r">${t("CLV")}</th><th>${t("Gain sur 1 000 €")}</th></tr></thead><tbody>
+  return `<div class="tbl-scroll" tabindex="0" role="region" aria-label="${esc(label)}"><table class="tbl groups"><thead><tr><th>${label}</th><th class="r">${t("Paris")}</th><th class="r">${t("Réussite")}</th><th class="r">ROI</th><th class="r">${t("CLV")}</th><th>${t("Résultat sur {v} fictifs", { v: eur0(base) })}</th></tr></thead><tbody>
     ${groups.map((g) => `<tr><td class="strong">${esc(g.name)}</td><td class="r mono">${g.bets}</td><td class="r mono">${Math.round(g.win_rate * 100)} %</td>
       <td class="r mono ${g.roi >= 0 ? "up" : "down"}">${pct(g.roi)}</td><td class="r mono">${g.clv === null ? "–" : pct(g.clv)}</td>
-      <td><div class="gbar"><span class="${g.profit >= 0 ? "gb-up" : "gb-down"}" style="width:${(Math.abs(g.profit) / max) * 100}%"></span><b>${g.profit >= 0 ? "+" : "−"}${Math.abs(Math.round(g.profit))} €</b></div></td></tr>`).join("")}
+      <td><div class="gbar"><span class="${g.profit >= 0 ? "gb-up" : "gb-down"}" style="width:${(Math.abs(g.profit) / max) * 100}%"></span><b>${g.profit >= 0 ? "+" : "−"}${eur0(Math.abs(g.profit))}</b></div></td></tr>`).join("")}
   </tbody></table></div>`;
 }
 
@@ -241,8 +273,8 @@ export function multiLineChart(series: Series[], digits = 0, box0: Box = { w: 56
   const grid = ticks(lo - pad, hi + pad, 3).map((v) =>
     `<line class="c-grid" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
     `<text class="c-axis" x="${box.left - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(digits)}</text>`).join("");
-  const months = monthTicks(t0, t1, box.w - box.left - box.right).map((t) =>
-    `<text class="c-axis" x="${x(t)}" y="${box.h - 8}" text-anchor="middle">${new Date(t).toLocaleDateString(locale(), { month: "short", year: "2-digit" })}</text>`).join("");
+  const months = timeTicks(t0, t1, box.w - box.left - box.right).map((k) =>
+    `<text class="c-axis" x="${x(k.t)}" y="${box.h - 8}" text-anchor="middle">${k.label}</text>`).join("");
   const labels: number[] = [];
   const lines = series.filter((s) => s.points.length).map((s) => {
     const d = s.points.map((p, i) => `${i ? "L" : "M"}${x(new Date(p.d).getTime())},${y(p.v)}`).join(" ");

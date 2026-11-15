@@ -21,15 +21,6 @@ export const pct = (v: number, digits = 1) => {
 };
 export const pctPlain = (v: number) => `${nf(0).format(v * 100)} %`;
 
-/** Bankroll split into integer and decimal parts for the big hero number. */
-export const splitAmount = (v: number): [string, string] => {
-  const parts = nf(2).formatToParts(v);
-  const dec = parts.find((p) => p.type === "decimal")?.value ?? ",";
-  const frac = parts.find((p) => p.type === "fraction")?.value ?? "00";
-  const int = parts.filter((p) => p.type === "integer" || p.type === "group").map((p) => p.value).join("");
-  return [int, `${dec}${frac}€`];
-};
-
 export const SIDE_LABEL = { home: "1", draw: "N", away: "2" } as const;
 export const betLabel = (b: Pick<Bet, "side" | "home" | "away">) =>
   b.side === "draw" ? t("Match nul") : t("Victoire {team}", { team: b.side === "home" ? b.home : b.away });
@@ -66,6 +57,7 @@ const dtf = (opts: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(locale
 export const fmtDay = (s: string) => dtf({ weekday: "short", day: "2-digit", month: "short" }).format(utc(s));
 export const fmtTime = (s: string) => dtf({ hour: "2-digit", minute: "2-digit" }).format(utc(s));
 export const fmtDate = (s: string) => dtf({ day: "2-digit", month: "2-digit", year: "2-digit" }).format(utc(s));
+export const fmtLongDate = (s: string) => dtf({ day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(utc(s));
 export const fmtMonth = (s: string) =>
   dtf({ month: "long", year: "numeric" }).format(new Date(`${s}-01T12:00:00Z`));
 
@@ -77,6 +69,25 @@ export const sliceEquity = (eq: EquityPoint[], days: number | null) => {
   if (!days || eq.length === 0) return eq;
   const end = new Date(eq[eq.length - 1].day).getTime();
   return eq.filter((p) => end - new Date(p.day).getTime() <= days * 86400000);
+};
+
+/** Whole days from `since` to `now` (both backend timestamps). */
+export const daysBetween = (since: string, now: string) =>
+  Math.max(0, Math.floor((utc(now).getTime() - utc(since).getTime()) / 86400000));
+
+/** Honest length of the published record: "12 jours" under two weeks, then weeks, then months. */
+export const periodLabel = (since: string, now: string) => {
+  const d = daysBetween(since, now);
+  if (d < 14) return t(d > 1 ? "{n} jours" : "{n} jour", { n: Math.max(1, d) });
+  if (d < 91) return t("{n} semaines", { n: Math.round(d / 7) });
+  return t("{n} mois", { n: Math.round(d / 30.44) });
+};
+
+/** Range tabs worth showing: windows shorter than the curve, plus the whole curve (null). */
+export const usefulRanges = <T extends [string, number | null]>(ranges: T[], eq: EquityPoint[]): T[] => {
+  if (eq.length < 2) return ranges.filter(([, d]) => d === null);
+  const span = (new Date(eq[eq.length - 1].day).getTime() - new Date(eq[0].day).getTime()) / 86400000;
+  return ranges.filter(([, d]) => d === null || d < span);
 };
 
 export const drawdown = (eq: EquityPoint[]) => {

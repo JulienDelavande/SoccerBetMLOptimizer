@@ -5,7 +5,6 @@ export interface Bet {
   id: string;
   kickoff: string;
   odds_at: string;
-  published: boolean;
   league_key: string | null;
   link: string | null;
   probs: Record<Side, number>;

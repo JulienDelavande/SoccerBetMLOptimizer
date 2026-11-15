@@ -1,6 +1,6 @@
-import { betLabel, bookName, esc, eur, fmtDate, fmtDay, fmtTime, odds, pct, stakeFor } from "../format";
+import { betLabel, bookName, esc, eur, eur0, fmtDate, fmtDay, fmtLongDate, fmtTime, int, odds, pct, periodLabel, stakeFor } from "../format";
 import { leagueLogo, teamLogo } from "../logos";
-import type { Bet } from "../types";
+import type { Bet, SiteData } from "../types";
 import { confirmBet, removeBet } from "../api";
 import { currentUser } from "../session";
 import { t } from "../i18n";
@@ -24,6 +24,35 @@ export const savedBankroll = () => Math.max(0, Number(localStorage.getItem(BANKR
 const KELLY_BY_RISK: Record<string, number> = { prudent: 0.25, balanced: 0.5, aggressive: 1.0 };
 export const riskStake = (fraction: number, risk: string) =>
   Math.min(fraction * ((KELLY_BY_RISK[risk] ?? 0.5) / 0.5), 0.05);
+
+// Fallback for the offline Method page (no payload): the date bets started being published live.
+export const LIVE_SINCE = "2026-10-19T00:00:00";
+export const JIS_PHONE = "09 74 75 13 13";
+
+/** Facts every view of the track record repeats: start date, honest length, settled count. */
+export function recordFacts(data: Pick<SiteData, "live_since" | "generated_at" | "kpis">) {
+  const since = data.live_since || LIVE_SINCE;
+  return { since: fmtLongDate(since), period: periodLabel(since, data.generated_at), settled: data.kpis?.bets ?? 0 };
+}
+
+/** Visible notice next to the track record (not fine print): past results, short sample, information
+ *  only, responsible gambling. Required framing for a French audience (Code de la consommation L121-2/4). */
+export function recordNotice(data: Pick<SiteData, "live_since" | "generated_at" | "kpis">) {
+  const f = recordFacts(data);
+  return `<aside class="notice" data-reveal aria-labelledby="notice-h">
+    <span class="notice-ic">${icon("alert")}</span>
+    <div class="notice-b">
+      <h2 id="notice-h">${t("Résultats passés : aucune garantie pour la suite")}</h2>
+      <p>${t("Historique publié en direct depuis le {d} : {p}, {n} paris réglés. C'est un échantillon court et la variance est élevée : sur une période aussi courte, le rendement dépend surtout du hasard et peut s'inverser.", { d: f.since, p: f.period, n: int(f.settled) })}</p>
+      <p>${t("Information uniquement, pas un conseil de pari adapté à votre situation. Ne misez que ce que vous pouvez vous permettre de perdre. Interdit aux moins de 18 ans.")}
+        ${t("Joueurs Info Service :")} <a href="tel:+33974751313" class="nowrap">${JIS_PHONE}</a> ${t("(appel non surtaxé).")}</p>
+    </div>
+  </aside>`;
+}
+
+/** What the fictitious bankroll is (shown under every track-record bankroll curve). */
+export const bankrollNote = (start: number) =>
+  t("Simulation : {v} fictifs au départ, en suivant les mises publiées (demi-Kelly) aux cotes publiées. Les résultats réels diffèrent : limites de mise, cotes qui bougent, paris indisponibles.", { v: eur0(start) });
 
 /** Page title block: big heading and an optional one-line context. */
 export const pageHead = (title: string, sub = "", extra = "") =>

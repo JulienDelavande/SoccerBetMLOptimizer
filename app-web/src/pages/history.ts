@@ -2,7 +2,7 @@ import { getMyBets, removeBet } from "../api";
 import { esc, eur, fmtDate, odds } from "../format";
 import type { MyBet } from "../api";
 import type { SiteData } from "../types";
-import { betsTable, bindRows, pageHead, savedBankroll } from "./shared";
+import { betsTable, bindRows, pageHead, recordFacts, savedBankroll } from "./shared";
 import { icon } from "../icons";
 import { currentUser } from "../session";
 import { getView } from "../view";
@@ -15,7 +15,7 @@ export function renderHistory(app: HTMLElement, data: SiteData) {
   const settled = data.bets.filter((b) => ["won", "lost", "void"].includes(b.status)).sort((a, b) => b.kickoff.localeCompare(a.kickoff));
   const leagues = [...new Set(settled.map((b) => b.league))].sort();
   app.innerHTML = `
-    ${pageHead(t("Historique"), t("{n} paris · mise pour {b} € · gain en % de la bankroll du jour", { n: settled.length, b: savedBankroll() }),
+    ${pageHead(t("Historique"), t("{n} paris réglés, publiés en direct depuis le {d} · mise pour ta bankroll de {b} € · résultat en % de la bankroll du jour", { n: settled.length, d: recordFacts(data).since, b: savedBankroll() }),
       `<div class="filters">
         <div class="seg" id="st" role="group" aria-label="${t("Résultat")}">${["Tous", "Gagnés", "Perdus"].map((l, i) => `<button data-v="${["", "won", "lost"][i]}" class="${i ? "" : "on"}" aria-pressed="${!i}">${t(l)}</button>`).join("")}</div>
         <label class="select"><span class="sr-only">${t("Championnat")}</span><select id="lg"><option value="">${t("Tous les championnats")}</option>${leagues.map((l) => `<option>${esc(l)}</option>`).join("")}</select></label>

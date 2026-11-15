@@ -304,6 +304,28 @@ html.motion .ball-stage:not(.in) .br-leads { opacity: 0; }
 .hero-chart .card-h { margin-bottom: 4px; padding-left: 4px; align-items: center; }
 .hero-chart .card-h h2 { font-size: 1rem; }
 
+.hero-chart .card-h h2 small { font-size: .8125rem; font-weight: 500; color: var(--muted); margin-left: 10px; letter-spacing: 0; }
+.card-h h2 small { font-size: .8125rem; font-weight: 500; color: var(--muted); }
+.hero-chart .chart-note { font-size: .8125rem; margin: 30px 4px 8px; line-height: 1.45; }
+.nowrap { white-space: nowrap; }
+
+/* track-record notice: visible, next to the numbers (not fine print) */
+.notice {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: start;
+  background: var(--surface); border: 2px solid var(--accent); border-radius: var(--r-card); padding: 22px 24px;
+}
+.notice-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: var(--on-accent); }
+.notice-ic .ic { width: 22px; height: 22px; }
+.notice h2 { font-size: 1.125rem; font-weight: 800; letter-spacing: -.015em; line-height: 1.25; }
+.notice p { margin-top: 8px; color: var(--text); line-height: 1.55; max-width: 88ch; font-size: .9375rem; }
+.notice p + p { color: var(--muted); }
+.notice a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+main > .bento + .notice { margin-top: 16px; }
+main > .notice + .marquee { margin-top: 48px; }
+.range-sep { opacity: .45; font-weight: 400; }
+.bankroll > span:first-child { display: grid; text-align: right; line-height: 1.2; }
+.bankroll small { font-size: .75rem; font-weight: 500; }
+
 /* bento: the one tomato stat card + scoreboard tiles */
 .bento { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 3fr); gap: 16px; margin-top: 32px !important; }
 .statcard {
@@ -627,6 +649,15 @@ html.motion .chart-wrap:has(.chart.draw:not(.in)) .callout { opacity: 0; }
 .mg-down { background: color-mix(in srgb, var(--mg-down) calc(var(--a) * 100%), var(--surface-2)); }
 .mg-total { font: 700 .8125rem var(--mono); display: flex; align-items: center; justify-content: flex-end; }
 
+/* short history: one tile per month */
+.mtiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.mt-tile { border-radius: var(--r-tile); padding: 14px 16px 16px; display: grid; gap: 10px; color: var(--text); }
+.mt-tile.mg-hi { color: var(--mg-ink); }
+[data-theme="dark"] .mt-tile.mg-hi { color: var(--text); }
+.mt-name { font-size: .875rem; font-weight: 650; text-transform: capitalize; display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; }
+.mt-name small { font-size: .75rem; font-weight: 500; text-transform: none; opacity: .8; }
+.mt-tile b { font: 700 1.375rem var(--mono); font-variant-numeric: tabular-nums; }
+
 /* ---------- history ---------- */
 .filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .select { position: relative; display: inline-flex; }
@@ -806,6 +837,9 @@ html.vt-theme::view-transition-new(root) { animation: 200ms ease both fade; }
   .foot-in { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 640px) {
+  .hero-chart .chart-note { margin-top: 44px; }
+  .kpi .v.txt { font-size: 1.5rem; white-space: normal; line-height: 1.05; }
+  .notice { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 20px; }
   body { font-size: 1rem; }
   .stamp:not(.is-offline) { display: none; }
   .phead { padding-top: 36px; }

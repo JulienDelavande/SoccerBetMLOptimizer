@@ -57,10 +57,10 @@ function render(m: MatchDetail) {
       ${kpi(t("CLV"), b.clv === null ? "–" : pct(b.clv), t("vs clôture Pinnacle"), b.clv !== null && b.clv >= 0 ? "up" : "down")}
       ${kpi(t("Résultat"), result, resultSub, resultTone)}
     </section>
-    <div class="mstamp"><span class="note">${t("Cotes relevées le {t}", { t: fmtStamp(m.odds_at) })}</span>
+    <div class="mstamp"><span class="note">${t("Publié le {t}", { t: fmtStamp(m.odds_at) })}</span>
       ${m.status === "upcoming" && b.link ? `<a class="btn-cta" href="${esc(b.link)}" target="_blank" rel="noopener nofollow">${t("Parier chez {book}", { book: esc(bookName(b.book)) })}${icon("arrow-up-right")}</a>` : ""}</div>
     <div class="grid2">
-      ${card(t("Cote Pinnacle · {label}", { label: esc(label) }), t("Pinnacle jusqu'au coup d'envoi contre notre cote. Clôture sous notre cote = on a acheté moins cher que le marché (CLV)."),
+      ${card(t("Cote Pinnacle · {label}", { label: esc(label) }), t("Pinnacle jusqu'au coup d'envoi, face à la cote publiée. Clôture sous la cote publiée = CLV positif."),
         oddsChart(m.pinnacle[b.side], b.price, m.kickoff))}
       ${card(t("Elo · 2 saisons"), t("Force des équipes (Elo maison, tous championnats FBref), avant chaque match."),
         m.elo ? multiLineChart([

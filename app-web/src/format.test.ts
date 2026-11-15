@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { setLang } from "./i18n";
 beforeAll(() => setLang("fr"));
-import { betLabel, drawdown, isoUtc, pct, sliceEquity, splitAmount, stakeFor } from "./format";
+import { betLabel, drawdown, isoUtc, pct, sliceEquity, stakeFor } from "./format";
 
 describe("format", () => {
   it("formats signed percentages with a real minus sign", () => {
@@ -9,12 +9,6 @@ describe("format", () => {
     expect(pct(-0.112).replace(/\s/g, " ")).toBe("−11,2 %");
     expect(pct(0)).toMatch(/^0,0/);
     expect(pct(-0.0001)).toMatch(/^0,0/); // no "−0,0 %"
-  });
-
-  it("splits a bankroll for the hero number", () => {
-    const [i, d] = splitAmount(1647.2);
-    expect(i.replace(/\s/g, "")).toBe("1647");
-    expect(d).toBe(",20€");
   });
 
   it("rounds stakes to 10 cents of the chosen bankroll", () => {
