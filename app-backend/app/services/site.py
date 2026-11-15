@@ -10,6 +10,7 @@ from app._config import engine
 from app.services.match_detail import build_match_detail
 from app.services.team_charts import elo_history
 from app.services.site_payload import build_payload
+from app.services.swr_cache import SWRCache
 
 BETS_SQL = """
 SELECT b.*, f.league, f.home_g, f.away_g, f.notes, f.home_xg, f.away_xg, f.venue, f.referee
@@ -81,36 +82,33 @@ ELO_TTL_SECONDS = 6 * 3600
 TTL_SECONDS = 300
 _cache: dict[str, tuple[float, dict]] = {}
 _lock = threading.Lock()
+_swr = SWRCache()
 
 
 def site_payload(label: str) -> dict:
-    with _lock:
-        hit = _cache.get(label)
-        if hit and time.monotonic() - hit[0] < TTL_SECONDS:
-            return hit[1]
+    """Public payload, refreshed in the background once older than TTL_SECONDS (stale-while-revalidate)."""
+    return _swr.get(f"site/{label}", TTL_SECONDS, lambda: _build_site_payload(label))
+
+
+def _build_site_payload(label: str) -> dict:
     with engine.connect() as conn:
         bets = pd.read_sql(text(BETS_SQL), conn, params={"label": label})
         closing = pd.read_sql(text(CLOSING_SQL), conn, params={"label": label})
     closing["price"] = closing["price"].astype(float)
-    payload = build_payload(bets, closing, datetime.datetime.utcnow())
-    with _lock:
-        _cache[label] = (time.monotonic(), payload)
-    return payload
+    return build_payload(bets, closing, datetime.datetime.utcnow())
 
 
 def elo_ratings() -> pd.DataFrame:
-    """Pre-match Elo history of every team, recomputed every few hours (a few seconds of work)."""
-    with _lock:
-        hit = _cache.get("elo")
-        if hit and time.monotonic() - hit[0] < ELO_TTL_SECONDS:
-            return hit[1]
+    """Pre-match Elo history of every team (a few seconds of work): recomputed in the background every
+    few hours while the previous history keeps serving match pages."""
+    return _swr.get("elo", ELO_TTL_SECONDS, _build_elo_history)
+
+
+def _build_elo_history() -> pd.DataFrame:
     with engine.connect() as conn:
         matches = pd.read_sql(text(ELO_SQL), conn, params={"since": ELO_SINCE})
     matches["date"] = pd.to_datetime(matches["date"]).dt.date
-    history = elo_history(matches)
-    with _lock:
-        _cache["elo"] = (time.monotonic(), history)
-    return history
+    return elo_history(matches)
 
 
 def match_detail(label: str, match_id: str) -> dict | None:
