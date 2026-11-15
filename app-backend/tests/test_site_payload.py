@@ -158,11 +158,10 @@ def test_only_open_bets_has_no_kpis():
     assert p["kpis"] is None and len(p["bets"]) == 1
 
 
-def test_bookmaker_link_attached_to_the_bet_book():
+def test_no_bookmaker_link_in_public_payload():
+    # No outbound betting links on the public site (loi 2010-476 art. 57 risk for unlicensed books).
     links = pd.DataFrame({"match_id": ["m1", "m1"], "bookmaker_key": ["onexbet", "williamhill"],
                           "bookmaker_link": ["https://1xbet.example/m1", "https://wh.example/m1"]})
     p = build_payload(frame(bet(1, "2026-10-25", "home", 2.2, 0.01)), pd.DataFrame(columns=["match_id", "side", "price"]),
                       NOW, links)
-    assert p["bets"][0]["link"] == "https://1xbet.example/m1"
-    p = build_payload(frame(bet(1, "2026-10-25", "home", 2.2, 0.01)), pd.DataFrame(columns=["match_id", "side", "price"]), NOW)
-    assert p["bets"][0]["link"] is None
+    assert "link" not in p["bets"][0]

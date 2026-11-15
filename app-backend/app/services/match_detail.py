@@ -82,7 +82,7 @@ def build_match_detail(bet: pd.DataFrame, pinnacle: pd.DataFrame, books: pd.Data
         "venue": row.get("venue") or None, "referee": row.get("referee") or None,
         "bet": {"side": t["side"], "book": t["book"], "price": float(t["price"]), "fair_price": float(t["fair_price"]),
                 "edge": float(t["edge"]), "stake": float(t["stake"]), "gain": float(t["gain"]),
-                "clv": None if pd.isna(t["clv"]) else float(t["clv"]), "link": t["link"]},
+                "clv": None if pd.isna(t["clv"]) else float(t["clv"])},
         "probs": {s: float(t[f"p_{s}"]) for s in SIDES},
         "closing_probs": None if fair_close.empty else {s: float(fair_close.iloc[0][s]) for s in SIDES},
         "closing_fair_price": None if fair_close.empty else {s: float(1 / fair_close.iloc[0][s]) for s in SIDES},

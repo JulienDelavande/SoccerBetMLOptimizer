@@ -5,7 +5,7 @@ import type { Bet, SiteData } from "../types";
 import { ballCallouts, daySummary } from "./today";
 
 const bet = (o: Partial<Bet>): Bet => ({
-  id: "x", kickoff: "2026-10-20T19:00:00", odds_at: "2026-10-19T10:05:00", league_key: null, link: null,
+  id: "x", kickoff: "2026-10-20T19:00:00", odds_at: "2026-10-19T10:05:00", league_key: null,
   probs: { home: 0.5, draw: 0.3, away: 0.2 }, home: "A", away: "B", league: "L", side: "home", price: 2, fair_price: 1.9,
   edge: 0.05, stake: 0.02, book: "onexbet", status: "upcoming", score: null, gain: 0, clv: null, ...o,
 });

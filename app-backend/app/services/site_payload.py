@@ -136,7 +136,7 @@ def summarize(t: pd.DataFrame, now: datetime.datetime) -> dict:
     def record(r):
         return {"id": r.match_id, "kickoff": r.kickoff.isoformat(), "odds_at": r.odds_at.isoformat(timespec="seconds"),
                 "home": r.home, "away": r.away, "league": r.league,
-                "league_key": r.league_key, "link": r.link, "side": r.side,
+                "league_key": r.league_key, "side": r.side,
                 "probs": {"home": round(float(r.p_home), 4), "draw": round(float(r.p_draw), 4), "away": round(float(r.p_away), 4)},
                 "price": round(float(r.price), 2), "fair_price": round(float(r.fair_price), 3),
                 "edge": float(r.edge), "stake": float(r.stake), "book": r.book, "status": r.status,
