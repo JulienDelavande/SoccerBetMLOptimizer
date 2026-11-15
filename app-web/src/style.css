@@ -294,9 +294,10 @@ html.motion .mq-track { animation: marquee 44s linear infinite; }
 .mq-pause {
   position: absolute; right: max(8px, env(safe-area-inset-right)); top: 50%; translate: 0 -50%; z-index: 1;
   width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--band); color: var(--band-text); box-shadow: 0 0 0 1px color-mix(in srgb, var(--band-text) 30%, transparent), -16px 0 16px 4px var(--band);
+  background: var(--band); color: var(--band-text); box-shadow: 0 0 0 1px color-mix(in srgb, var(--band-text) 30%, transparent), 0 0 0 0 transparent;
   transition: transform 100ms var(--ease-out), background-color 180ms ease;
 }
+html.motion .marquee::after { content: ""; position: absolute; inset: 0 0 0 auto; width: 96px; pointer-events: none; background: linear-gradient(to right, transparent, var(--band) 55%); }
 .mq-pause::after { content: ""; position: absolute; inset: -4px; }
 .mq-pause .ic { width: 16px; height: 16px; }
 .mq-pause .ic-play, .marquee.paused .mq-pause .ic-pause { display: none; }
