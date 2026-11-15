@@ -98,7 +98,10 @@ def telegram_link_code(uid: int) -> str:
 
 def delete_account(uid: int) -> None:
     from app._config import engine
+    from app.services.waitlist import DELETE_FOR_USER_SQL
     with engine.begin() as conn:
+        # Waitlist row first: it may only match by email (signed up before creating the account).
+        conn.execute(text(DELETE_FOR_USER_SQL), {"uid": uid})
         conn.execute(text("DELETE FROM users WHERE user_id = :uid"), {"uid": uid})  # cascades to settings + bets
 
 
