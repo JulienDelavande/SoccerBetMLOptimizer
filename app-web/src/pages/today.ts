@@ -10,6 +10,7 @@ import { currentUser, setUser } from "../session";
 import { getView } from "../view";
 import { t } from "../i18n";
 import { heroBall, mountHeroBall, type Callout } from "../ball/hero";
+import { mountWaitlist, waitlistCard } from "../waitlist";
 
 const RANGES: [string, number | null][] = [["1M", 31], ["3M", 92], ["1Y", 366], ["ALL", null]];
 const RANGE_LABEL: Record<string, string> = { "1Y": "1A", "ALL": "TOUT" };  // FR labels via i18n
@@ -86,7 +87,8 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
       </div>
       <div id="daysum"></div>
       <div id="bets"></div>
-    </section>`;
+    </section>
+    ${waitlistCard()}`;
 
   const eqBox = app.querySelector<HTMLElement>("#eq")!;
   const drawEq = (i: number) => {
@@ -162,6 +164,7 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
     if (ids.length) idle(() => ids.forEach(prefetchMatch));
   }
   drawDay();
+  mountWaitlist(app.querySelector<HTMLElement>("#waitlist")!, user);
 
   // Coming back from a match page: restore where the visitor was; a shared day link lands on the bets.
   const saved = sessionStorage.getItem(`scroll:${location.hash || "#/"}`);
