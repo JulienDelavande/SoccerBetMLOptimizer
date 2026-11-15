@@ -1,4 +1,4 @@
-import { drawdown, esc, eur, eur0, fmtDate, pct } from "./format";
+import { axisNum, drawdown, esc, eur, eur0, fmtDate, pct } from "./format";
 import { locale, t } from "./i18n";
 import type { EquityPoint, GroupStat, LinePoint, SeriesPoint } from "./types";
 
@@ -21,7 +21,7 @@ function ticks(min: number, max: number, count = 4) {
   return Array.from({ length: count + 1 }, (_, i) => min + i * step);
 }
 
-export interface EquityOpts { box?: Box; draw?: boolean; callouts?: boolean }
+export interface EquityOpts { box?: Box; draw?: boolean; callouts?: boolean; label?: string }
 /** Wide variant for full-width cards (Performance), so labels keep their size. */
 export const EQ_WIDE: Box = { w: 1120, h: 400, top: 56, right: 24, bottom: 30, left: 58 };
 const EQ_BOX: Box = { w: 760, h: 340, top: 64, right: 20, bottom: 30, left: 58 };
@@ -42,10 +42,11 @@ export function equityChart(eq: EquityPoint[], start: number, opts: EquityOpts =
   const last = eq[eq.length - 1], lx = X(last), ly = y(last.bankroll);
   const grid = ticks(lo - pad, hi + pad).map((v) =>
     `<line class="c-grid" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
-    `<text class="c-axis" x="${box.left - 10}" y="${y(v) + 4}" text-anchor="end">${Math.round(v)}</text>`).join("");
+    `<text class="c-axis" x="${box.left - 10}" y="${y(v) + 4}" text-anchor="end">${axisNum(v)}</text>`).join("");
   const months = monthTicks(t0, t1, box.w - box.left - box.right).map((t) =>
     `<text class="c-axis" x="${x(t)}" y="${box.h - 8}" text-anchor="middle">${new Date(t).toLocaleDateString(locale(), { month: "short", year: "2-digit" })}</text>`).join("");
-  const svg = `<svg class="chart${opts.draw ? " draw" : ""}" viewBox="0 0 ${box.w} ${box.h}" role="img" aria-label="${t("Courbe de bankroll")}" data-eq='${JSON.stringify({ t0, t1, lo: lo - pad, hi: hi + pad, box })}'>
+  const label = opts.label ?? t("Courbe de bankroll : de {a} à {b}, du {d0} au {d1}", { a: eur0(eq[0].bankroll), b: eur0(last.bankroll), d0: fmtDate(eq[0].day), d1: fmtDate(last.day) });
+  const svg = `<svg class="chart${opts.draw ? " draw" : ""}" viewBox="0 0 ${box.w} ${box.h}" role="img" aria-label="${esc(label)}" data-eq='${JSON.stringify({ t0, t1, lo: lo - pad, hi: hi + pad, box })}'>
     ${grid}${months}
     <line class="c-base" x1="${box.left}" x2="${box.w - box.right}" y1="${y(start)}" y2="${y(start)}"/>
     <path class="c-area" d="${d} V${box.h - box.bottom} H${X(eq[0])}Z"/>
@@ -90,7 +91,8 @@ function monthTicks(t0: number, t1: number, plotW = 700) {
   return out;
 }
 
-/** Crosshair + tooltip on an equity chart rendered by equityChart. */
+/** Crosshair + tooltip on an equity chart rendered by equityChart. Mouse: follows the pointer and
+ *  hides on leave. Touch: tap or drag to scrub (vertical scroll still works), hides 1.5 s after lifting. */
 export function attachEquityHover(root: HTMLElement, eq: EquityPoint[]) {
   const svg = root.querySelector<SVGSVGElement>("svg.chart[data-eq]");
   if (!svg) return;
@@ -100,7 +102,10 @@ export function attachEquityHover(root: HTMLElement, eq: EquityPoint[]) {
   const tip = g.querySelector(".c-tip")!, l1 = g.querySelector<SVGTextElement>("[data-l='1']")!, l2 = g.querySelector<SVGTextElement>("[data-l='2']")!;
   const times = eq.map((p) => new Date(p.day).getTime());
   const wrap = svg.parentElement!;
-  svg.addEventListener("pointermove", (e) => {
+  let hideTimer = 0;
+  const hide = () => { g.style.display = "none"; wrap.classList.remove("hovering"); };
+  const show = (e: PointerEvent) => {
+    clearTimeout(hideTimer);
     const r = svg.getBoundingClientRect(), px = ((e.clientX - r.left) / r.width) * box.w;
     const tm = meta.t0 + ((px - box.left) / (box.w - box.left - box.right)) * (meta.t1 - meta.t0);
     let i = times.findIndex((v) => v > tm) - 1;
@@ -110,14 +115,23 @@ export function attachEquityHover(root: HTMLElement, eq: EquityPoint[]) {
     wrap.classList.add("hovering");
     cross.setAttribute("x1", `${cx}`); cross.setAttribute("x2", `${cx}`);
     dot.setAttribute("cx", `${cx}`); dot.setAttribute("cy", `${cy}`);
-    const tx = cx + 176 > box.w ? cx - 174 : cx + 12, ty = Math.max(box.top - 40, Math.min(cy - 56, box.h - box.bottom - 48));
-    tip.setAttribute("x", `${tx}`); tip.setAttribute("y", `${ty}`);
-    l1.setAttribute("x", `${tx + 14}`); l1.setAttribute("y", `${ty + 19}`); l1.textContent = eur(p.bankroll);
+    l1.textContent = eur(p.bankroll);
     const prev = i > 0 ? eq[i - 1].bankroll : p.bankroll;
-    l2.setAttribute("x", `${tx + 14}`); l2.setAttribute("y", `${ty + 35}`);
     l2.textContent = `${fmtDate(p.day)} · ${t("jour")} ${pct(p.bankroll / prev - 1)}`;
-  });
-  svg.addEventListener("pointerleave", () => { g.style.display = "none"; wrap.classList.remove("hovering"); });
+    // Size the bubble to its text (long amounts, EN labels) and flip it left near the right edge.
+    const w = Math.ceil(Math.max(l1.getComputedTextLength(), l2.getComputedTextLength())) + 28;
+    const tx = cx + 12 + w > box.w ? cx - 12 - w : cx + 12, ty = Math.max(box.top - 40, Math.min(cy - 56, box.h - box.bottom - 48));
+    tip.setAttribute("width", `${w}`);
+    tip.setAttribute("x", `${tx}`); tip.setAttribute("y", `${ty}`);
+    l1.setAttribute("x", `${tx + 14}`); l1.setAttribute("y", `${ty + 19}`);
+    l2.setAttribute("x", `${tx + 14}`); l2.setAttribute("y", `${ty + 35}`);
+  };
+  svg.addEventListener("pointerdown", show);
+  svg.addEventListener("pointermove", show);
+  svg.addEventListener("pointerup", (e) => { if (e.pointerType !== "mouse") hideTimer = window.setTimeout(hide, 1500); });
+  const leave = (e: PointerEvent) => { if (e.pointerType === "mouse") hide(); };
+  svg.addEventListener("pointerleave", leave);
+  svg.addEventListener("pointercancel", (e) => { if (e.pointerType === "mouse") hide(); else hideTimer = window.setTimeout(hide, 1500); });
 }
 
 /** Underwater curve: distance to the running bankroll peak. */
@@ -132,7 +146,7 @@ export function drawdownChart(eq: EquityPoint[], box0: Box = { w: 1120, h: 220, 
   const grid = ticks(lo, 0, 3).map((v) =>
     `<line class="c-grid" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
     `<text class="c-axis" x="${box.left - 8}" y="${y(v) + 4}" text-anchor="end">${Math.round(v * 100)}%</text>`).join("");
-  return `<svg class="chart draw" viewBox="0 0 ${box.w} ${box.h}" role="img" aria-label="${t("Drawdown")}">${grid}
+  return `<svg class="chart draw" viewBox="0 0 ${box.w} ${box.h}" role="img" aria-label="${esc(t("Drawdown : pire creux {v}", { v: pct(Math.min(...dd.map((d) => d.dd))) }))}">${grid}
     <path class="c-loss-area c-area" d="${d} V${y(0)}Z"/><path class="c-loss c-line" pathLength="1" d="${d}"/></svg>`;
 }
 
@@ -158,13 +172,13 @@ export function monthlyGrid(monthly: { month: string; return: number }[]) {
     }).join("");
     return `<div class="mg-row"><span class="mg-year">${yr}</span>${cells}<span class="mg-total ${year >= 0 ? "up" : "down"}">${pct(year)}</span></div>`;
   }).join("");
-  return `<div class="mgrid">${head}${rows}</div>`;
+  return `<div class="mgrid" tabindex="0" role="region" aria-label="${t("Rendement mensuel")}">${head}${rows}</div>`;
 }
 
 /** Horizontal profit bars with the group's stats. */
 export function groupTable(groups: GroupStat[], label: string) {
   const max = Math.max(1, ...groups.map((g) => Math.abs(g.profit)));
-  return `<div class="tbl-scroll"><table class="tbl groups"><thead><tr><th>${label}</th><th class="r">${t("Paris")}</th><th class="r">${t("Réussite")}</th><th class="r">ROI</th><th class="r">${t("CLV")}</th><th>${t("Gain sur 1 000 €")}</th></tr></thead><tbody>
+  return `<div class="tbl-scroll" tabindex="0" role="region" aria-label="${esc(label)}"><table class="tbl groups"><thead><tr><th>${label}</th><th class="r">${t("Paris")}</th><th class="r">${t("Réussite")}</th><th class="r">ROI</th><th class="r">${t("CLV")}</th><th>${t("Gain sur 1 000 €")}</th></tr></thead><tbody>
     ${groups.map((g) => `<tr><td class="strong">${esc(g.name)}</td><td class="r mono">${g.bets}</td><td class="r mono">${Math.round(g.win_rate * 100)} %</td>
       <td class="r mono ${g.roi >= 0 ? "up" : "down"}">${pct(g.roi)}</td><td class="r mono">${g.clv === null ? "–" : pct(g.clv)}</td>
       <td><div class="gbar"><span class="${g.profit >= 0 ? "gb-up" : "gb-down"}" style="width:${(Math.abs(g.profit) / max) * 100}%"></span><b>${g.profit >= 0 ? "+" : "−"}${Math.abs(Math.round(g.profit))} €</b></div></td></tr>`).join("")}
@@ -183,7 +197,7 @@ export function clvChart(series: { day: string; clv: number; rolling: number | n
   const grid = [-lim, -lim / 2, 0, lim / 2, lim].map((v) =>
     `<line class="${v === 0 ? "c-base" : "c-grid"}" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
     `<text class="c-axis" x="${box.left - 8}" y="${y(v) + 4}" text-anchor="end">${v > 0 ? "+" : ""}${Math.round(v * 100)}%</text>`).join("");
-  return `<svg class="chart draw" viewBox="0 0 ${box.w} ${box.h}" role="img" aria-label="${t("Closing line value")}">${grid}<g class="c-area">${dots}</g><path class="c-line" pathLength="1" d="${line}"/></svg>`;
+  return `<svg class="chart draw" viewBox="0 0 ${box.w} ${box.h}" role="img" aria-label="${esc(t("Closing line value : {n} paris, moyenne glissante finale {v}", { n: series.length, v: pct([...series].reverse().find((s) => s.rolling !== null)?.rolling ?? 0) }))}">${grid}<g class="c-area">${dots}</g><path class="c-line" pathLength="1" d="${line}"/></svg>`;
 }
 
 /** Pinnacle price of the chosen outcome over time, with our entry price as a reference line. */
@@ -203,7 +217,8 @@ export function oddsChart(points: LinePoint[], ours: number, kickoff: string, bo
     `<line class="c-grid" x1="${box.left}" x2="${box.w - box.right}" y1="${y(v)}" y2="${y(v)}"/>` +
     `<text class="c-axis" x="${box.left - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(2)}</text>`).join("");
   const day = (t: number) => new Date(t).toLocaleDateString(locale(), { day: "2-digit", month: "2-digit" });
-  return `<svg class="chart draw" viewBox="0 0 ${box.w} ${box.h}">${grid}
+  const label = t("Cote Pinnacle de {a} à {b} jusqu'au coup d'envoi, notre cote {o}", { a: pts[0].v.toFixed(2), b: last.v.toFixed(2), o: ours.toFixed(2) });
+  return `<svg class="chart draw" viewBox="0 0 ${box.w} ${box.h}" role="img" aria-label="${esc(label)}">${grid}
     <line class="c-ours" x1="${box.left}" x2="${box.w - box.right}" y1="${y(ours)}" y2="${y(ours)}"/>
     <text class="c-ours-t" x="${box.w - box.right + 6}" y="${y(ours) + 4}">${t("nous {v}", { v: ours.toFixed(2) })}</text>
     <path class="c-line" pathLength="1" d="${d}"/>
@@ -216,7 +231,7 @@ export function oddsChart(points: LinePoint[], ours: number, kickoff: string, bo
 export interface Series { label: string; cls: string; points: SeriesPoint[]; dashed?: boolean }
 
 /** Several dated series on one chart (Elo, xG), labelled at their last point. */
-export function multiLineChart(series: Series[], digits = 0, box0: Box = { w: 560, h: 240, top: 14, right: 110, bottom: 26, left: 46 }) {
+export function multiLineChart(series: Series[], digits = 0, box0: Box = { w: 560, h: 240, top: 14, right: 110, bottom: 26, left: 46 }, title = "") {
   const box = fit(box0);
   const all = series.flatMap((s) => s.points);
   if (all.length < 2) return `<div class="empty">${t("Pas assez de données.")}</div>`;
@@ -238,5 +253,6 @@ export function multiLineChart(series: Series[], digits = 0, box0: Box = { w: 56
     return `<path class="c-series ${s.cls}${s.dashed ? " dashed" : ""}" d="${d}"/>
       <text class="c-series-t ${s.cls}" x="${box.w - box.right + 8}" y="${ly}">${s.label} ${last.v.toFixed(digits)}</text>`;
   }).join("");
-  return `<svg class="chart" viewBox="0 0 ${box.w} ${box.h}">${grid}${months}${lines}</svg>`;
+  const label = [title, ...series.filter((s) => s.points.length).map((s) => `${s.label} ${s.points[s.points.length - 1].v.toFixed(digits)}`)].filter(Boolean).join(" · ");
+  return `<svg class="chart" viewBox="0 0 ${box.w} ${box.h}" role="img" aria-label="${esc(label)}">${grid}${months}${lines}</svg>`;
 }

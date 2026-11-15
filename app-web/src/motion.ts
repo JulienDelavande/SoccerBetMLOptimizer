@@ -14,13 +14,14 @@ const rm = typeof matchMedia === "function" ? matchMedia("(prefers-reduced-motio
 export const reducedMotion = () => !!rm?.matches;
 
 let routeAt = 0;
-const observedAt = new WeakMap<Element, number>();
 let revealIO: IntersectionObserver | null = null;
 let countIO: IntersectionObserver | null = null;
 
 /** Call when a page (re)starts, so its first render gets the entrance choreography. */
 export const markRoute = () => { routeAt = performance.now(); };
-const isLate = (el: Element) => (observedAt.get(el) ?? 0) - routeAt > SETTLE_MS;
+/** Call before an in-place re-render (day switch, language switch): content appears in its final state. */
+export const markSettled = () => { routeAt = -Infinity; };
+const settled = (now: number) => reducedMotion() || now - routeAt > SETTLE_MS;
 
 /** Watch `root` for new content and wire motion onto it. Call once at startup. */
 export function initMotion(root: HTMLElement) {
@@ -29,25 +30,22 @@ export function initMotion(root: HTMLElement) {
   rm?.addEventListener("change", sync);
   revealIO = new IntersectionObserver(onReveal, { rootMargin: "0px 0px -6% 0px", threshold: 0.01 });
   countIO = new IntersectionObserver(onCount, { threshold: 0.5 });
-  let queued = false;
-  new MutationObserver(() => {
-    if (queued) return;
-    queued = true;
-    requestAnimationFrame(() => { queued = false; enhance(root); });
-  }).observe(root, { childList: true, subtree: true });
+  // MutationObserver callbacks run as a microtask (batched per task), always before the next paint.
+  new MutationObserver(() => enhance(root)).observe(root, { childList: true, subtree: true });
 }
 
 function enhance(root: HTMLElement) {
   const now = performance.now();
+  const late = settled(now);
   root.querySelectorAll("[data-reveal]:not([data-m]), svg.draw:not([data-m])").forEach((el) => {
     el.setAttribute("data-m", "");
-    observedAt.set(el, now);
+    // Late content is shown in this same frame: going through the observer would blank it for one frame.
+    if (late) { el.classList.add("in", "now"); return; }
     revealIO!.observe(el);
   });
   root.querySelectorAll<HTMLElement>("[data-count]:not([data-m])").forEach((el) => {
     el.setAttribute("data-m", "");
-    observedAt.set(el, now);
-    if (reducedMotion() || isLate(el)) return;            // keep the final number
+    if (late) return;                                     // keep the final number
     const job = prepareCount(el);
     if (!job) return;
     job.set(0);                                           // runs before first paint: no flash of the final value
@@ -62,7 +60,7 @@ function onReveal(entries: IntersectionObserverEntry[], io: IntersectionObserver
     if (!e.isIntersecting) continue;
     io.unobserve(e.target);
     const el = e.target as HTMLElement | SVGElement;
-    if (reducedMotion() || isLate(el)) { el.classList.add("in", "now"); continue; }
+    if (reducedMotion()) { el.classList.add("in", "now"); continue; }
     el.style.setProperty("--d", `${Math.min(i++, STAGGER_CAP - 1) * STAGGER_MS}ms`);
     el.classList.add("in");
   }
@@ -115,10 +113,11 @@ export function prepareCount(el: HTMLElement): CountJob | null {
   return null;
 }
 
-/** Route changes cross-fade through the View Transitions API when available. */
-export function withTransition(update: () => void) {
+/** Route changes cross-fade through the View Transitions API when available. `replay` = false
+ *  re-renders in place (language switch) without replaying the stagger and count-ups. */
+export function withTransition(update: () => void, replay = true) {
   const d = document as Document & { startViewTransition?: (cb: () => void) => unknown };
-  const run = () => { markRoute(); update(); };
+  const run = () => { if (replay) markRoute(); else markSettled(); update(); };
   if (!d.startViewTransition || reducedMotion()) { run(); return; }
   d.startViewTransition(run);
 }
