@@ -18,6 +18,7 @@ export function renderMatch(app: HTMLElement, id: string, back: () => void) {
     .then((res) => { if (!res.ok) throw new Error(`API ${res.status}`); return res.json(); })
     .then((m: MatchDetail) => {
       app.innerHTML = render(m);
+      document.title = `${m.home} - ${m.away} · OptiBet`;
       app.querySelector("#back")!.addEventListener("click", (e) => { e.preventDefault(); back(); });
     })
     .catch((e: Error) => { app.innerHTML = `<div class="empty pad">${t("Impossible de charger ce match ({e}).", { e: esc(e.message) })} <a class="go" href="#/">${t("Retour")}</a></div>`; });
@@ -26,11 +27,14 @@ export function renderMatch(app: HTMLElement, id: string, back: () => void) {
 function render(m: MatchDetail) {
   const b = m.bet, bankroll = savedBankroll(), day = dayKey(m.odds_at);
   const label = betLabel({ side: b.side, home: m.home, away: m.away });
-  const status = m.status === "won" ? `<span class="res res-won">${t("Gagné · {p} de bankroll", { p: pct(b.gain, 2) })}</span>`
-    : m.status === "lost" ? `<span class="res res-lost">${t("Perdu · {p} de bankroll", { p: pct(b.gain, 2) })}</span>`
-    : m.status === "void" ? `<span class="res res-void">${t("Annulé")}</span>`
-    : m.status === "pending" ? `<span class="res res-live"><i class="live-dot" aria-hidden="true"></i>${t("EN COURS")}</span>` : `<span class="res res-up">${t("À venir")}</span>`;
+  const gain = t("{p} de la bankroll", { p: pct(b.gain, 2) });
+  const [result, resultSub, resultTone] = m.status === "won" ? [t("Gagné"), gain, "up"]
+    : m.status === "lost" ? [t("Perdu"), gain, "down"]
+    : m.status === "void" ? [t("Annulé"), t("mise remboursée"), ""]
+    : m.status === "pending" ? [`<span class="v-live"><i class="live-dot" aria-hidden="true"></i>${t("En cours")}</span>`, t("match en cours"), ""]
+    : [t("À venir"), `${fmtDay(m.kickoff)} · ${fmtTime(m.kickoff)}`, ""];
   return `
+    <h1 class="sr-only">${t("{home} contre {away}", { home: esc(m.home), away: esc(m.away) })}</h1>
     <nav class="crumbs"><a id="back" class="back" href="#/jour/${day}">${icon("arrow-left")}<span>${t("Paris du {d}", { d: esc(fmtDayKey(day)) })}</span></a></nav>
     <section class="mhero" data-reveal>
       <svg class="pitch" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><line x1="300" y1="0" x2="300" y2="300"/><circle cx="300" cy="150" r="96"/><circle cx="300" cy="150" r="150"/><circle class="spot" cx="300" cy="150" r="3.5"/></svg>
@@ -51,7 +55,7 @@ function render(m: MatchDetail) {
       ${kpi(t("Avantage"), pct(b.edge), t("vs juste prix"), "up")}
       ${kpi(t("Mise · {b}", { b: eur0(bankroll) }), eur(stakeFor(b.stake, bankroll)), t("{p} de la bankroll", { p: pct(b.stake).replace("+", "") }), "")}
       ${kpi(t("CLV"), b.clv === null ? "–" : pct(b.clv), t("vs clôture Pinnacle"), b.clv !== null && b.clv >= 0 ? "up" : "down")}
-      ${kpi(t("Résultat"), status, "", "")}
+      ${kpi(t("Résultat"), result, resultSub, resultTone)}
     </section>
     <div class="mstamp"><span class="note">${t("Cotes relevées le {t}", { t: fmtStamp(m.odds_at) })}</span>
       ${m.status === "upcoming" && b.link ? `<a class="btn-cta" href="${esc(b.link)}" target="_blank" rel="noopener nofollow">${t("Parier chez {book}", { book: esc(bookName(b.book)) })}${icon("arrow-up-right")}</a>` : ""}</div>
@@ -62,7 +66,7 @@ function render(m: MatchDetail) {
         m.elo ? multiLineChart([
           { label: short(m.home), cls: "s-home", points: m.elo.home },
           { label: short(m.away), cls: "s-away", points: m.elo.away },
-        ]) : `<div class="empty">${t("Elo indisponible.")}</div>`)}
+        ], 0, undefined, t("Elo")) : `<div class="empty">${t("Elo indisponible.")}</div>`)}
     </div>
     ${m.xg_form.home.length || m.xg_form.away.length ? card(t("xG glissant · 8 matchs"), t("trait plein = xG pour · pointillé = xG contre"),
       multiLineChart([
@@ -70,13 +74,13 @@ function render(m: MatchDetail) {
         { label: `${short(m.home)} −`, cls: "s-home", dashed: true, points: m.xg_form.home.map((p) => ({ d: p.d, v: p.against })) },
         { label: `${short(m.away)} +`, cls: "s-away", points: m.xg_form.away.map((p) => ({ d: p.d, v: p.for })) },
         { label: `${short(m.away)} −`, cls: "s-away", dashed: true, points: m.xg_form.away.map((p) => ({ d: p.d, v: p.against })) },
-      ], 2, { w: 1100, h: 240, top: 14, right: 130, bottom: 26, left: 46 })) : ""}
+      ], 2, { w: 1100, h: 240, top: 14, right: 130, bottom: 26, left: 46 }, t("xG glissant"))) : ""}
     <div class="grid2">
       ${card(t("Forme"), "", `<div class="form2">${form(m.home, m.form.home)}${form(m.away, m.form.away)}</div>`)}
       ${card(t("Confrontations"), "", m.h2h.length ? `<table class="tbl mini">${m.h2h.map((h) =>
           `<tr><td class="mono">${fmtDate(h.date)}</td><td>${esc(h.home)}</td><td class="r mono strong">${esc(h.score)}</td><td>${esc(h.away)}</td></tr>`).join("")}</table>` : `<div class="empty">${t("Aucune confrontation récente.")}</div>`)}
     </div>
-    ${card(t("Cotes au moment du pari"), t("{n} bookmakers · meilleure cote en gras · notre ligne surlignée", { n: m.books.length }), `<div class="tbl-scroll">${booksTable(m)}</div>`, "flush")}
+    ${card(t("Cotes au moment du pari"), t("{n} bookmakers · meilleure cote en gras · notre ligne surlignée", { n: m.books.length }), `<div class="tbl-scroll" tabindex="0" role="region" aria-label="${t("Cotes au moment du pari")}">${booksTable(m)}</div>`, "flush")}
     <p class="fine">${m.referee ? t("Arbitre : {ref} · Données FBref, cotes The Odds API", { ref: esc(m.referee) }) : t("Données FBref, cotes The Odds API")}</p>`;
 }
 

@@ -6,6 +6,12 @@ const nf = (min: number, max = min) =>
 
 export const eur = (v: number) => `${nf(2).format(v)} €`;
 export const eur0 = (v: number) => `${nf(0).format(Math.round(v))} €`;
+/** Whole count with locale grouping (12 873 / 12,873). */
+export const int = (v: number) => nf(0).format(Math.round(v));
+/** Chart axis label: plain under 10 000, compact above (1,2 M / 1.2M) so labels fit the gutter. */
+export const axisNum = (v: number) =>
+  Math.abs(v) < 10000 ? nf(0).format(Math.round(v))
+    : new Intl.NumberFormat(locale(), { notation: "compact", maximumFractionDigits: 1 }).format(v);
 export const odds = (v: number) => v.toFixed(2);
 /** Signed percentage, e.g. +3,0 % / −11,2 % (true minus sign). */
 export const pct = (v: number, digits = 1) => {
@@ -28,11 +34,25 @@ export const SIDE_LABEL = { home: "1", draw: "N", away: "2" } as const;
 export const betLabel = (b: Pick<Bet, "side" | "home" | "away">) =>
   b.side === "draw" ? t("Match nul") : t("Victoire {team}", { team: b.side === "home" ? b.home : b.away });
 
-export const BOOKS: Record<string, string> = { onexbet: "1xBet", williamhill: "William Hill", sport888: "888sport" };
-/** "unibet_se" -> "Unibet (SE)", "betfred_uk" -> "Betfred (UK)" for keys without a curated name. */
-export const prettyBook = (k: string) =>
-  k.replace(/_(eu|uk|nl|se|de|it|fr)$/, (_m, r: string) => ` (${r.toUpperCase()})`).replace(/(^|\s)\w/g, (c) => c.toUpperCase());
+/** Curated display names; region suffixes (_uk, _se...) are added by bookName. */
+export const BOOKS: Record<string, string> = {
+  onexbet: "1xBet", williamhill: "William Hill", sport888: "888sport", mybookieag: "MyBookie", betonlineag: "BetOnline",
+  gtbets: "GTbets", leovegas: "LeoVegas", paddypower: "Paddy Power", betvictor: "BetVictor", skybet: "Sky Bet",
+  nordicbet: "Nordic Bet", livescorebet: "LiveScore Bet", boylesports: "BoyleSports", virginbet: "Virgin Bet",
+  pmu: "PMU", betfair_ex: "Betfair", betfair_sb: "Betfair Sportsbook",
+};
+const REGION = /_(eu|uk|nl|se|de|it|fr|es|us|au|dk)$/;
+/** "unibet_se" -> "Unibet (SE)", "leovegas_se" -> "LeoVegas (SE)"; unknown keys are title-cased. */
+export const prettyBook = (k: string) => {
+  const region = k.match(REGION)?.[1];
+  const base = region ? k.slice(0, -region.length - 1) : k;
+  const name = BOOKS[base] ?? base.replace(/_/g, " ").replace(/(^|\s)\w/g, (c) => c.toUpperCase());
+  return region ? `${name} (${region.toUpperCase()})` : name;
+};
 export const bookName = (k: string) => BOOKS[k] ?? prettyBook(k);
+
+/** One day before a YYYY-MM-DD key (UTC arithmetic, DST-safe). */
+export const prevDayKey = (k: string) => new Date(Date.parse(`${k}T12:00:00Z`) - 86400000).toISOString().slice(0, 10);
 
 /** Backend timestamps are naive UTC. */
 export const utc = (s: string) => new Date(s.endsWith("Z") || s.includes("+") ? s : `${s}Z`);

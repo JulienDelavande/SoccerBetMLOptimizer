@@ -1,5 +1,5 @@
 import { getMyBets, removeBet } from "../api";
-import { esc, eur, fmtDate } from "../format";
+import { esc, eur, fmtDate, odds } from "../format";
 import type { MyBet } from "../api";
 import type { SiteData } from "../types";
 import { betsTable, bindRows, pageHead, savedBankroll } from "./shared";
@@ -42,24 +42,52 @@ export function renderHistory(app: HTMLElement, data: SiteData) {
 /** "Me" view: the user's confirmed bets. */
 function renderMyHistory(app: HTMLElement) {
   app.innerHTML = `${pageHead(t("Mon historique"))}<div id="rows"><div class="empty">${t("Chargement…")}</div></div>`;
+  const box = app.querySelector<HTMLElement>("#rows")!;
   const draw = () => getMyBets().then(({ bets }) => {
-    const box = app.querySelector<HTMLElement>("#rows")!;
     if (bets.length === 0) { box.innerHTML = `<div class="empty">${t("Aucun pari confirmé. Depuis les paris du jour, indique ceux que tu as joués.")}</div>`; return; }
-    box.innerHTML = `<div class="tbl-card"><table class="tbl"><thead><tr><th>${t("Date")}</th><th>${t("Match")}</th><th>${t("Pari")}</th><th class="r">${t("Cote")}</th><th class="r">${t("Mise")}</th><th class="r">${t("Résultat")}</th><th></th></tr></thead><tbody>
-      ${bets.map((b: MyBet) => `<tr><td class="mono">${b.commence_time ? fmtDate(b.commence_time) : "–"}</td>
-        <td class="match">${esc(b.home_team ?? "")} – ${esc(b.away_team ?? "")}</td>
-        <td>${label(b)}</td><td class="r mono">${b.placed_price ?? b.recommended_price ?? "–"}</td>
-        <td class="r mono">${b.stake != null ? eur(b.stake) : "–"}</td>
-        <td class="r mono">${b.status === "placed" ? t("en attente") : b.settled_gain != null ? (b.settled_gain >= 0 ? "+" : "−") + eur(Math.abs(b.settled_gain)) : t("À venir")}</td>
-        <td class="r"><button class="ibtn ibtn-sm" aria-label="${t("Retirer ce pari")}" data-del="${esc(b.match_id)}|${esc(b.side)}">${icon("x")}</button></td></tr>`).join("")}
-    </tbody></table></div>`;
+    box.innerHTML = myBetsTable(bets);
     box.querySelectorAll<HTMLButtonElement>("[data-del]").forEach((btn) => btn.addEventListener("click", async () => {
       const [mid, side] = btn.dataset.del!.split("|");
-      await removeBet(mid, side); draw();
+      btn.disabled = true;
+      try { await removeBet(mid, side); await draw(); }
+      catch {
+        btn.disabled = false;
+        box.querySelector("#delerr")?.remove();
+        box.insertAdjacentHTML("afterbegin", `<p class="note down" id="delerr" role="alert">${t("Impossible de retirer ce pari. Réessaie dans un instant.")}</p>`);
+      }
     }));
-  }).catch(() => { app.querySelector("#rows")!.innerHTML = `<div class="empty">${t("Erreur de chargement.")}</div>`; });
+  }).catch(() => { box.innerHTML = `<div class="empty">${t("Erreur de chargement.")}</div>`; });
   draw();
 }
 
+const dash = "–";
+/** Newest kick-off first; bets without a date go last. */
+export const sortMyBets = (bets: MyBet[]) =>
+  [...bets].sort((a, b) => (b.commence_time ?? "").localeCompare(a.commence_time ?? ""));
+
+/** Result cell text and tone for one confirmed bet. */
+export function myResult(b: MyBet): { text: string; tone: string } {
+  if (b.status === "void") return { text: t("Annulé"), tone: "" };
+  if (b.status === "placed") return { text: t("en attente"), tone: "" };
+  if (b.settled_gain == null) return { text: t("À venir"), tone: "" };
+  return { text: `${b.settled_gain >= 0 ? "+" : "−"}${eur(Math.abs(b.settled_gain))}`, tone: b.settled_gain >= 0 ? "up" : "down" };
+}
+
+const myPrice = (b: MyBet) => { const p = b.placed_price ?? b.recommended_price; return p == null ? dash : odds(p); };
+
+export function myBetsTable(bets: MyBet[]) {
+  const rows = sortMyBets(bets).map((b) => {
+    const res = myResult(b), stake = b.stake != null ? eur(b.stake) : dash;
+    return `<tr><td class="mono when">${b.commence_time ? fmtDate(b.commence_time) : dash}</td>
+      <td class="match">${esc(b.home_team ?? dash)} – ${esc(b.away_team ?? dash)}
+        <span class="pick-s">${esc(label(b))} · ${myPrice(b)} · ${stake}</span></td>
+      <td class="hide-xs">${esc(label(b))}</td><td class="r mono hide-xs">${myPrice(b)}</td>
+      <td class="r mono hide-xs">${stake}</td>
+      <td class="r mono ${res.tone}">${res.text}</td>
+      <td class="r"><button class="ibtn ibtn-sm" aria-label="${t("Retirer ce pari")}" data-del="${esc(b.match_id)}|${esc(b.side)}">${icon("x")}</button></td></tr>`;
+  }).join("");
+  return `<div class="tbl-card"><table class="tbl"><thead><tr><th>${t("Date")}</th><th>${t("Match")}</th><th class="hide-xs">${t("Pari")}</th><th class="r hide-xs">${t("Cote")}</th><th class="r hide-xs">${t("Mise")}</th><th class="r">${t("Résultat")}</th><th><span class="sr-only">${t("Retirer ce pari")}</span></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
 const label = (b: MyBet) =>
-  b.side === "draw" ? t("Match nul") : t("Victoire {team}", { team: b.side === "home" ? (b.home_team ?? "") : (b.away_team ?? "") });
+  b.side === "draw" ? t("Match nul") : t("Victoire {team}", { team: (b.side === "home" ? b.home_team : b.away_team) ?? dash });

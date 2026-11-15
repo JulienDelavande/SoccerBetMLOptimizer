@@ -8,13 +8,13 @@ export function renderMethod(app: HTMLElement, data: SiteData) {
   app.innerHTML = `
     ${pageHead(t("Méthode"), t("Comment chaque pari est choisi, misé et jugé."))}
     <section class="method">
-      <article data-reveal><span class="n" aria-hidden="true">01</span><h3>${t("Pinnacle donne le juste prix")}</h3>
+      <article data-reveal><span class="n" aria-hidden="true">01</span><h2>${t("Pinnacle donne le juste prix")}</h2>
         <p>${t("Pinnacle est le bookmaker le plus précis du monde : marges faibles, il accepte les gros parieurs et corrige ses cotes avec leur argent. On retire sa marge (méthode de Shin) pour obtenir la vraie probabilité de chaque issue.")}</p></article>
-      <article data-reveal><span class="n" aria-hidden="true">02</span><h3>${t("On cherche les bookmakers en retard")}</h3>
-        <p>${t("Chaque jour, on compare les cotes de 1xBet à ce juste prix. Quand une cote dépasse le juste prix d'au moins 2 % (cote ≤ 3,50, prix récent, avant le coup d'envoi), c'est un pari de valeur. Un seul pari par match, au premier signal.")}</p></article>
-      <article data-reveal><span class="n" aria-hidden="true">03</span><h3>${t("On mise avec Kelly")}</h3>
+      <article data-reveal><span class="n" aria-hidden="true">02</span><h2>${t("On cherche les bookmakers en retard")}</h2>
+        <p>${t("Chaque jour, on compare à ce juste prix les cotes de plus de vingt bookmakers grand public (Pinnacle sert de référence, les bourses d'échange sont exclues). Quand une cote dépasse le juste prix d'au moins 2 % (cote ≤ 3,50, prix récent, avant le coup d'envoi), c'est un pari de valeur. Un bookmaker seul est rarement en retard : l'avantage vient du nombre de bookmakers surveillés. Un seul pari par match, au premier signal.")}</p></article>
+      <article data-reveal><span class="n" aria-hidden="true">03</span><h2>${t("On mise avec Kelly")}</h2>
         <p>${t("La mise suit le critère de Kelly, divisé par deux : plus l'avantage est grand, plus on mise, sans jamais dépasser 5 % de la bankroll par pari ni 30 % par jour. En moyenne, moins de 2 % par pari.")}</p></article>
-      <article data-reveal><span class="n" aria-hidden="true">04</span><h3>${t("On mesure avec le CLV")}</h3>
+      <article data-reveal><span class="n" aria-hidden="true">04</span><h2>${t("On mesure avec le CLV")}</h2>
         <p>${t("Les résultats des matchs sont bruités. Le vrai juge est la closing line value : notre cote comparée à la cote de clôture de Pinnacle. Elle est de {clv} en moyenne ici : on achète moins cher que le marché.", { clv: clv == null ? "–" : pct(clv) })}</p></article>
     </section>
     <section class="risk-card" data-reveal><h2>${t("Les risques, honnêtement")}</h2>
