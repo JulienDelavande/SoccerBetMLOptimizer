@@ -49,3 +49,12 @@ describe("dayKey", () => {
     expect(dayKey("2026-10-19T22:30:00")).toBe("2026-10-20"); // 00:30 in Paris
   });
 });
+
+import { bookName } from "./format";
+describe("bookName", () => {
+  it("keeps curated names and prettifies raw keys", () => {
+    expect(bookName("onexbet")).toBe("1xBet");
+    expect(bookName("unibet_se")).toBe("Unibet (SE)");
+    expect(bookName("marathonbet")).toBe("Marathonbet");
+  });
+});
