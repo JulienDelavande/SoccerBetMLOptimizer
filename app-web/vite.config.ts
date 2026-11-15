@@ -6,6 +6,8 @@ import { defineConfig } from "vite";
 const live = process.env.OPTIBET_LIVE;
 
 export default defineConfig({
+  // The only chunk above Vite's 500 kB default is three.js (hero ball), loaded lazily after first paint.
+  build: { chunkSizeWarningLimit: 600 },
   server: {
     proxy: live
       ? {
