@@ -927,3 +927,20 @@ html.vt-theme::view-transition-new(root) { animation: 200ms ease both fade; }
 @media (max-width: 380px) {
   .logo-word { display: none; }
 }
+
+/* match page skeleton (shown while the detail loads) */
+.match-sk { display: grid; gap: 16px; padding-top: 8px; }
+.sk { background: color-mix(in srgb, var(--surface) 70%, var(--line)); border-radius: 20px; }
+.sk-crumb { width: 220px; height: 36px; border-radius: 999px; }
+.sk-hero { height: 260px; border-radius: 28px; }
+.sk-tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.sk-tile { height: 96px; border-radius: 18px; }
+.sk-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.sk-card { height: 240px; }
+html.motion .sk { animation: sk-pulse 1.2s ease-in-out infinite; }
+@keyframes sk-pulse { 50% { opacity: .55; } }
+@media (max-width: 700px) {
+  .sk-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sk-cards { grid-template-columns: 1fr; }
+  .sk-hero { height: 220px; }
+}

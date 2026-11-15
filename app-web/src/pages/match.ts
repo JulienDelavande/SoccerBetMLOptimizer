@@ -5,6 +5,7 @@ import type { MatchDetail, Side } from "../types";
 import { card, probBar, savedBankroll } from "./shared";
 import { icon } from "../icons";
 import { t } from "../i18n";
+import { loadMatch } from "../matchCache";
 
 const SIDES: Side[] = ["home", "draw", "away"];
 const SIDE_HEAD: Record<Side, string> = { home: "1", draw: "N", away: "2" };
@@ -12,16 +13,24 @@ const RESULT = { W: "W", D: "D", L: "L" } as const;  // form chips: language-neu
 
 /** Full page for one recommended bet (route #/match/<id>). */
 export function renderMatch(app: HTMLElement, id: string, back: () => void) {
-  app.innerHTML = `<div class="empty pad">${t("Chargement…")}</div>`;
+  app.innerHTML = skeleton();
   window.scrollTo(0, 0);
-  fetch(`/api/site/match/${encodeURIComponent(id)}`)
-    .then((res) => { if (!res.ok) throw new Error(`API ${res.status}`); return res.json(); })
+  loadMatch(id)
     .then((m: MatchDetail) => {
       app.innerHTML = render(m);
       document.title = `${m.home} - ${m.away} · OptiBet`;
       app.querySelector("#back")!.addEventListener("click", (e) => { e.preventDefault(); back(); });
     })
     .catch((e: Error) => { app.innerHTML = `<div class="empty pad">${t("Impossible de charger ce match ({e}).", { e: esc(e.message) })} <a class="go" href="#/">${t("Retour")}</a></div>`; });
+}
+
+/** Page outline shown while the match loads (same blocks as the real page, no spinner text). */
+function skeleton() {
+  const tile = `<div class="sk sk-tile"></div>`;
+  return `<div class="match-sk" role="status" aria-live="polite"><span class="sr-only">${t("Chargement…")}</span>
+    <div class="sk sk-crumb"></div><div class="sk sk-hero"></div>
+    <div class="sk-tiles">${tile.repeat(6)}</div>
+    <div class="sk-cards"><div class="sk sk-card"></div><div class="sk sk-card"></div></div></div>`;
 }
 
 function render(m: MatchDetail) {
