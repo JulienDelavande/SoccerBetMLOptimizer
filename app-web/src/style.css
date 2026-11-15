@@ -232,11 +232,58 @@ main > .marquee, main > .sec, main > .phead + *, main > .bento + .marquee { marg
 .grid2 > .card { margin: 0; }
 
 /* ---------- today hero ---------- */
-.hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: center; padding-top: 48px; }
-.hero-l { position: relative; isolation: isolate; padding: 24px 0; container-type: inline-size; }
-/* Centre circle sits off to the left gutter, so its centre line never crosses the bankroll digits. */
-.rings { position: absolute; z-index: -1; width: min(460px, 110%); left: -62%; top: 50%; translate: 0 -50%; fill: none; stroke: var(--line); stroke-width: 1.25; }
-.rings .spot { fill: var(--line); stroke: none; }
+.hero {
+  display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-areas: "num ball" "chart ball";
+  gap: 20px 40px; align-items: center; padding-top: 40px;
+}
+.hero-l { grid-area: num; position: relative; padding: 8px 0 0; container-type: inline-size; }
+.hero-chart { grid-area: chart; }
+.hero > .ball-stage { grid-area: ball; }
+
+/* hero football: product object centred in the centre-circle rings, tactics pills on leader lines */
+.ball-stage { position: relative; width: 100%; aspect-ratio: 100 / 112; isolation: isolate; }
+.br-deco, .br-leads { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: none; pointer-events: none; }
+.br-deco { z-index: -1; }
+.br-leads { z-index: 1; }
+.br-narrow { display: none; }
+.br-ring { stroke: var(--line); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
+.br-half { stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: .7; }
+.br-lead { stroke: var(--line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.br-pt { fill: var(--surface); stroke: var(--structure); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.ball-obj {
+  --bd: 60%; position: absolute; left: 50%; top: calc(54 / 112 * 100%); width: var(--bd); aspect-ratio: 1; translate: -50% -50%;
+  touch-action: pan-y; cursor: grab; -webkit-user-select: none; user-select: none;
+}
+.ball-stage:not(.live) .ball-obj { cursor: default; }
+.ball-obj.grabbing { cursor: grabbing; }
+.ball-svg, .ball-gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* the GL canvas is 6% larger than the ball, so it covers the poster exactly */
+.ball-gl { inset: -3.2%; width: 106.4%; height: 106.4%; opacity: 0; transition: opacity 320ms ease; }
+.ball-stage.gl .ball-gl { opacity: 1; }
+.ball-stage.gl .ball-svg { opacity: 0; transition: opacity 320ms ease 120ms; }
+/* contact shadow on the cream floor: a tight core plus a soft wide falloff */
+.ball-shadow {
+  position: absolute; left: 50%; top: 96%; width: 96%; height: 16%; translate: -50% -50%; border-radius: 50%; z-index: -1;
+  background: radial-gradient(closest-side, rgba(22, 39, 26, .3), rgba(22, 39, 26, .12) 55%, transparent);
+  filter: blur(2px);
+}
+.ball-shadow::before {
+  content: ""; position: absolute; left: 26%; right: 26%; top: 30%; bottom: 34%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(22, 39, 26, .55), rgba(22, 39, 26, .2) 60%, transparent); filter: blur(2px);
+}
+[data-theme="dark"] .ball-shadow { background: radial-gradient(closest-side, rgba(0, 0, 0, .6), rgba(0, 0, 0, .26) 55%, transparent); }
+[data-theme="dark"] .ball-shadow::before { background: radial-gradient(closest-side, rgba(0, 0, 0, .7), transparent); }
+.bc { position: absolute; z-index: 2; left: var(--x); top: var(--y); width: 0; height: 0; pointer-events: none; }
+.bc .co-pill { left: 0; top: 0; translate: -50% -50%; }
+.co-dot.acc { background: var(--tomato-500); }
+html.motion .ball-stage:not(.in) .ball-obj { opacity: 0; }
+.ball-stage.in:not(.now) .ball-obj { animation: ball-in 700ms var(--ease-out) 80ms both; }
+html.motion .ball-stage:not(.in) .br-leads { opacity: 0; }
+.ball-stage.in:not(.now) .br-leads { animation: fade 360ms ease-out 560ms both; }
+.ball-stage.in:not(.now) .bc { animation: rise 360ms var(--ease-out) both; animation-delay: 620ms; }
+.ball-stage.in:not(.now) .bc + .bc { animation-delay: 680ms; }
+.ball-stage.in:not(.now) .bc + .bc + .bc { animation-delay: 740ms; }
+@keyframes ball-in { from { opacity: 0; transform: translateY(28px) scale(.84); } }
 .hero-label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: .875rem; color: var(--muted); }
 .big {
   margin-top: 12px; font-weight: 900; font-stretch: 75%; font-size: min(clamp(4.25rem, 9.6vw, 8.25rem), 19cqi); line-height: .86; letter-spacing: -.02em;
@@ -253,7 +300,7 @@ main > .marquee, main > .sec, main > .phead + *, main > .bento + .marquee { marg
 .delta.neg { background: var(--accent-text); color: #fff; }
 [data-theme="dark"] .delta.neg { color: var(--on-accent); }
 .lede { margin-top: 24px; color: var(--muted); max-width: 42ch; font-size: 1.0625rem; }
-.hero-chart { padding: 20px 20px 12px; }
+.hero-chart { padding: 18px 20px 10px; }
 .hero-chart .card-h { margin-bottom: 4px; padding-left: 4px; align-items: center; }
 .hero-chart .card-h h2 { font-size: 1rem; }
 
@@ -742,8 +789,8 @@ html.vt-theme::view-transition-new(root) { animation: 200ms ease both fade; }
   .menu a { scroll-snap-align: start; }
 }
 @media (max-width: 1080px) {
-  .hero { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .rings { left: auto; right: -80px; }
+  .hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "num" "ball" "chart"; gap: 24px; }
+  .hero > .ball-stage { width: min(100%, 520px); justify-self: center; }
   .bento { grid-template-columns: minmax(0, 1fr); }
   .kpis-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
@@ -763,8 +810,12 @@ html.vt-theme::view-transition-new(root) { animation: 200ms ease both fade; }
   .stamp:not(.is-offline) { display: none; }
   .phead { padding-top: 36px; }
   .hero { padding-top: 28px; }
-  .hero-l { padding: 8px 0 0; }
-  .rings { width: 340px; right: -120px; top: 40%; }
+  .hero-l { padding: 4px 0 0; }
+  .hero > .ball-stage { width: min(100%, 380px); aspect-ratio: 100 / 104; }
+  .ball-stage .ball-obj { --bd: 68%; top: 50%; }
+  .br-wide, .bc-wide { display: none; }
+  .br-narrow { display: block; }
+  .bc { left: var(--nx); top: var(--ny); }
   .big { font-size: clamp(4rem, 23vw, 6rem); }
   .lede { font-size: 1rem; margin-top: 18px; }
   .hero-chart { padding: 16px 12px 8px; margin-inline: calc(var(--gutter) * -0.5); }

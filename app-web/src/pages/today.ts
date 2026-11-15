@@ -8,6 +8,7 @@ import { getMyBets, updateSettings } from "../api";
 import { currentUser, setUser } from "../session";
 import { getView } from "../view";
 import { locale, t } from "../i18n";
+import { heroBall, mountHeroBall, type Callout } from "../ball/hero";
 
 const RANGES: [string, number | null][] = [["1M", 31], ["3M", 92], ["1Y", 366], ["ALL", null]];
 const RANGE_LABEL: Record<string, string> = { "1Y": "1A", "ALL": "TOUT" };  // FR labels via i18n
@@ -29,12 +30,12 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
     <h1 class="sr-only">${t("Paris de valeur du jour")}</h1>
     <section class="hero">
       <div class="hero-l" data-reveal>
-        <svg class="rings" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="198"/><circle cx="200" cy="200" r="140"/><circle cx="200" cy="200" r="82"/><line x1="200" y1="0" x2="200" y2="400"/></svg>
         <div class="hero-label"><span class="eyebrow">${t("Bankroll")}</span><span>${since ? t("départ {v} · {since}", { v: eur0(data.start_bankroll), since }) : t("départ {v}", { v: eur0(data.start_bankroll) })}</span></div>
         <div class="big num"><span data-count>${int}</span><span class="big-dec">${dec}</span></div>
         ${k ? `<div class="delta num ${k.return < 0 ? "neg" : ""}">${icon(k.return >= 0 ? "arrow-up" : "arrow-down")}<b>${pct(k.return)}</b><span>${t("depuis le départ")}</span></div>` : ""}
         <p class="lede">${k ? t("{n} paris réglés. ", { n: count(k.bets) }) : ""}${t("On compare chaque cote à celle de Pinnacle, le bookmaker le plus précis du marché, et on ne joue que quand un bookmaker est en retard sur lui.")}</p>
       </div>
+      ${heroBall(ballCallouts(data, books))}
       <div class="hero-chart card" data-reveal>
         <div class="card-h"><h2>${t("Courbe de bankroll")}</h2>
           <div class="seg seg-sm tabs" role="group" aria-label="${t("Période")}">${RANGES.map(([l], i) => `<button data-range="${i}" class="${i === 3 ? "on" : ""}" aria-pressed="${i === 3}">${t(RANGE_LABEL[l] ?? l)}</button>`).join("")}</div></div>
@@ -93,6 +94,7 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
     drawEq(Number(b.dataset.range));
   }));
   drawEq(3);
+  mountHeroBall(app.querySelector<HTMLElement>(".ball-stage")!);
 
   bindMarquee(app);
   const input = app.querySelector<HTMLInputElement>("#bk")!;
@@ -156,6 +158,16 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
   if (saved !== null) { window.scrollTo(0, Number(saved)); sessionStorage.removeItem(`scroll:${location.hash || "#/"}`); }
   else if (day) app.querySelector("#day")!.scrollIntoView();
   else window.scrollTo(0, 0);
+}
+
+/** Live facts pinned to the hero ball (first and last are the ones kept on phones). */
+export function ballCallouts(data: SiteData, books: number): Callout[] {
+  const k = data.kpis;
+  const out: Callout[] = [];
+  if (k && k.clv !== null) out.push({ label: t("CLV moyen"), value: pct(k.clv), tone: "accent" });
+  if (k) out.push({ label: t("Écart vs juste prix Pinnacle"), value: pct(k.avg_edge) });
+  if (books) out.push({ label: t(books > 1 ? "bookmakers comparés" : "bookmaker comparé"), value: count(books), valueFirst: true });
+  return out;
 }
 
 function dayInfo(bets: Bet[]) {

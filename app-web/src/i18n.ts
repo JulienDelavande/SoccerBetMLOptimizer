@@ -51,6 +51,8 @@ const EN: Record<string, string> = {
   "On compare chaque cote à celle de Pinnacle, le bookmaker le plus précis du marché, et on ne joue que quand un bookmaker est en retard sur lui.":
     "We compare every price to Pinnacle, the sharpest bookmaker, and only bet when a bookmaker lags behind it.",
   "CLV moyen": "Average CLV", "vs clôture Pinnacle": "vs Pinnacle close",
+  "Écart vs juste prix Pinnacle": "Edge vs Pinnacle fair price",
+  "bookmakers comparés": "bookmakers compared", "bookmaker comparé": "bookmaker compared",
   "Paris": "Bets", "{n} % gagnants": "{n}% won", "ROI / pari": "ROI / bet", "cote moy. {v}": "avg odds {v}",
   "Drawdown max": "Max drawdown",
   "Paris du jour": "Bets of the day", "Ma bankroll": "My bankroll",
