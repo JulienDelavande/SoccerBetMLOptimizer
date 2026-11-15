@@ -87,12 +87,10 @@ export const matchCell = (b: Pick<Bet, "home" | "away" | "league" | "league_key"
     <small>${leagueLogo(b.league_key, b.league)}${esc(b.league)}</small>${extra}</td>`;
 };
 
-/** Result: bet link before kickoff, live tag, or settled score and gain (sign always shown). */
+/** Result: "upcoming" tag before kickoff, live tag, or settled score and gain (sign always shown).
+ *  Never an outbound bookmaker link: the site informs on prices, it does not send traffic to bookmakers. */
 export const resultCell = (b: Bet) => {
-  if (b.status === "upcoming")
-    return b.link
-      ? `<a class="go" href="${esc(b.link)}" target="_blank" rel="noopener nofollow" data-stop>${esc(bookName(b.book))}${icon("arrow-up-right")}</a>`
-      : `<span class="res res-up">${t("À venir")}</span>`;
+  if (b.status === "upcoming") return `<span class="res res-up">${t("À venir")}</span>`;
   if (b.status === "pending") return `<span class="res res-live"><i class="live-dot" aria-hidden="true"></i>${t("EN COURS")}</span>`;
   if (b.status === "void") return `<span class="res res-void">${t("Annulé")}</span>`;
   return `<span class="res res-${b.status}">${b.score ? `<span class="res-score">${esc(b.score)}</span>` : ""}${pct(b.gain, 2)}</span>`;
@@ -110,7 +108,7 @@ export function betsTable(bets: Bet[], bankroll: number, opts: { date: "day" | "
       <td class="r mono edge hide-xs">${pct(b.edge)}</td>
       <td class="r"><span class="stake">${eur(stakeFor(b.stake, bankroll))}</span>${placedBtn(b, bankroll, opts.placed)}</td>
       <td class="r hide-xs">${resultCell(b)}</td></tr>`).join("");
-  return `<div class="tbl-card" data-reveal><table class="tbl bets"><thead><tr><th>${t("Coup d'envoi")}</th><th>${t("Match")}</th><th class="hide-xs">${t("Pari · probabilités 1 / N / 2")}</th><th class="r hide-xs">${t("Cote")}</th><th class="r hide-s">${t("Juste prix")}</th><th class="r hide-xs">${t("Avantage")}</th><th class="r">${t("Mise")}</th><th class="r hide-xs">${t("Résultat")}</th></tr></thead>
+  return `<div class="tbl-card" data-reveal><table class="tbl bets"><thead><tr><th>${t("Coup d'envoi")}</th><th>${t("Match")}</th><th class="hide-xs">${t("Pari · probabilités 1 / N / 2")}</th><th class="r hide-xs">${t("Cote")}</th><th class="r hide-s">${t("Juste prix")}</th><th class="r hide-xs">${t("Écart de cote")}</th><th class="r">${t("Mise")}</th><th class="r hide-xs">${t("Résultat")}</th></tr></thead>
     <tbody>${rows}</tbody></table></div>`;
 }
 
@@ -134,7 +132,7 @@ export function betTickets(bets: Bet[], bankroll: number, placed?: Set<string>) 
         <div class="tk-odds"><small title="${esc(bookName(b.book))}">${t("Cote")} · ${esc(bookName(b.book))}</small><b class="mono">${odds(b.price)}</b><span>${t("juste prix {v}", { v: odds(b.fair_price) })}</span></div>
         <dl class="tk-meta">
           <div><dt>${t("Mise")}</dt><dd class="mono">${stake}</dd></div>
-          <div><dt>${t("Avantage")}</dt><dd class="mono edge-chip">${pct(b.edge)}</dd></div>
+          <div><dt>${t("Écart de cote")}</dt><dd class="mono edge-chip">${pct(b.edge)}</dd></div>
         </dl>
         <div class="tk-act">${resultCell(b)}${placedBtn(b, bankroll, placed)}</div>
       </div>

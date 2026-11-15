@@ -6,6 +6,7 @@ export interface Bet {
   kickoff: string;
   odds_at: string;
   league_key: string | null;
+  /** Bookmaker deep link, still sent by the API but never rendered (no outbound betting links). */
   link: string | null;
   probs: Record<Side, number>;
   home: string;

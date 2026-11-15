@@ -34,8 +34,9 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
       <div class="hero-l" data-reveal>
         <div class="hero-label"><span class="eyebrow">${t("CLV moyen")}</span><span>${t("historique publié depuis le {d} · {p}", { d: facts.since, p: facts.period })}</span></div>
         <div class="big num">${k && k.clv !== null ? `<span data-count>${pct(k.clv).replace(/\s?%$/, "")}</span><span class="big-dec">%</span>` : "<span>–</span>"}</div>
+        <p class="big-note">${t("écart de cote moyen, pas un gain")}</p>
         <div class="delta num"><b>${count(facts.settled)}</b><span>${t(facts.settled > 1 ? "paris réglés" : "pari réglé")} · ${t("{n} publiés", { n: count(data.bets.length) })}</span></div>
-        <p class="lede">${t("Écart moyen entre la cote publiée et la cote de clôture de Pinnacle, le bookmaker de référence. Chaque jour, les cotes de plus de vingt bookmakers sont comparées à son juste prix ; un pari est publié quand une cote le dépasse.")}</p>
+        <p class="lede">${t("Écart moyen entre la cote publiée et la cote de clôture de Pinnacle, la référence de marché. Chaque jour, les cotes de plus de vingt bookmakers sont comparées à un prix estimé à partir de Pinnacle ; on signale les cotes au-dessus de ce prix estimé.")}</p>
       </div>
       ${heroBall(ballCallouts(data, books))}
       <div class="hero-chart card" data-reveal>
@@ -63,7 +64,7 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
         ? [t(nLatest > 1 ? "{n} paris de valeur ce jour" : "{n} pari de valeur ce jour", { n: nLatest })]
         : [t(nLatest > 1 ? "Dernière sélection · {d} · {n} paris" : "Dernière sélection · {d} · {n} pari", { d: fmtDate(`${latest}T12:00:00`), n: nLatest })]),
       ...(k ? [
-        `${t("CLV moyen")} ${k.clv === null ? "–" : pct(k.clv)}`,
+        `${t("Écart de cote moyen")} ${k.clv === null ? "–" : pct(k.clv)}`,
         t("{n} paris réglés", { n: count(k.bets) }),
       ] : []),
       t("Publié en direct depuis le {d}", { d: facts.since }),
@@ -73,7 +74,7 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
     ])}
     <section class="sec" id="day">
       <div class="sec-head">
-        <h2 id="dayhead">${t("Paris du jour")}</h2>
+        <h2 id="dayhead">${t("Sélection du jour")}</h2>
         <label class="bankroll"><span>${t("Ma bankroll")}<small>${t("pour calculer mes mises")}</small></span><span class="field-pill"><input id="bk" name="bankroll" type="number" min="1" step="10" inputmode="decimal" autocomplete="off" /><i>€</i></span></label>
       </div>
       <div class="daynav">
@@ -140,7 +141,7 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
     app.querySelector<HTMLButtonElement>("#next")!.disabled = !days.some((d) => d > current);
     picker.value = current;
     app.querySelector("#dayname")!.textContent = fmtDayKey(current);
-    app.querySelector("#dayhead")!.textContent = t(current === latest && latest !== today ? "Dernière sélection" : "Paris du jour");
+    app.querySelector("#dayhead")!.textContent = t(current === latest && latest !== today ? "Dernière sélection" : "Sélection du jour");
     let bets = data.bets.filter((b) => dayKey(b.odds_at) === current).sort((a, b) => a.kickoff.localeCompare(b.kickoff));
     if (mine && user) {
       const books = user.books;
@@ -151,7 +152,7 @@ export function renderToday(app: HTMLElement, data: SiteData, day?: string) {
     app.querySelector("#daysum")!.innerHTML = bets.length ? daySummary(bets, bankroll) : "";
     const box = app.querySelector<HTMLElement>("#bets")!;
     box.innerHTML = bets.length === 0
-      ? `<div class="empty">${mine ? t("Aucun pari chez tes bookmakers ce jour-là.") : t("Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).")}</div>`
+      ? `<div class="empty">${mine ? t("Aucun pari chez tes bookmakers ce jour-là.") : t("Aucune cote signalée ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).")}</div>`
       : betTickets(bets, bankroll, placed);
     bindRows(box, placed);
   }
@@ -185,19 +186,16 @@ function dayInfo(bets: Bet[]) {
 
 const won = (bets: Bet[]) => { const n = bets.filter((b) => b.status === "won").length; return t(n > 1 ? "{n} gagnés" : "{n} gagné", { n }); };
 
-/** What the day's bets commit and can return for the visitor's own bankroll (both extremes, and the
- *  theoretical edge, never a promise). */
+/** What the day's bets commit for the visitor's own bankroll and the most they can lose; once matches
+ *  are played, the actual result. Never a gain projection (no expected value, no all-win amount). */
 export function daySummary(bets: Bet[], bankroll: number) {
   const stake = bets.reduce((t, b) => t + stakeFor(b.stake, bankroll), 0);
-  const expected = bets.reduce((t, b) => t + stakeFor(b.stake, bankroll) * b.edge, 0);
-  const allWin = bets.reduce((t, b) => t + stakeFor(b.stake, bankroll) * (b.price - 1), 0);
   const settled = bets.filter((b) => b.status === "won" || b.status === "lost");
   const result = settled.reduce((t, b) => t + b.gain * bankroll, 0);
   const cell = (k: string, v: string, s: string, tone = "") => `<div class="kpi"><div class="k">${k}</div><div class="v num ${tone}" data-count>${v}</div><div class="s">${s}</div></div>`;
   return `<section class="daysum" data-reveal>
     ${cell(t("À engager"), eur(stake), t(bets.length > 1 ? "{n} paris · {p} de la bankroll" : "{n} pari · {p} de la bankroll", { n: bets.length, p: pct(stake / (bankroll || 1)).replace("+", "") }))}
-    ${cell(t("Écart théorique"), `${expected >= 0 ? "+" : "−"}${eur(Math.abs(expected))}`, t("mise × avantage, non garanti"))}
-    ${cell(t("Fourchette"), `−${eur(stake)} <span class="range-sep">/</span> +${eur(allWin)}`, t("tout perdu / tout gagné"))}
+    ${cell(t("Perte maximale"), `−${eur(stake)}`, t("si tous les paris sont perdus"), "down")}
     ${settled.length
       ? cell(t("Résultat"), `${result >= 0 ? "+" : "−"}${eur(Math.abs(result))}`, t("{n}/{m} matchs joués · {w}", { n: settled.length, m: bets.length, w: won(settled) }), result >= 0 ? "up" : "down")
       : cell(t("Résultat"), "–", t("aucun match joué"))}

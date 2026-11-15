@@ -83,6 +83,15 @@ describe("short history charts", () => {
     expect(t).toMatch(/Résultat sur 10 000 € fictifs/);
     expect(t).toMatch(/\+1 234 €/);
   });
+
+  it("dims ROI and result for rows under 30 bets, keeping the data", () => {
+    const g = (name: string, bets: number) => ({ name, bets, win_rate: 0.5, roi: 0.1, clv: 0.02, profit: 100 });
+    const html = groupTable([g("Thin", 29), g("Wide", 30)], "Championnat", 10000);
+    const [thin, wide] = html.split("<tr>").slice(2);
+    expect(thin.match(/class="[^"]*\bthin\b/g)).toHaveLength(2);
+    expect(thin).toMatch(/\+10,0 %/);
+    expect(wide).not.toMatch(/\bthin\b/);
+  });
 });
 
 // Public copy must read as information, never as a promise to win (Code de la consommation
@@ -95,6 +104,9 @@ describe("copy compliance", () => {
     /garantis\b/i, /guaranteed (profit|return|gain)/i, /\bon achète moins cher\b/i, /we buy below/i, /gains? à long terme/i,
     /long-run profit/i, /gain espéré/i, /expected gain/i, /historique.{0,20}rejoué/i, /replayed (bets|history)/i, /history before/i,
     /de gagnants/i, /% of winners/i,
+    /plus précis du monde/i, /sharpest/i, /vraie probabilité/i, /true probability/i, /toute la valeur/i, /all the value/i,
+    /bookmakers en retard/i, /lagging bookmakers/i, /Parier chez/, /Bet at \{book\}/, /demi-Kelly · recommandé/, /recommended"/,
+    /Écart théorique/, /tout gagné/, /dès qu'ils sortent/, /gains réels/, /4 chances sur 10/,
   ];
   for (const re of banned) it(`never says ${re}`, () => expect(all).not.toMatch(re));
 });

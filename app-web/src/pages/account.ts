@@ -10,15 +10,29 @@ import { pageHead } from "./shared";
 
 const RISK = [
   ["prudent", "Prudent", "quart de Kelly · mises prudentes"],
-  ["balanced", "Équilibré", "demi-Kelly · recommandé"],
+  ["balanced", "Équilibré", "demi-Kelly · méthode publiée"],
   ["aggressive", "Agressif", "Kelly plein · plus volatil"],
 ] as const;
+
+/** Age confirmation required before sign-in (18+ only), remembered on this device. */
+export const AGE_KEY = "age_confirmed";
+export const ageConfirmed = () => typeof localStorage !== "undefined" && localStorage.getItem(AGE_KEY) === "1";
 
 export function renderAccount(app: HTMLElement) {
   const user = currentUser();
   app.innerHTML = user ? "" : loggedOut();
   if (!user) {
-    renderGoogleButton(app.querySelector<HTMLElement>("#gbtn")!, (u) => { setUser(u); renderAccount(app); });
+    const gbtn = app.querySelector<HTMLElement>("#gbtn")!;
+    const box = app.querySelector<HTMLInputElement>("#age")!;
+    // Until the box is ticked the Google button is inert: not clickable, not focusable, announced as unavailable.
+    const lock = (ok: boolean) => { gbtn.inert = !ok; gbtn.classList.toggle("locked", !ok); gbtn.setAttribute("aria-disabled", String(!ok)); };
+    box.checked = ageConfirmed();
+    lock(box.checked);
+    box.addEventListener("change", () => {
+      if (box.checked) localStorage.setItem(AGE_KEY, "1"); else localStorage.removeItem(AGE_KEY);
+      lock(box.checked);
+    });
+    renderGoogleButton(gbtn, (u) => { setUser(u); renderAccount(app); });
     return;
   }
   renderSettings(app, user);
@@ -32,10 +46,13 @@ function loggedOut() {
         <ul class="perks">
           <li><b>${t("Tes bookmakers")}</b><span>${t("ne vois que les paris jouables chez toi.")}</span></li>
           <li><b>${t("Ton risque")}</b><span>${t("prudent, équilibré ou agressif.")}</span></li>
-          <li><b>${t("Ta bankroll")}</b><span>${t("mises calculées pour ton montant, suivi de tes gains réels.")}</span></li>
-          <li><b>${t("Alertes Telegram")}</b><span>${t("les paris du jour, dès qu'ils sortent.")}</span></li>
+          <li><b>${t("Ta bankroll")}</b><span>${t("mises calculées pour ton montant, suivi de tes résultats réels.")}</span></li>
+          <li><b>${t("Alertes Telegram")}</b><span>${t("la sélection du jour, une fois publiée.")}</span></li>
         </ul>
-        <div id="gbtn" class="gbtn"></div>
+        <div class="signin">
+          <label class="age-check"><input type="checkbox" id="age" name="age" required /><span>${t("Je certifie avoir 18 ans ou plus")}</span></label>
+          <div id="gbtn" class="gbtn"></div>
+        </div>
       </div>
     </section>`;
 }
@@ -105,7 +122,7 @@ function renderSettings(app: HTMLElement, user: UserProfile) {
 
 function renderTelegram(el: HTMLElement, user: UserProfile) {
   if (user.telegram_linked) { el.innerHTML = `<p class="pub">${icon("check")}${t("Telegram relié. Tu reçois les paris du jour.")}</p>`; return; }
-  el.innerHTML = `<p class="note">${t("Relie Telegram pour recevoir les paris du jour dès leur sortie.")}</p><button class="go" id="tglink">${t("Relier Telegram")}</button><div id="tgcode"></div>`;
+  el.innerHTML = `<p class="note">${t("Relie Telegram pour recevoir la sélection du jour une fois publiée.")}</p><button class="go" id="tglink">${t("Relier Telegram")}</button><div id="tgcode"></div>`;
   el.querySelector("#tglink")!.addEventListener("click", async () => {
     try {
       const { code, bot } = await telegramLink();

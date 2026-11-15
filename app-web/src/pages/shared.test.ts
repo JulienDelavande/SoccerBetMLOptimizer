@@ -14,6 +14,18 @@ const bet = (o: Partial<Bet>): Bet => ({
 });
 const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 
+describe("no outbound bookmaker links", () => {
+  it("shows the bookmaker as plain text on tickets and rows, never as a link", () => {
+    for (const html of [betTickets([bet({})], 1000), betsTable([bet({})], 1000, { date: "day" })]) {
+      expect(html).not.toContain("example.test");
+      expect(html).not.toMatch(/target="_blank"/);
+      expect(text(html)).toMatch(/À venir/);
+    }
+    expect(text(betTickets([bet({})], 1000))).toMatch(/Cote · Unibet \(SE\)/);
+    expect(text(betTickets([bet({})], 1000))).toMatch(/Écart de cote \+4,1 %/);
+  });
+});
+
 describe("betTickets", () => {
   it("renders a ticket linking to the match with price, stake and edge", () => {
     const html = betTickets([bet({})], 1000);
@@ -52,11 +64,11 @@ describe("marquee", () => {
 });
 
 describe("equityChart callouts", () => {
-  it("pins the record high and the worst trough", () => {
+  it("pins the peak and the worst trough", () => {
     const eq = [1000, 1100, 1300, 1050, 980, 1010, 1200, 1250, 1240, 1260, 1270, 1280].map((b, i) =>
       ({ day: `2026-01-${String(i + 1).padStart(2, "0")}`, bankroll: b }));
     const t = text(equityChart(eq, 1000));
-    expect(t).toMatch(/Record 1\s300 €/);
+    expect(t).toMatch(/Plus haut 1\s300 €/);
     expect(t).toMatch(/Pire creux −24,6 %/);
   });
 

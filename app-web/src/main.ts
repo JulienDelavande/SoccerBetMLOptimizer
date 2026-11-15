@@ -14,8 +14,10 @@ import { dayKey, esc, todayKey, utc } from "./format";
 import { avatar } from "./logos";
 import { NAV, routeTitle } from "./routes";
 import { icon } from "./icons";
+import { JIS_PHONE } from "./pages/shared";
 import { initMotion, reducedMotion, withTransition } from "./motion";
 
+const FOOTER = "OptiBet · information sur les cotes, pas un conseil de pari. Jouer comporte des risques : endettement, isolement, dépendance. Pour être aidé, appelez le 09 74 75 13 13 (appel non surtaxé). Interdit aux moins de 18 ans.";
 const app = document.querySelector<HTMLElement>("#app")!;
 const routes: Record<string, (app: HTMLElement, data: SiteData) => void> = {
   "/": renderToday, "/performance": renderPerformance, "/historique": renderHistory, "/methode": renderMethod,
@@ -33,9 +35,8 @@ function paintChrome() {
     const label = NAV[a.dataset.route!];
     if (label) a.textContent = t(label);
   });
-  document.querySelector("#foot-legal")!.textContent =
-    t("OptiBet · paris de valeur, pas de conseil financier. Jouer comporte des risques.");
-  document.querySelector("#foot-age")!.textContent = t("18+ · Joueurs Info Service 09 74 75 13 13");
+  // Responsible-gambling footer on every page; the helpline number becomes a tap-to-call link.
+  document.querySelector("#foot-legal")!.innerHTML = esc(t(FOOTER)).replace(JIS_PHONE, `<a href="tel:+33974751313">${JIS_PHONE}</a>`);
   document.querySelector(".skip")!.textContent = t("Aller au contenu");
   document.querySelector(".menu")!.setAttribute("aria-label", t("Navigation"));
   const lang = document.querySelector<HTMLButtonElement>("#lang")!;
@@ -96,7 +97,7 @@ function paintCta(onToday: boolean) {
   const u = currentUser(), books = u && getView() === "me" ? u.books : [];
   const n = siteData ? siteData.bets.filter((b) => dayKey(b.odds_at) === today && (books.length === 0 || books.includes(b.book))).length : 0;
   cta.hidden = !onToday || n === 0;
-  cta.innerHTML = `${t("Paris du jour")}<b aria-hidden="true">${n}</b><span class="sr-only"> ${t(n > 1 ? "({n} paris)" : "({n} pari)", { n })}</span>`;
+  cta.innerHTML = `${t("Sélection du jour")}<b aria-hidden="true">${n}</b><span class="sr-only"> ${t(n > 1 ? "({n} paris)" : "({n} pari)", { n })}</span>`;
 }
 
 /** Mobile nav row: keep the active item visible and fade only the edges that hide more items. */

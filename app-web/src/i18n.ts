@@ -40,9 +40,8 @@ const EN: Record<string, string> = {
   "Aujourd'hui": "Today", "Performance": "Performance", "Historique": "History", "Méthode": "Method",
   "Compte": "Account", "Bot": "Bot", "Moi": "Me", "Mon espace": "My space", "CHARGEMENT…": "LOADING…", "LIVE": "LIVE", "MAJ": "UPD", "HORS LIGNE": "OFFLINE",
   "Chargement…": "Loading…",
-  "OptiBet · paris de valeur, pas de conseil financier. Jouer comporte des risques.":
-    "OptiBet · value bets, not financial advice. Gambling involves risk.",
-  "18+ · Joueurs Info Service 09 74 75 13 13": "18+ · Please gamble responsibly",
+  "OptiBet · information sur les cotes, pas un conseil de pari. Jouer comporte des risques : endettement, isolement, dépendance. Pour être aidé, appelez le 09 74 75 13 13 (appel non surtaxé). Interdit aux moins de 18 ans.":
+    "OptiBet · odds information, not betting advice. Gambling involves risks: debt, isolation, addiction. 18+ only. France: Joueurs Info Service 09 74 75 13 13 (free call).",
   "Impossible de charger les données ({e}). Réessayez dans un instant.":
     "Could not load data ({e}). Please try again shortly.",
   // today / hero
@@ -51,10 +50,10 @@ const EN: Record<string, string> = {
 
     "Paris": "Bets", "{n} % gagnants": "{n}% won", "ROI / pari": "ROI / bet",
   "Drawdown max": "Max drawdown",
-  "Paris du jour": "Bets of the day", "Ma bankroll": "My bankroll",
+  "Sélection du jour": "Today's picks", "Ma bankroll": "My bankroll",
   "Jour précédent": "Previous day", "Jour suivant": "Next day",
-  "Aucun pari de valeur recommandé ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).":
-    "No value bet recommended that day. Daily analysis at 14:05 (Paris time).",
+  "Aucune cote signalée ce jour-là. Analyse quotidienne à 14 h 05 (heure de Paris).":
+    "No price flagged that day. Daily analysis at 14:05 (Paris time).",
   "Publié le {t}, avant les coups d'envoi": "Published {t}, before kick-off",
 
   "{n} pari · total engagé": "{n} bet · total staked", "{n} paris · total engagé": "{n} bets · total staked",
@@ -65,7 +64,7 @@ const EN: Record<string, string> = {
   "{n} gagné": "{n} won", "{n} gagnés": "{n} won", "aucun match joué": "no match played",
   // bets table
   "Coup d'envoi": "Kick-off", "Match": "Match", "Pari · probabilités 1 / N / 2": "Bet · probabilities 1 / X / 2",
-  "Pari": "Bet", "Cote": "Odds", "Juste prix": "Fair price", "Avantage": "Edge", "Mise": "Stake",
+  "Pari": "Bet", "Cote": "Odds", "Juste prix": "Fair price", "Écart de cote": "Price gap", "Mise": "Stake",
   "j'ai joué": "I bet this", "joué": "placed", "À venir": "Upcoming", "EN COURS": "LIVE",
   "Annulé": "Void", "en attente": "pending",
   "Victoire {team}": "{team} win", "Match nul": "Draw",
@@ -73,7 +72,7 @@ const EN: Record<string, string> = {
 
   "Bankroll": "Bankroll", "Rendement": "Return", "cumulé": "cumulative", "départ": "from",
   "{n} % des paris mesurés": "{n}% of bets measured", "mise fixe": "flat stake",
-  "Cote moyenne": "Average odds", "avantage moyen {v}": "avg edge {v}",
+  "Cote moyenne": "Average odds",
   "Mise moyenne": "Average stake", "de la bankroll": "of bankroll",
   "Drawdown": "Drawdown", "Écart au plus haut historique": "Distance from the running peak",
   "Rendement mensuel": "Monthly return", "Closing line value": "Closing line value",
@@ -94,7 +93,6 @@ const EN: Record<string, string> = {
   "Retour": "Back",
   "juste prix {v}": "fair price {v}", "vs juste prix": "vs fair price",
   "Mise · {b}": "Stake · {b}", "{p} de la bankroll": "{p} of bankroll",
-  "Parier chez {book}": "Bet at {book}",
   "Cote Pinnacle · {label}": "Pinnacle odds · {label}",
 
   "Elo · 2 saisons": "Elo · 2 seasons",
@@ -113,23 +111,23 @@ const EN: Record<string, string> = {
   "Pas d'historique de cote Pinnacle.": "No Pinnacle odds history.",
   "coup d'envoi {d}": "kick-off {d}", "nous {v}": "us {v}", "clôt. {v}": "close {v}",
   // method
-  "Pinnacle donne le juste prix": "Pinnacle gives the fair price",
-  "Pinnacle est le bookmaker le plus précis du monde : marges faibles, il accepte les gros parieurs et corrige ses cotes avec leur argent. On retire sa marge (méthode de Shin) pour obtenir la vraie probabilité de chaque issue.":
-    "Pinnacle is the sharpest bookmaker in the world: low margins, it welcomes big bettors and corrects its odds with their money. We strip its margin (Shin method) to get the true probability of each outcome.",
-  "On cherche les bookmakers en retard": "We find the lagging bookmakers",
-  "Chaque jour, on compare à ce juste prix les cotes de plus de vingt bookmakers grand public (Pinnacle sert de référence, les bourses d'échange sont exclues). Quand une cote dépasse le juste prix d'au moins 2 % (cote ≤ 3,50, prix récent, avant le coup d'envoi), c'est un pari de valeur. Un bookmaker seul est rarement en retard : l'avantage vient du nombre de bookmakers surveillés. Un seul pari par match, au premier signal.":
-    "Each day we compare that fair price with the odds of more than twenty mainstream bookmakers (Pinnacle is the reference, betting exchanges are left out). When a price beats fair value by at least 2% (odds ≤ 3.50, fresh price, before kick-off), it's a value bet. A single bookmaker rarely lags: the edge comes from watching many of them. One bet per match, at first signal.",
+  "Pinnacle sert de référence": "Pinnacle as the reference",
+  "Pinnacle sert de référence de marché ; on retire sa marge (méthode de Shin) pour estimer une probabilité.":
+    "Pinnacle serves as the market reference; we remove its margin (Shin method) to estimate a probability.",
+  "On compare les cotes": "We compare prices",
+  "Chaque jour, on compare à ce prix estimé les cotes de plus de vingt bookmakers grand public (les bourses d'échange sont exclues). On signale les cotes au-dessus de ce prix estimé, d'au moins 2 % (cote ≤ 3,50, prix récent, avant le coup d'envoi). Un seul pari par match, au premier signal.":
+    "Each day we compare the prices of more than twenty mainstream bookmakers with that estimated price (betting exchanges are left out). We flag prices above that estimated price, by at least 2% (odds ≤ 3.50, fresh price, before kick-off). One bet per match, at the first signal.",
   "On mise avec Kelly": "We stake with Kelly",
-  "La mise suit le critère de Kelly, divisé par deux : plus l'avantage est grand, plus on mise, sans jamais dépasser 5 % de la bankroll par pari ni 30 % par jour. En moyenne, moins de 2 % par pari.":
-    "Stakes follow the Kelly criterion, halved: the bigger the edge, the bigger the stake, never above 5% of bankroll per bet or 30% per day. On average, under 2% per bet.",
+  "La mise suit le critère de Kelly, divisé par deux : plus l'écart de cote est grand, plus la mise est grande, sans jamais dépasser 5 % de la bankroll par pari ni 30 % par jour. En moyenne, moins de 2 % par pari.":
+    "Stakes follow the Kelly criterion, halved: the bigger the price gap, the bigger the stake, never above 5% of bankroll per bet or 30% per day. On average, under 2% per bet.",
   "On mesure avec le CLV": "We measure with CLV",
 
   "Les risques, honnêtement": "The risks, honestly",
   "Ça fluctue beaucoup.": "It swings a lot.",
 
   "Pas de modèle magique.": "No magic model.",
-  "Un modèle maison a été testé sur 14 saisons et 22 championnats : il ne bat jamais Pinnacle. Toute la valeur vient de la comparaison des cotes.":
-    "An in-house model was tested over 14 seasons and 22 leagues: it never beats Pinnacle. All the value comes from comparing odds.",
+  "Un modèle maison a été testé sur 14 saisons et 22 championnats : il ne fait pas mieux que Pinnacle. La méthode se limite à comparer les cotes.":
+    "An in-house model was tested over 14 seasons and 22 leagues: it does no better than Pinnacle. The method is limited to comparing prices.",
 
 
   // account
@@ -138,17 +136,17 @@ const EN: Record<string, string> = {
     "A free personal space to follow the method your way.",
   "Tes bookmakers": "Your bookmakers", "ne vois que les paris jouables chez toi.": "see only the bets you can place.",
   "Ton risque": "Your risk", "prudent, équilibré ou agressif.": "cautious, balanced or aggressive.",
-  "Ta bankroll": "Your bankroll", "mises calculées pour ton montant, suivi de tes gains réels.":
-    "stakes sized to your amount, tracking of your real P&L.",
-  "Alertes Telegram": "Telegram alerts", "les paris du jour, dès qu'ils sortent.": "the day's bets, as soon as they're out.",
+  "Ta bankroll": "Your bankroll", "mises calculées pour ton montant, suivi de tes résultats réels.":
+    "stakes sized to your amount, tracking of your real results.",
+  "Alertes Telegram": "Telegram alerts", "la sélection du jour, une fois publiée.": "today's picks, once published.",
   "La connexion sera bientôt disponible.": "Sign-in will be available soon.",
   "Déconnexion": "Sign out", "Réglages": "Settings",
   "Niveau de risque": "Risk level", "Prudent": "Cautious", "Équilibré": "Balanced", "Agressif": "Aggressive",
   "quart de Kelly · mises prudentes": "quarter Kelly · cautious stakes",
-  "demi-Kelly · recommandé": "half Kelly · recommended", "Kelly plein · plus volatil": "full Kelly · more volatile",
+  "demi-Kelly · méthode publiée": "half Kelly · published method", "Kelly plein · plus volatil": "full Kelly · more volatile",
   "Mes bookmakers": "My bookmakers", "(aucun = tous)": "(none = all)",
-  "Relie Telegram pour recevoir les paris du jour dès leur sortie.":
-    "Link Telegram to get the day's bets as soon as they're out.",
+  "Relie Telegram pour recevoir la sélection du jour une fois publiée.":
+    "Link Telegram to get today's picks once published.",
   "Relier Telegram": "Link Telegram", "Telegram relié. Tu reçois les paris du jour.":
     "Telegram linked. You'll receive the day's bets.",
   "Ouvre le bot et valide : ": "Open the bot and confirm: ", "Ouvrir @{bot}": "Open @{bot}",
@@ -168,7 +166,7 @@ const EN: Record<string, string> = {
   // redesign (Barley / Hunter / Tomato)
   "Aller au contenu": "Skip to content", "Navigation": "Navigation",
   "Passer en thème clair": "Switch to light theme", "Passer en thème sombre": "Switch to dark theme",
- "Période": "Period", "Record": "Record high", "Pire creux": "Worst trough",
+  "Période": "Period", "Plus haut": "Peak", "Pire creux": "Worst trough",
   "jour": "day",
   "{n} pari de valeur ce jour": "{n} value bet on the day", "{n} paris de valeur ce jour": "{n} value bets on the day",
   "{n} paris réglés": "{n} settled bets", 
@@ -244,24 +242,22 @@ const EN: Record<string, string> = {
     "Published live since {d}",
   "pour calculer mes mises":
     "to size my stakes",
-  "Écart théorique":
-    "Theoretical edge",
-  "mise × avantage, non garanti":
-    "stake × edge, not guaranteed",
-  "Fourchette":
-    "Range",
-  "tout perdu / tout gagné":
-    "all lost / all won",
+  "Perte maximale":
+    "Maximum loss",
+  "si tous les paris sont perdus":
+    "if every bet loses",
   "Paris publiés en direct depuis le {d} · {p} · mises en demi-Kelly":
     "Bets published live since {d} · {p} · half-Kelly stakes",
   "vs clôture Pinnacle · {n} % des paris mesurés":
     "vs Pinnacle close · {n}% of bets measured",
   "Écart moyen":
-    "Average edge",
+    "Average gap",
   "cote publiée vs juste prix":
     "published price vs fair price",
-  "mise fixe · échantillon court":
-    "flat stake · short sample",
+  "non significatif (n = {n})":
+    "not meaningful (n = {n})",
+  "Trop peu de paris par ligne pour conclure : ces écarts relèvent surtout du hasard.":
+    "Too few bets per row to conclude: these differences are mostly chance.",
   "Le CLV compare la cote publiée à la cote de clôture de Pinnacle. Une moyenne positive signifie que les cotes publiées étaient en moyenne au-dessus du prix final du marché. C'est un écart mesuré, pas une garantie : le résultat des matchs reste aléatoire.":
     "CLV compares the published price with Pinnacle's closing price. A positive average means the published prices were, on average, above the market's final price. It is a measured gap, not a guarantee: match results stay random.",
   "{n} paris réglés, publiés en direct depuis le {d} · mise pour ta bankroll de {b} € · résultat en % de la bankroll du jour":
@@ -270,12 +266,12 @@ const EN: Record<string, string> = {
     "How each bet is picked, staked and measured.",
   "Les résultats des matchs sont bruités. La mesure suivie est la closing line value : la cote publiée comparée à la cote de clôture de Pinnacle. Sur les paris publiés depuis le {d}, elle est de {clv} en moyenne. C'est un écart mesuré avec le marché, pas une garantie de résultat.":
     "Match results are noisy. The measure we track is closing line value: the published price versus Pinnacle's closing price. On the bets published since {d} it averages {clv}. It is a measured gap with the market, not a guarantee of results.",
-  "L'écart mesuré est de quelques % par pari : même s'il se maintient, une saison peut finir en perte (à peu près 4 chances sur 10).":
-    "The measured edge is a few % per bet: even if it holds, a season can end in a loss (roughly 4 chances in 10).",
+  "Une saison peut finir en perte, même si l'écart mesuré se maintient.":
+    "A season can end in a loss, even if the measured gap holds.",
   "Les résultats passés ne garantissent pas les résultats futurs.":
     "Past results do not guarantee future results.",
   "L'historique publié est court ({p}) : il ne permet pas de conclure, et l'écart peut disparaître.":
-    "The published record is short ({p}): it proves nothing yet, and the edge can disappear.",
+    "The published record is short ({p}): it proves nothing yet, and the gap can disappear.",
   "Les bookmakers limitent les comptes.":
     "Bookmakers limit accounts.",
   "Un compte qui prend ces cotes est souvent plafonné : les résultats réels s'écartent alors de l'historique publié.":
@@ -292,8 +288,14 @@ const EN: Record<string, string> = {
     "Pinnacle up to kick-off against the published price. Close below the published price = positive CLV.",
   "bookmakers retenus": "bookmakers picked", "bookmaker retenu": "bookmaker picked",
   "{n} bookmakers avec un pari publié": "{n} bookmakers with a published bet", "{n} bookmaker avec un pari publié": "{n} bookmaker with a published bet",
-  "Écart moyen entre la cote publiée et la cote de clôture de Pinnacle, le bookmaker de référence. Chaque jour, les cotes de plus de vingt bookmakers sont comparées à son juste prix ; un pari est publié quand une cote le dépasse.":
-    "Average gap between the published price and Pinnacle's closing price, the reference bookmaker. Every day the odds of more than twenty bookmakers are compared with its fair price; a bet is published when a price beats it.",
+  "Écart moyen entre la cote publiée et la cote de clôture de Pinnacle, la référence de marché. Chaque jour, les cotes de plus de vingt bookmakers sont comparées à un prix estimé à partir de Pinnacle ; on signale les cotes au-dessus de ce prix estimé.":
+    "Average gap between the published price and Pinnacle's closing price, the market reference. Every day the prices of more than twenty bookmakers are compared with a price estimated from Pinnacle; we flag prices above that estimated price.",
+  "écart de cote moyen, pas un gain":
+    "average price gap, not a profit",
+  "Écart de cote moyen":
+    "Avg price gap",
+  "Je certifie avoir 18 ans ou plus":
+    "I confirm I am 18 or older",
   "Probabilités au moment du pari (juste prix Pinnacle)":
     "Probabilities at bet time (Pinnacle fair price)",
   "À la clôture":

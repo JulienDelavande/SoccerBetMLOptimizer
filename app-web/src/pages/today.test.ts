@@ -12,13 +12,18 @@ const bet = (o: Partial<Bet>): Bet => ({
 const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 
 describe("daySummary", () => {
-  it("sums stakes, the theoretical edge and both extremes for the visitor's bankroll", () => {
+  it("sums the stakes and the maximum loss for the visitor's bankroll", () => {
     const t = text(daySummary([bet({}), bet({ price: 3, stake: 0.01 })], 1000));
-    expect(t).toMatch(/À engager 30,00 €/);
-    expect(t).toMatch(/Écart théorique \+1,50 € mise × avantage, non garanti/); // 20*0.05 + 10*0.05
-    expect(t).toMatch(/Fourchette −30,00 € \/ \+40,00 € tout perdu \/ tout gagné/); // all lost / 20*1 + 10*2
-    expect(t).toMatch(/aucun match joué/);
-    expect(t).not.toMatch(/Gain espéré|Si tout passe|long terme/);
+    expect(t).toMatch(/À engager 30,00 € 2 paris · 3,0 % de la bankroll/);
+    expect(t).toMatch(/Perte maximale −30,00 € si tous les paris sont perdus/);
+    expect(t).toMatch(/Résultat – aucun match joué/);
+  });
+
+  it("never projects a gain: no theoretical edge, no all-win amount", () => {
+    const t = text(daySummary([bet({}), bet({ price: 3, stake: 0.01 })], 1000));
+    expect(t).not.toMatch(/Écart théorique|Fourchette|tout gagné|Gain espéré|Si tout passe|long terme/);
+    expect(t).not.toMatch(/\+1,50 €|\+40,00 €/); // 20*0.05 + 10*0.05 edge, 20*1 + 10*2 all-win
+    expect(t).not.toMatch(/\+/);
   });
 
   it("reports the settled result", () => {

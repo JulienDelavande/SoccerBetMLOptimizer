@@ -1,5 +1,18 @@
-import { describe, expect, it } from "vitest";
-import { myEquity } from "./performance";
+import { beforeAll, describe, expect, it } from "vitest";
+import { setLang } from "../i18n";
+beforeAll(() => setLang("fr"));
+import { myEquity, roiNote } from "./performance";
+
+describe("roiNote", () => {
+  it("flags the per-bet ROI as not meaningful under 500 settled bets", () => {
+    expect(roiNote(80).replace(/\s/g, " ")).toBe("non significatif (n = 80)");
+    expect(roiNote(499)).toMatch(/^non significatif/);
+  });
+
+  it("drops the flag once the sample is large enough", () => {
+    expect(roiNote(500)).toBe("mise fixe");
+  });
+});
 
 describe("myEquity", () => {
   it("seeds the curve the day before the first settled bet", () => {

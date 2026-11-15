@@ -58,7 +58,7 @@ export function equityChart(eq: EquityPoint[], start: number, opts: EquityOpts =
   return `<div class="chart-wrap">${svg}${opts.callouts === false ? "" : equityCallouts(eq, X, y, box)}</div>`;
 }
 
-/** Record high and worst trough as pill callouts. Positions are % of the viewBox so they track the
+/** Peak and worst trough as pill callouts. Positions are % of the viewBox so they track the
  *  responsive SVG; the leader line and pill are sized in px so they stay legible at any width. */
 function equityCallouts(eq: EquityPoint[], X: (p: EquityPoint) => number, y: (v: number) => number, box: Box) {
   const out: string[] = [];
@@ -76,7 +76,7 @@ function equityCallouts(eq: EquityPoint[], X: (p: EquityPoint) => number, y: (v:
     out.push(`<div class="callout ${dir} ${align} ${tone}" style="left:${(px * 100).toFixed(2)}%;top:${(py * 100).toFixed(2)}%">
       <span class="co-pt"></span><span class="co-line"></span><span class="co-pill"><i class="co-dot"></i>${label}<b>${value}</b></span></div>`);
   };
-  pin(peak, "up", "co-pos", t("Record"), eur0(eq[peak].bankroll));
+  pin(peak, "up", "co-pos", t("Plus haut"), eur0(eq[peak].bankroll));
   if (dd[trough].dd < -0.03 && Math.abs(trough - peak) > eq.length * 0.08)
     pin(trough, "down", "co-neg", t("Pire creux"), pct(dd[trough].dd));
   return out.join("");
@@ -208,12 +208,15 @@ function monthTiles(monthly: { month: string; return: number }[], { since, now }
 }
 
 /** Horizontal result bars with the group's stats; `base` is the fictitious bankroll the flat result is counted on. */
+/** Rows with fewer settled bets than this get their ROI and result dimmed (shown, but mostly noise). */
+export const GROUP_MIN_BETS = 30;
+
 export function groupTable(groups: GroupStat[], label: string, base: number) {
   const max = Math.max(1, ...groups.map((g) => Math.abs(g.profit)));
   return `<div class="tbl-scroll" tabindex="0" role="region" aria-label="${esc(label)}"><table class="tbl groups"><thead><tr><th>${label}</th><th class="r">${t("Paris")}</th><th class="r">${t("Réussite")}</th><th class="r">ROI</th><th class="r">${t("CLV")}</th><th>${t("Résultat sur {v} fictifs", { v: eur0(base) })}</th></tr></thead><tbody>
-    ${groups.map((g) => `<tr><td class="strong">${esc(g.name)}</td><td class="r mono">${g.bets}</td><td class="r mono">${Math.round(g.win_rate * 100)} %</td>
-      <td class="r mono ${g.roi >= 0 ? "up" : "down"}">${pct(g.roi)}</td><td class="r mono">${g.clv === null ? "–" : pct(g.clv)}</td>
-      <td><div class="gbar"><span class="${g.profit >= 0 ? "gb-up" : "gb-down"}" style="width:${(Math.abs(g.profit) / max) * 100}%"></span><b>${g.profit >= 0 ? "+" : "−"}${eur0(Math.abs(g.profit))}</b></div></td></tr>`).join("")}
+    ${groups.map((g) => { const thin = g.bets < GROUP_MIN_BETS ? " thin" : ""; return `<tr><td class="strong">${esc(g.name)}</td><td class="r mono">${g.bets}</td><td class="r mono">${Math.round(g.win_rate * 100)} %</td>
+      <td class="r mono ${g.roi >= 0 ? "up" : "down"}${thin}">${pct(g.roi)}</td><td class="r mono">${g.clv === null ? "–" : pct(g.clv)}</td>
+      <td class="${thin.trim()}"><div class="gbar"><span class="${g.profit >= 0 ? "gb-up" : "gb-down"}" style="width:${(Math.abs(g.profit) / max) * 100}%"></span><b>${g.profit >= 0 ? "+" : "−"}${eur0(Math.abs(g.profit))}</b></div></td></tr>`; }).join("")}
   </tbody></table></div>`;
 }
 
