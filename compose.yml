@@ -47,7 +47,7 @@ services:
   #     - "${APP_FRONTEND_PORT_BRIDGE:-8004}:${APP_FRONTEND_PORT:-80}"
     
   postgres:
-    image: bitnami/postgresql:15
+    image: soldevelo/postgresql:15
     container_name: dev-postgres
     environment:
       POSTGRESQL_USERNAME: ${DB_USER}
